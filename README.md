@@ -1,5 +1,7 @@
 # Dokumentum előállító modul
 
+Tesztek statusza: <a href="http://ci.dbx.hu/job/stencil-unit-tests/lastCompletedBuild/testReport/"><img src="http://ci.dbx.hu/buildStatus/icon?job=stencil-unit-tests"/></a>
+
 ## Függőségek
 
 - Java 8 (tesztelve: `Java 1.8.0_151 OpenJDK 64-Bit Server VM`)
