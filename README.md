@@ -9,3 +9,4 @@
 ## Dokumentáció
 - [Fejlesztői dokumentáció](doc/development.md)
 - [Sablonfájlok nyelvtana](doc/syntax.md)
+- Javadoc: futtassuk a `javadoc.sh` parancsot. A kimenet a `./javadoc` mappaba kerul.
