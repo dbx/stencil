@@ -1,0 +1,1 @@
+<a><b>aaa{%if x1%}</b><c>bbb{%else%}egyebkent</c>{%end%}</a>
