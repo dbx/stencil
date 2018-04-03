@@ -9,6 +9,8 @@ Tesztek statusza: <a href="http://ci.dbx.hu/job/stencil-unit-tests/lastCompleted
 - Futtatáshoz: LibreOffice 5 (tesztelve: `5.3.7.2.0+` verzió)
 
 ## Dokumentáció
+
 - [Fejlesztői dokumentáció](development.md)
 - [Sablonfájlok nyelvtana](doc/Syntax.md)
 - Javadoc: futtassuk a `javadoc.sh` parancsot. A kimenet a `./javadoc` mappaba kerul.
+- Generalt javadoc a dbx ci szerveren: http://ci.dbx.hu/job/stencil-unit-tests/Javadoc/
