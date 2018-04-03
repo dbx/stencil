@@ -13,7 +13,7 @@ Ekkor megjelenik a `pom.xml`, ami alapján már be tudjuk importálni a projekte
 ## Teszt futtatás
 
 - A Clojure egységtesztek tesztek futtatása a `$ lein test` paranccsal történik.
-- A Java egységtesztek futtatása a `mvn test` paranccsal történik.
+- A Java egységtesztek futtatása a `$ mvn test` paranccsal történik.
 
 ## Library fordítása
 
@@ -22,6 +22,6 @@ Más alkalmazásban felhasználható JAR fájl a `$ lein uberjar` paranccsal ké
 - `target/stencil-*.jar`: csak a library kódját tartalmazza.
 - `target/stencil-*-standalone.jar`: tartalmaz minden függőséget.
 
-## Használat
+## Javadoc dokumentáció
 
-Használjuk a `Process` publikus API osztályt.
+Futtassuk a `./javadoc.sh` parancsot. A generált dokumentáció a `javadoc` mappába kerül. A dokumentációban az *overview* oldal tartalmaz példa kódot, amely segíti az elindulást.
