@@ -14,6 +14,7 @@ import static io.github.erdos.stencil.InputDocumentFormats.RTF;
 public class LibreOfficeConverterTest {
 
 
+    /*
     public static void main(String... args) throws IOException, InterruptedException {
 
         LibreOfficeConverter converter = new LibreOfficeConverter(new File("/usr/lib64/libreoffice"));
@@ -29,4 +30,5 @@ public class LibreOfficeConverterTest {
             converter.stop();
         }
     }
+    */
 }

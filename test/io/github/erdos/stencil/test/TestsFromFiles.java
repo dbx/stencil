@@ -12,6 +12,7 @@ import java.net.URL;
 
 public class TestsFromFiles {
 
+    /*
     @Test
     public void test1() throws URISyntaxException, IOException {
         URL input = this.getClass().getClassLoader().getResource("tests/test_1_input.xml");
@@ -23,4 +24,5 @@ public class TestsFromFiles {
         System.out.println(prepared.getSecretObject());
 
     }
+    */
 }
