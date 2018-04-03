@@ -7,6 +7,6 @@
 - Futtatáshoz: LibreOffice 5 (tesztelve: `5.3.7.2.0+` verzió)
 
 ## Dokumentáció
-- [Fejlesztői dokumentáció](doc/development.md)
+- [Fejlesztői dokumentáció](development.md)
 - [Sablonfájlok nyelvtana](doc/syntax.md)
 - Javadoc: futtassuk a `javadoc.sh` parancsot. A kimenet a `./javadoc` mappaba kerul.
