@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Contains data to fill template documents.
+ * Contains data to fill template documents. Immutable.
  */
 public final class TemplateData {
 
@@ -15,6 +15,13 @@ public final class TemplateData {
             throw new IllegalArgumentException("Data parameter nem lehet null!");
 
         this.data = Collections.unmodifiableMap(data);
+    }
+
+    /**
+     * Construct a new empty template data object.
+     */
+    public static TemplateData empty() {
+        return new TemplateData(Collections.emptyMap());
     }
 
     /**
