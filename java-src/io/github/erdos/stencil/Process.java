@@ -19,7 +19,7 @@ import java.util.Optional;
  * The process instance has lifecycle too. Make sure to start/stop it.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class Process implements TemplateFactory {
+public final class Process implements TemplateFactory {
 
     private final Converter converter;
     private final TemplateFactory templateFactory;

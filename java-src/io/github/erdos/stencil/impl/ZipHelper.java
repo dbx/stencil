@@ -12,7 +12,7 @@ import java.util.zip.ZipInputStream;
 /**
  * Various helpers for handling ZIP files.
  */
-public class ZipHelper {
+public final class ZipHelper {
 
     /**
      * Unzips contents of a zip file under the target directory. Closes stream.

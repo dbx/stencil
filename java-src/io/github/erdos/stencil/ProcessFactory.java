@@ -8,7 +8,7 @@ import java.io.File;
  * Helps to construct Process instances.
  */
 @SuppressWarnings("unused")
-public class ProcessFactory {
+public final class ProcessFactory {
 
     private ProcessFactory() {
     }

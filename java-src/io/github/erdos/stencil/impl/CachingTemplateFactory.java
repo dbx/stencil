@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Wraps a TemplateFactory instance and proxies calls only iff template file has not been changed since last call.
@@ -33,8 +32,6 @@ public final class CachingTemplateFactory implements TemplateFactory {
 
     @Override
     public PreparedTemplate prepareTemplateFile(File templateFile) throws IOException {
-        AtomicReference<Exception> exc = new AtomicReference<>();
-
         if (cache.containsKey(templateFile)) {
             PreparedTemplate stored = cache.get(templateFile);
             if (stored.creationDateTime().toEpochSecond(ZoneOffset.UTC) <= templateFile.lastModified()) {
@@ -43,7 +40,7 @@ public final class CachingTemplateFactory implements TemplateFactory {
             }
             return stored;
         } else {
-            PreparedTemplate stored = templateFactory.prepareTemplateFile(templateFile);
+            final PreparedTemplate stored = templateFactory.prepareTemplateFile(templateFile);
             cache.put(templateFile, stored);
             return stored;
         }

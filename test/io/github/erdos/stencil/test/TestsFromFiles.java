@@ -5,6 +5,7 @@ import io.github.erdos.stencil.Process;
 import io.github.erdos.stencil.ProcessFactory;
 import io.github.erdos.stencil.TemplateData;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.junit.Test;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -45,7 +46,7 @@ public class TestsFromFiles {
         }
     }
 
-    //    @Test
+        // @Test
     public void test1() throws URISyntaxException, IOException {
         runTest(1);
     }

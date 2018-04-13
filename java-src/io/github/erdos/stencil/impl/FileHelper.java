@@ -2,7 +2,7 @@ package io.github.erdos.stencil.impl;
 
 import java.io.File;
 
-public class FileHelper {
+public final class FileHelper {
 
     public static String extension(File f) {
         return extension(f.getName());
