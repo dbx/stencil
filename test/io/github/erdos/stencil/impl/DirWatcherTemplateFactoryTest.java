@@ -2,6 +2,7 @@ package io.github.erdos.stencil.impl;
 
 import io.github.erdos.stencil.PreparedTemplate;
 import io.github.erdos.stencil.TemplateFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,38 +24,70 @@ public class DirWatcherTemplateFactoryTest implements TemplateFactory {
     private final Set<File> calledFiles = new HashSet<>();
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    DirWatcherTemplateFactory factory;
+    private File folder;
 
     @Before
-    public void cleanup() {
+    public void cleanup() throws IOException {
         calledFiles.clear();
+        folder = temporaryFolder.newFolder();
+        factory = new DirWatcherTemplateFactory(folder, this);
+        factory.start();
+    }
+
+    @After
+    public void after() {
+        factory.stop();
     }
 
     @Test
-    public void testLoadFilesOnStartup() throws IOException, InterruptedException {
-
-        File folder = temporaryFolder.newFolder();
-        System.out.println("Temp folder is: " + folder);
-
-        DirWatcherTemplateFactory factory = new DirWatcherTemplateFactory(folder, this);
-        factory.start();
-
-        File file1 = new File(folder, "asd").getAbsoluteFile();
-
-        (new FileOutputStream(file1)).close();
+    public void testFileChange() throws IOException, InterruptedException {
+        File file1 = makeFile("asd");
         assertFalse(calledFiles.contains(file1));
         Thread.sleep(1100L);
         assertTrue(calledFiles.contains(file1));
-        factory.stop();
+    }
+
+    @Test
+    public void testFileChange2() throws IOException, InterruptedException {
+        Thread.sleep(2000L);
+        File file1 = makeFile("asd");
+        assertFalse(calledFiles.contains(file1));
+
+        Thread.sleep(200L);
+        makeFile("asd");
+        File file2 = makeFile("fedfed");
+
+        Thread.sleep(600L);
+        assertFalse(calledFiles.contains(file1));
+
+        makeFile("asd");
+        Thread.sleep(600L);
+        assertFalse(calledFiles.contains(file1));
+        assertTrue(calledFiles.contains(file2));
+
+        makeFile("asd");
+        Thread.sleep(1100L);
+        assertTrue(calledFiles.contains(file1));
+    }
+
+
+    private File makeFile(String fname) throws IOException {
+        final File file1 = new File(folder, fname).getAbsoluteFile();
+        try (OutputStream fo = new FileOutputStream(file1)) {
+            fo.write("Hello".getBytes());
+        }
+        return file1;
     }
 
     @Override
     public PreparedTemplate prepareTemplateFile(File templateFile) throws IOException {
-        System.out.println("Adding: " + templateFile);
         calledFiles.add(templateFile);
         return new PreparedTemplate() {
+
             @Override
             public String getName() {
-                return "asd";
+                return templateFile.getName();
             }
 
             @Override

@@ -86,12 +86,10 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
         if (running.getAndSet(true))
             throw new IllegalStateException("Already running!");
 
-        final WatchService ws = templatesDirectory.toPath().getFileSystem().newWatchService();
-        final WatchKey waka = templatesDirectory.toPath().register(ws, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        Path path = templatesDirectory.toPath();
+        final WatchService ws = path.getFileSystem().newWatchService();
+        final WatchKey waka = path.register(ws, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
-        // TODO: benyalni az egesz alap konyvtarat es mindegyiket legyartani.
-
-        // TOOD: unregister
         new Thread(() -> {
             try {
                 initAllFiles();
@@ -103,16 +101,20 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
                 while (running.get()) {
                     if (delayQueue.isEmpty()) {
                         addEvents(ws.take());
+                    }
+
+                    List<DelayedContainer<File>> elems = new LinkedList<>();
+                    if (0 < delayQueue.drainTo(elems)) {
+                        elems.forEach((x) -> {
+                            delays.remove(x.getElem());
+                            handle(x.getElem());
+                        });
                     } else {
-                        List<DelayedContainer<File>> elems = new LinkedList<>();
-                        if (0 < delayQueue.drainTo(elems)) {
-                            elems.forEach((x) -> handle(x.getElem()));
-                        } else {
-                            long delay = delayQueue.peek().getDelay(TimeUnit.MILLISECONDS);
-                            WatchKey poll = ws.poll(delay, TimeUnit.MILLISECONDS);
-                            if (poll != null) {
-                                addEvents(poll);
-                            }
+                        long delay = delayQueue.peek().getDelay(TimeUnit.MILLISECONDS);
+                        WatchKey poll = ws.poll(delay, TimeUnit.MILLISECONDS);
+                        if (poll != null) {
+                            addEvents(poll);
+
                         }
                     }
                 }
@@ -123,8 +125,6 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
     }
 
     private void initAllFiles() {
-        System.out.println("Starting with " + templatesDirectory);
-        System.out.println("Initially all files are: " + recurse(templatesDirectory).collect(toList()));
         recurse(templatesDirectory).forEach(this::handle);
     }
 
@@ -137,6 +137,7 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
 
     @SuppressWarnings("unchecked")
     private void addEvents(WatchKey key) {
+        assert (key != null);
         for (WatchEvent<?> event : key.pollEvents()) {
             final WatchEvent<Path> ev = (WatchEvent<Path>) event;
             final File f = new File(templatesDirectory, ev.context().toFile().getName());
@@ -146,10 +147,11 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
                 delayQueue.remove(container);
             }
 
-            final DelayedContainer<File> newCont = new DelayedContainer<>(1000, f);
+            final DelayedContainer<File> newCont = new DelayedContainer<>(1000L, f);
             delays.put(f, newCont);
             delayQueue.add(newCont);
         }
+        key.reset();
     }
 
     public void stop() {
@@ -183,6 +185,10 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
 
         private X getElem() {
             return contents;
+        }
+
+        public String toString() {
+            return "D+" + expiration;
         }
 
         @Override
