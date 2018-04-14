@@ -1,5 +1,6 @@
 package io.github.erdos.stencil;
 
+import io.github.erdos.stencil.functions.Function;
 import io.github.erdos.stencil.impl.CachingTemplateFactory;
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
 import io.github.erdos.stencil.impl.NativeEvaluator;

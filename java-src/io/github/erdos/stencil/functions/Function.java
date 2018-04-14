@@ -1,4 +1,4 @@
-package io.github.erdos.stencil;
+package io.github.erdos.stencil.functions;
 
 /**
  * A function object can be called from inside a template file.

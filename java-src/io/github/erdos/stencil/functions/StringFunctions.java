@@ -1,7 +1,5 @@
 package io.github.erdos.stencil.functions;
 
-import io.github.erdos.stencil.Function;
-
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 

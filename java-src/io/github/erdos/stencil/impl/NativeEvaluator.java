@@ -2,9 +2,7 @@ package io.github.erdos.stencil.impl;
 
 import clojure.lang.IFn;
 import io.github.erdos.stencil.*;
-import io.github.erdos.stencil.functions.BasicFunctions;
-import io.github.erdos.stencil.functions.NumberFunctions;
-import io.github.erdos.stencil.functions.StringFunctions;
+import io.github.erdos.stencil.functions.FunctionEvaluator;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -14,28 +12,9 @@ import java.util.Map;
  */
 public class NativeEvaluator implements Evaluator {
 
-    {
-        registerFunctions(BasicFunctions.values());
-        registerFunctions(StringFunctions.values());
-        registerFunctions(NumberFunctions.values());
-    }
-
-    private void registerFunction(Function function) {
-        // TODO
-    }
-
-    /**
-     * Registers a function to this evaluator engine.
-     * Registered functions can be invoked from inside template files.
-     *
-     * @param functions any number of function instances.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void registerFunctions(Function... functions) {
-        for (Function function : functions) {
-            registerFunction(function);
-        }
-    }
+    // TODO: dispatch to this object
+    @SuppressWarnings("unused")
+    private final FunctionEvaluator evaluator = new FunctionEvaluator();
 
     @Override
     public EvaluatedDocument render(PreparedTemplate template, TemplateData data) {
