@@ -1,5 +1,6 @@
 package io.github.erdos.stencil.test;
 
+import io.github.erdos.stencil.PreparedTemplate;
 import io.github.erdos.stencil.Process;
 import io.github.erdos.stencil.ProcessFactory;
 import io.github.erdos.stencil.TemplateData;
@@ -14,6 +15,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
@@ -75,6 +77,25 @@ public class SimpleRenderTest {
         assertTrue(output.contains("Item: 2 pcs"));
         assertTrue(output.contains("Item: three pcs"));
     }
+
+    @Test
+    @Ignore
+    @SuppressWarnings("unchecked")
+    public void testTemplateMetadata() throws IOException {
+        // GIVEN
+        final URL docxFile = SimpleRenderTest.class.getClassLoader().getResource("tests/test1.docx");
+
+        // WHEN
+        final PreparedTemplate template = process.prepareTemplateFile(new File(docxFile.getFile()));
+        final Set<String> variables = template.getVariables();
+
+        // THEN
+        assertTrue(variables.contains("customer.fullName"));
+        assertTrue(variables.contains("listItems"));
+        // TODO: valamiert ezt mintha nem talalna meg.
+        // assertTrue(variables.contains("tableItems.name"));
+    }
+
 
     private String getOutputContents() throws IOException {
         return new String(Files.readAllBytes(outputFile.toPath()));
