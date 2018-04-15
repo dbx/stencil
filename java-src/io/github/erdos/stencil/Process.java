@@ -62,7 +62,7 @@ public final class Process implements TemplateFactory {
      * @throws IllegalArgumentException when any arg is null
      */
     public void registerFunctions(Function... functions) {
-        evaluator.registerFunctions(functions);
+        evaluator.getFunctionEvaluator().registerFunctions(functions);
     }
 
     /**

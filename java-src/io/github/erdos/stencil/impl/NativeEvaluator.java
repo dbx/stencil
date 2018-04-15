@@ -14,7 +14,11 @@ public class NativeEvaluator implements Evaluator {
 
     // TODO: dispatch to this object
     @SuppressWarnings("unused")
-    private final FunctionEvaluator evaluator = new FunctionEvaluator();
+    private final FunctionEvaluator functions = new FunctionEvaluator();
+
+    public FunctionEvaluator getFunctionEvaluator() {
+        return functions;
+    }
 
     @Override
     public EvaluatedDocument render(PreparedTemplate template, TemplateData data) {
