@@ -12,15 +12,19 @@ import clojure.lang.Symbol;
 public class ClojureHelper {
 
     /**
-     * :stream keyword
+     * Clojure :stream keyword
      */
     public static final Keyword KV_STREAM = Keyword.intern("stream");
 
     /**
-     * :variables keyword
+     * Clojure :variables keyword
      */
     public static final Keyword KV_VARIABLES = Keyword.intern("variables");
 
+    /**
+     * Clojure :functions keyword
+     */
+    public static final Keyword KV_FUNCTIONS = Keyword.intern("functions");
 
     static {
         final IFn req = RT.var("clojure.core", "require");

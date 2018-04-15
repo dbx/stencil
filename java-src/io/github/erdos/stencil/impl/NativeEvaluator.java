@@ -1,11 +1,16 @@
 package io.github.erdos.stencil.impl;
 
+import clojure.lang.AFunction;
 import clojure.lang.IFn;
 import io.github.erdos.stencil.*;
 import io.github.erdos.stencil.functions.FunctionEvaluator;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Default implementation that calls the engine written in Clojure.
@@ -29,7 +34,7 @@ public class NativeEvaluator implements Evaluator {
 
         final IFn fn = ClojureHelper.findFunction("do-eval-stream");
         final Object result = fn.invoke(template.getSecretObject(), data.getData());
-        final InputStream stream = (InputStream) ((Map) result).get(ClojureHelper.KV_STREAM);
+        final InputStream resultStream = (InputStream) ((Map) result).get(ClojureHelper.KV_STREAM);
 
         // TODO: itt kesobb lehet, hogy HTML stream jon, azt is tudni kell majd kezelni.
         return new EvaluatedDocument() {
@@ -40,7 +45,34 @@ public class NativeEvaluator implements Evaluator {
 
             @Override
             public InputStream getInputStream() {
-                return stream;
+                return resultStream;
+            }
+        };
+    }
+
+    /**
+     * Builds a Clojure function instance that dispatches to java implementations.
+     * <p>
+     * First argument is callable fn name as string.
+     * Second argument is a collection of argumets to pass to fn.
+     */
+    @SuppressWarnings("unchecked")
+    private clojure.lang.IFn prepareFunctionCaller() {
+        return new AFunction() {
+            @Override
+            public Object invoke(Object functionName, Object argsList) {
+
+                if (functionName == null || !(functionName instanceof String)) {
+                    throw new IllegalArgumentException("First argument must be a String!");
+                } else if (argsList == null) {
+                    argsList = emptyList();
+                } else if (!(argsList instanceof Collection)) {
+                    throw new IllegalArgumentException("Second argument must be a collection!");
+                }
+
+                final Object[] args = new ArrayList((Collection) argsList).toArray();
+
+                return functions.call(functionName.toString(), args);
             }
         };
     }
