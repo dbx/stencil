@@ -6,6 +6,9 @@
 
 (set! *warn-on-reflection* true)
 
+
+(def ^:dynamic ^:private *calc-vars* {})
+
 (defrecord FnCall [fn-name])
 
 (def ops
@@ -199,10 +202,6 @@
                  (update-peek functions update :args inc)
                  functions))))))
 
-
-(def ^:dynamic ^:private *calc-vars* {})
-
-
 (def reduce-step nil)
 (defmulti ^:private reduce-step
   (fn [x cmd]
@@ -224,6 +223,11 @@
 (defmethod reduce-step :string [stack s] (conj stack s))
 
 (defmulti call-fn (fn [fname & args-seq] fname))
+
+(defmethod call-fn :default [fn-name & args-seq]
+  (if-let [default-fn (::functions *calc-vars*)]
+    (default-fn fn-name args-seq)
+    (throw (new IllegalArgumentException (str "Unknown function: " fn-name)))))
 
 (defmethod reduce-step FnCall [stack {:keys [fn args]}]
   (try
@@ -261,13 +265,15 @@
 
 (defmethod reduce-step :power [[s0 s1 & ss] _] (conj ss (Math/pow s0 s1)))
 
-
-;; kiertekeljuk a kifejezest. itt mar csak szemantikai hibat dobunk.
-(defn eval-rpn [bindings tokens]
-  (assert (map? bindings))
-  (assert (seq tokens))
-  (binding [*calc-vars* bindings]
-    (first (reduce reduce-step () tokens))))
+(defn eval-rpn
+  ([bindings default-function tokens]
+   (assert (ifn? default-function))
+   (eval-rpn (assoc bindings ::functions default-function) tokens))
+  ([bindings tokens]
+   (assert (map? bindings))
+   (assert (seq tokens))
+   (binding [*calc-vars* bindings]
+     (first (reduce reduce-step () tokens)))))
 
 (def parse (comp tokens->rpn tokenize))
 

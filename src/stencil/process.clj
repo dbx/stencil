@@ -47,8 +47,8 @@
      :exec-files (into {} (for [[k v] @execs] [k (:executable v)]))}))
 
 
-(defn- run-executable-and-write [executable data output-stream]
-  (let [result (-> (eval/normal-control-ast->evaled-seq data executable)
+(defn- run-executable-and-write [executable function data output-stream]
+  (let [result (-> (eval/normal-control-ast->evaled-seq data function executable)
                    (tokenizer/tokens-seq->document)
                    (tree-postprocess/postprocess))
         writer (io/writer output-stream)]
@@ -57,7 +57,7 @@
 
 (defmulti do-eval-stream (comp :type :template))
 
-(defmethod do-eval-stream :docx [{:keys [template data]}]
+(defmethod do-eval-stream :docx [{:keys [template data function]}]
   (assert (:zip-dir template))
   (assert (:exec-files template))
   (let [data   (into {} data)
@@ -76,7 +76,7 @@
                          ze       (new java.util.zip.ZipEntry rel-path)]]
             (.putNextEntry zipstream ze)
             (if-let [executable (get exec-files rel-path)]
-              (run-executable-and-write executable data zipstream)
+              (run-executable-and-write executable function data zipstream)
               (java.nio.file.Files/copy path zipstream))
             (.closeEntry zipstream)))
         (catch Throwable e

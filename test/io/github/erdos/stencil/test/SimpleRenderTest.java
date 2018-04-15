@@ -54,6 +54,8 @@ public class SimpleRenderTest {
         data.put("customer", singletonMap("fullName", "John"));
         data.put("listItems", asList(1, "2", "three"));
 
+        data.put("roundable", 3.1415);
+
         data.put("tableItems", asList(map("name", "Pump", "value", 1000, "amt", 12),
                 map("name", "Sponge", "value", 2000, "amt", 1),
                 map("name", "Soap", "value", 3000, "amt", 3)));
@@ -76,6 +78,10 @@ public class SimpleRenderTest {
         assertTrue(output.contains("Item: 1 pcs"));
         assertTrue(output.contains("Item: 2 pcs"));
         assertTrue(output.contains("Item: three pcs"));
+
+        // rounding fn call
+        assertTrue(output.contains("Round 3.1 to 3!"));
+        assertTrue(output.contains("Round 3.5 to 4!"));
     }
 
     @Test

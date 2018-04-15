@@ -24,26 +24,26 @@
   {:cmd :echo
    :expression [Object]})
 
-(defmulti ^:private eval-step (fn [data item] (:cmd item)))
+(defmulti ^:private eval-step (fn [function data item] (:cmd item)))
 
-(defmethod eval-step nil [data item] [item])
+(defmethod eval-step nil [_ _ item] [item])
 
-(defmethod eval-step :if [data item]
-  (if (eval-rpn data (:condition item))
-    (mapcat (partial eval-step data) (:then item))
-    (mapcat (partial eval-step data) (:else item))))
+(defmethod eval-step :if [function data item]
+  (if (eval-rpn data  function (:condition item))
+    (mapcat (partial eval-step function data) (:then item))
+    (mapcat (partial eval-step function data) (:else item))))
 
-(defmethod eval-step :echo [data item]
-  [{:text (str (eval-rpn data (:expression item)))}])
+(defmethod eval-step :echo [function data item]
+  [{:text (str (eval-rpn data function (:expression item)))}])
 
-(defmethod eval-step :for [data item]
-  (if-let [items (seq (eval-rpn data (:expression item)))]
+(defmethod eval-step :for [function data item]
+  (if-let [items (seq (eval-rpn data function (:expression item)))]
     (let [datas  (map #(assoc data (name (:variable item)) %) items)
           bodies (cons (:body-run-once item) (repeat (:body-run-next item)))]
-      (mapcat (fn [data body] (mapcat (partial eval-step data) body)) datas bodies))
+      (mapcat (fn [data body] (mapcat (partial eval-step function data) body)) datas bodies))
     (:body-run-none item)))
 
-(defn normal-control-ast->evaled-seq [data items]
-  (mapcat (partial eval-step data) items))
-
-;; (normal-control-ast->evaled-seq {} [{:text "a"}])f
+(defn normal-control-ast->evaled-seq [data function items]
+  (assert (map? data))
+  (assert (ifn? function))
+  (mapcat (partial eval-step function data) items))

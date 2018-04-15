@@ -14,7 +14,7 @@
 
 (defn- test-eval [input expected]
   (is (= expected
-         (normal-control-ast->evaled-seq test-data input))))
+         (normal-control-ast->evaled-seq test-data {} input))))
 
 (deftest test-no-change
   (test-eval [{:open "a"} {:close "a"}]
