@@ -55,14 +55,13 @@
     (xml/emit result writer)
     (.flush writer)))
 
-(defn- do-eval-stream-docx
-  "Visszaad egy docx InputStream objektumot, ami tartalmazza az eredmenyt."
-  [prepared-template data]
-  (assert (map? prepared-template))
-  (assert (:zip-dir prepared-template))
-  (assert (:exec-files prepared-template))
+(defmulti do-eval-stream (comp :type :template))
+
+(defmethod do-eval-stream :docx [{:keys [template data]}]
+  (assert (:zip-dir template))
+  (assert (:exec-files template))
   (let [data   (into {} data)
-        {:keys [zip-dir exec-files]} prepared-template
+        {:keys [zip-dir exec-files]} template
         source-dir   (clojure.java.io/file zip-dir)
         pp           (.toPath source-dir)
         outstream    (new java.io.PipedOutputStream)
@@ -84,5 +83,3 @@
           (println "Zipping exception: " e))))
     {:stream input-stream
      :format :docx}))
-
-(defn do-eval-stream [prepared-template data] (do-eval-stream-docx prepared-template data))

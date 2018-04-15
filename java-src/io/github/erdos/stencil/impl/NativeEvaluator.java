@@ -8,8 +8,10 @@ import io.github.erdos.stencil.functions.FunctionEvaluator;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.erdos.stencil.impl.ClojureHelper.*;
 import static java.util.Collections.emptyList;
 
 /**
@@ -32,9 +34,9 @@ public class NativeEvaluator implements Evaluator {
         if (data == null)
             throw new IllegalArgumentException("Template data is missing!");
 
-        final IFn fn = ClojureHelper.findFunction("do-eval-stream");
-        final Object result = fn.invoke(template.getSecretObject(), data.getData());
-        final InputStream resultStream = (InputStream) ((Map) result).get(ClojureHelper.KV_STREAM);
+        final IFn fn = findFunction("do-eval-stream");
+        final Object result = fn.invoke(makeArgsMap(template.getSecretObject(), data.getData()));
+        final InputStream resultStream = (InputStream) ((Map) result).get(KV_STREAM);
 
         // TODO: itt kesobb lehet, hogy HTML stream jon, azt is tudni kell majd kezelni.
         return new EvaluatedDocument() {
@@ -48,6 +50,15 @@ public class NativeEvaluator implements Evaluator {
                 return resultStream;
             }
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map makeArgsMap(Object template, Object data) {
+        Map result = new HashMap();
+        result.put(KV_TEMPLATE, template);
+        result.put(KV_DATA, data);
+        result.put(KV_FUNCTION, prepareFunctionCaller());
+        return result;
     }
 
     /**

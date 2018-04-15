@@ -22,9 +22,20 @@ public class ClojureHelper {
     public static final Keyword KV_VARIABLES = Keyword.intern("variables");
 
     /**
-     * Clojure :functions keyword
+     * Clojure :template keyword
      */
-    public static final Keyword KV_FUNCTIONS = Keyword.intern("functions");
+    public static final Keyword KV_TEMPLATE = Keyword.intern("template");
+
+
+    /**
+     * Clojure :data keyword
+     */
+    public static final Keyword KV_DATA = Keyword.intern("data");
+
+    /**
+     * Clojure :function keyword
+     */
+    public static final Keyword KV_FUNCTION = Keyword.intern("function");
 
     static {
         final IFn req = RT.var("clojure.core", "require");
