@@ -26,6 +26,9 @@ import static org.junit.Assert.assertTrue;
  */
 public class SimpleRenderTest {
 
+    private final static URL TEMPLATE_URL = SimpleRenderTest.class.getClassLoader().getResource("tests/test1.docx");
+    private final static File TEMPLATE_FILE = new File(TEMPLATE_URL.getFile());
+
     private Process process;
     private File outputFile;
 
@@ -48,8 +51,6 @@ public class SimpleRenderTest {
     @SuppressWarnings("unchecked")
     public void test() throws IOException {
         // GIVEN
-        final URL docxFile = SimpleRenderTest.class.getClassLoader().getResource("tests/test1.docx");
-
         final Map data = new HashMap();
         data.put("customer", singletonMap("fullName", "John"));
         data.put("listItems", asList(1, "2", "three"));
@@ -61,7 +62,7 @@ public class SimpleRenderTest {
                 map("name", "Soap", "value", 3000, "amt", 3)));
 
         // WHEN
-        process.render(new File(docxFile.getFile()), TemplateData.fromMap(data), outputFile);
+        process.render(TEMPLATE_FILE, TemplateData.fromMap(data), outputFile);
         String output = getOutputContents();
 
         // THEN
@@ -89,10 +90,9 @@ public class SimpleRenderTest {
     @SuppressWarnings("unchecked")
     public void testTemplateMetadata() throws IOException {
         // GIVEN
-        final URL docxFile = SimpleRenderTest.class.getClassLoader().getResource("tests/test1.docx");
 
         // WHEN
-        final PreparedTemplate template = process.prepareTemplateFile(new File(docxFile.getFile()));
+        final PreparedTemplate template = process.prepareTemplateFile(TEMPLATE_FILE);
         final Set<String> variables = template.getVariables();
 
         // THEN

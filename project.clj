@@ -1,4 +1,4 @@
-(defproject io.github.erdos/stencil "0.1.0-SNAPSHOT"
+(defproject io.github.erdos/stencil "0.1.1-SNAPSHOT"
   :description       "docx es pdf fajlt generalas"
   :min-lein-version  "2.0.0"
   :java-source-paths ["java-src"]
