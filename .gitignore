@@ -12,4 +12,6 @@ pom.xml.asc
 *.iml
 pom.xml
 /javadoc
-./junit.xml
+junit.xml
+.~lock.*
+.idea/

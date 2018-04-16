@@ -2,6 +2,7 @@ package io.github.erdos.stencil.functions;
 
 import java.util.Arrays;
 import java.util.IllegalFormatException;
+import java.util.stream.Collectors;
 
 /**
  * Common string functions.
@@ -76,8 +77,13 @@ public enum StringFunctions implements Function {
     TITLECASE() {
         @Override
         public Object call(Object... arguments) throws IllegalArgumentException {
-            // TODO: implement this!
-            throw new Error("Not iimplemented!");
+            if (arguments.length != 1)
+                throw new IllegalArgumentException("upperCase() function expects exactly 1 argument!");
+            if (arguments[0] == null)
+                return null;
+            return Arrays.stream(arguments[0].toString().split("\\s"))
+                    .map(x -> x.substring(0,1).toUpperCase() + x.substring(1).toLowerCase())
+                    .collect(Collectors.joining(" "));
         }
     };
 

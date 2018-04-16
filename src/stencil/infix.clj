@@ -78,12 +78,12 @@
    Visszaad egy ketelemu vektort, ahol az elso elem a beolvasott string literal,
    a masodik elem a maradek karakter szekvencia."
   [characters]
-  (assert (= \" (first characters)))
+  (assert (#{\“ \"} (first characters)))
   (loop [[c & cs] (next characters)
          out      ""]
     (case c
       (\\)  (recur (next cs) (str out (first cs)))
-      (\")  [out cs]
+      (\" \”) [out cs]
       (nil) (throw (ex-info "String parse error"
                             {:reason "Unexpected end of stream"}))
       (recur cs (str out c)))))
@@ -134,7 +134,7 @@
       (let [[n tail] (read-number characters)]
         (recur tail (conj tokens n)))
 
-      (= \" first-char)
+      (#{\“ \"} first-char)
       (let [[s tail] (read-string-literal characters)]
         (recur tail (conj tokens s)))
 
