@@ -1,5 +1,5 @@
 (defproject io.github.erdos/stencil "0.1.1-SNAPSHOT"
-  :description       "docx es pdf fajlt generalas"
+  :description       "Templating engine for office documents."
   :min-lein-version  "2.0.0"
   :java-source-paths ["java-src"]
   :javac-options     ["-target" "8" "-source" "8"]
@@ -14,7 +14,7 @@
   :pom-addition [:properties
                  ["maven.compiler.source" "8"]
                  ["maven.compiler.target" "8"]]
-  :plugins [[quickie "0.4.2"]
+  :plugins [[quickie "0.4.2" :exclusions [org.clojure/clojure]]
             [lein-javadoc "0.3.0"]
             [lein-test-out "0.3.1"]]
   :aliases      {"junit" ["with-profile" "test" "do" "test-out" "junit" "junit.xml"]}
@@ -23,5 +23,6 @@
                                    "-top" "<style>a[title~=class], a[title~=interface], a[title~=enum]{text-decoration: underline; font-weight: bold} dd>code{background:#eee}</style>"
                                    ]}
   :jar-exclusions [#".*\.xml"]
-  :profiles {:test {:dependencies [[junit/junit "4.12"]]
+  :profiles {:test {:dependencies [[junit/junit "4.12"]
+                                   [org.xmlunit/xmlunit-core "2.5.1"]]
                     :java-source-paths ["java-src" "test"]}})
