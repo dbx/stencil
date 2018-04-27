@@ -2,6 +2,7 @@ package io.github.erdos.stencil.impl;
 
 import clojure.lang.AFunction;
 import clojure.lang.IFn;
+import clojure.lang.Keyword;
 import io.github.erdos.stencil.*;
 import io.github.erdos.stencil.functions.FunctionEvaluator;
 
@@ -19,8 +20,6 @@ import static java.util.Collections.emptyList;
  */
 public class NativeEvaluator implements Evaluator {
 
-    // TODO: dispatch to this object
-    @SuppressWarnings("unused")
     private final FunctionEvaluator functions = new FunctionEvaluator();
 
     public FunctionEvaluator getFunctionEvaluator() {
@@ -36,13 +35,13 @@ public class NativeEvaluator implements Evaluator {
 
         final IFn fn = findFunction("do-eval-stream");
         final Object result = fn.invoke(makeArgsMap(template.getSecretObject(), data.getData()));
-        final InputStream resultStream = (InputStream) ((Map) result).get(KV_STREAM);
+        final InputStream resultStream = resultInputStream((Map) result);
+        final OutputDocumentFormats templateForm = resultTemplateFormat((Map) result);
 
-        // TODO: itt kesobb lehet, hogy HTML stream jon, azt is tudni kell majd kezelni.
         return new EvaluatedDocument() {
             @Override
             public OutputDocumentFormats getFormat() {
-                return OutputDocumentFormats.DOCX;
+                return templateForm;
             }
 
             @Override
@@ -51,6 +50,19 @@ public class NativeEvaluator implements Evaluator {
             }
         };
     }
+
+    private InputStream resultInputStream(Map result) {
+        return (InputStream) result.get(KV_STREAM);
+    }
+
+    private OutputDocumentFormats resultTemplateFormat(Map result) {
+        final Keyword templateFormat = (Keyword) result.get(KV_FORMAT);
+
+        return OutputDocumentFormats
+                .ofExtension(templateFormat.getName())
+                .orElseThrow(() -> new IllegalStateException("Unexpected template format: " + templateFormat));
+    }
+
 
     @SuppressWarnings("unchecked")
     private Map makeArgsMap(Object template, Object data) {

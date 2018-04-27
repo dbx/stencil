@@ -33,6 +33,11 @@ public class ClojureHelper {
     public static final Keyword KV_DATA = Keyword.intern("data");
 
     /**
+     * Clojure :format keyword
+     */
+    public static final Keyword KV_FORMAT = Keyword.intern("format");
+
+    /**
      * Clojure :function keyword
      */
     public static final Keyword KV_FUNCTION = Keyword.intern("function");

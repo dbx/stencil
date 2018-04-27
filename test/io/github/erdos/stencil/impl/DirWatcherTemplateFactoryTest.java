@@ -24,7 +24,7 @@ public class DirWatcherTemplateFactoryTest implements TemplateFactory {
     private final Set<File> calledFiles = new HashSet<>();
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
-    DirWatcherTemplateFactory factory;
+    private DirWatcherTemplateFactory factory;
     private File folder;
 
     @Before
@@ -81,7 +81,7 @@ public class DirWatcherTemplateFactoryTest implements TemplateFactory {
     }
 
     @Override
-    public PreparedTemplate prepareTemplateFile(File templateFile) throws IOException {
+    public PreparedTemplate prepareTemplateFile(File templateFile) {
         calledFiles.add(templateFile);
         return new PreparedTemplate() {
 

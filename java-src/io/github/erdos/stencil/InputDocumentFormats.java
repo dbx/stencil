@@ -15,14 +15,15 @@ public enum InputDocumentFormats {
     ODT(TemplateDocumentFormats.DOCX, true),
     RTF(TemplateDocumentFormats.DOCX, true),
     HTML(TemplateDocumentFormats.XML, false),
+    XHTML(TemplateDocumentFormats.XML, false),
     XML(TemplateDocumentFormats.XML, false),
     TXT(TemplateDocumentFormats.TXT, false);
     private final TemplateDocumentFormats templateFormat;
     private final boolean templateShouldConvert;
 
-    InputDocumentFormats(TemplateDocumentFormats templateFormat, boolean b) {
+    InputDocumentFormats(TemplateDocumentFormats templateFormat, boolean templateShouldConvert) {
         this.templateFormat = templateFormat;
-        this.templateShouldConvert = b;
+        this.templateShouldConvert = templateShouldConvert;
     }
 
     /**

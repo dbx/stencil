@@ -42,7 +42,13 @@ public enum OutputDocumentFormats {
     /**
      * Rich Text Format (oldie)
      */
-    RTF;
+    RTF,
+
+    /**
+     * Just XML.
+     */
+    XML
+    ;
 
     /**
      * Tries to find an output document format instance for a given extension string.

@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LibreOfficeConverter implements Converter {
     private final OfficeManager officeManager;
     private final AtomicBoolean started = new AtomicBoolean(false);
-
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
@@ -91,9 +90,16 @@ public class LibreOfficeConverter implements Converter {
      * @param outputFormat output stream is expected in this file format
      * @return a new input stream with the conversion result
      * @throws IllegalStateException when converter has not yet been started
+     * @throws IllegalArgumentException when any argument is null
      * @throws IOException           on file system IO error
      */
     public InputStream convert(InputStream inputStream, InputDocumentFormats inputFormat, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
+        if (inputStream == null)
+            throw new IllegalArgumentException("Convert function input stream is null!");
+        if (inputFormat == null)
+            throw new IllegalArgumentException("Convert function input format is null!");
+        if (outputFormat == null)
+            throw new IllegalArgumentException("Convert function output format is null!");
         if (inputFormat.name().equals(outputFormat.name()))
             return inputStream;
 
@@ -121,6 +127,10 @@ public class LibreOfficeConverter implements Converter {
     public ConversionResult<InputStream> convert(EvaluatedDocument document, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
         if (!started.get())
             throw new IllegalStateException("Service has not yet been started!");
+
+        // we are lazy
+        if (document.getFormat() == outputFormat)
+            return new ConversionResult<>(outputFormat, document.getInputStream(), null);
 
         final InputDocumentFormats inputFormat = InputDocumentFormats.valueOf(document.getFormat().name());
         final InputStream inputStream = convert(document.getInputStream(), inputFormat, outputFormat);

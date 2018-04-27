@@ -83,3 +83,18 @@
           (println "Zipping exception: " e))))
     {:stream input-stream
      :format :docx}))
+
+(defmethod do-eval-stream :xml [{:keys [template data function] :as input}]
+  (println input)
+  (assert (:executable template))
+  (let [data         (into {} data)
+        executable   (:executable template)
+        out-stream    (new java.io.PipedOutputStream)
+        input-stream (new java.io.PipedInputStream out-stream)]
+    (future
+      (try
+        (with-open [out-stream out-stream]        (run-executable-and-write executable function data out-stream) )
+        (catch Throwable e
+          (println "Evaling exception: " e))))
+    {:stream input-stream
+     :format :xml}))

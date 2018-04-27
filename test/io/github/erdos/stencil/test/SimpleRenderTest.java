@@ -33,7 +33,7 @@ public class SimpleRenderTest {
     private File outputFile;
 
     @Before
-    public void setUp() throws InterruptedException, IOException {
+    public void setUp() throws IOException {
         process = ProcessFactory.fromLibreOfficeHome(new File("/usr/lib64/libreoffice"));
         process.start();
         outputFile = File.createTempFile("stencil", "test.txt");

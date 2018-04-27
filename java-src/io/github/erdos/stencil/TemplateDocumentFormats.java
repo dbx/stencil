@@ -2,6 +2,7 @@ package io.github.erdos.stencil;
 
 /**
  * These types are used when preprocessing a template document.
+ *
  */
 public enum TemplateDocumentFormats {
 
@@ -13,7 +14,7 @@ public enum TemplateDocumentFormats {
     /**
      * Raw XML file.
      */
-    XML(OutputDocumentFormats.HTML),
+    XML(OutputDocumentFormats.XML),
 
     /**
      * Simple text file without formatting. Like XML but without a header.
