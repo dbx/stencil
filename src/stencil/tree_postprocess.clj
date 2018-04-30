@@ -43,8 +43,15 @@
   (assert (zipper? loc))
   (first (filter (comp pred zip/node) (take-while some? (iterations zip/right (zip/down loc))))))
 
+;; finds first child with given tag name
 (defn- child-of-tag [tag-name loc]
+  (assert (zipper? loc))
+  (assert (string? tag-name))
   (find-first-child #(some-> % :tag name (= tag-name)) loc))
+
+;; finds or creates first child with given tag name
+(defn- child-of-tag+ [tag-name loc]
+  (or (child-of-tag tag-name loc) (zip/down (zip/insert-child loc {:tag tag-name}))))
 
 (defn- cell-width
   "Az aktualis TD table cella szelesseget adja vissza. Alapertelmezetten 1."
@@ -59,7 +66,6 @@
       ;; ooxml
       "tc" (or (some->> loc (child-of-tag "tcPr") (child-of-tag "w:gridSpan") zip/node :attrs (#(get % "w:val")) ->int) 1))))
 
-
 (defn shrink-column
   "Az aktualis td cella szelesseget csokkenti"
   [col-loc shrink-amount]
@@ -68,14 +74,10 @@
 
   (let [old-width (cell-width col-loc)]
     (assert (< shrink-amount old-width))
-    ;; TODO: itt kell megoldani a frissitest
     (case (name (:tag (zip/node col-loc)))
-      "td" (zip/edit col-loc update :width - shrink-amount)
-      ("th" "tc")
-      ;;  ez a resz atkozottul trukkos. kompatibilisnek kell maradni a cell-width fuggvennyel!
-      col-loc
-      )))
-
+      "td"        (zip/edit col-loc update :width - shrink-amount)
+      ("th" "tc") (-> (->> col-loc (child-of-tag+ "tcPr") (child-of-tag+ "w:gridSpan"))
+                      (zip/edit update-in [:attrs "w:val"] #(str (- (->int %) shrink-amount))) (zip/up) (zip/up)))))
 
 (defn- current-column-indices
   "Visszaadja egy halmazban, hogy hanyadik oszlop(ok)ban vagyunk benne eppen."

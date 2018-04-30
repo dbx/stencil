@@ -45,7 +45,7 @@
 (deftest test-column-merging-joined
   (testing "Second column is being hidden here."
     (is (=  (table (row (cell "x1") (cell "x3"))
-                   (row (cell "d1") (cell "d2")))
+                   (row (cell "d1") (cell-of-width 1 "d2")))
             (postprocess (table (row (cell "x1") (cell (->HideTableColumnMarker) "x2") (cell "x3"))
                                 (row (cell "d1") (cell-of-width 2 "d2"))))))))
 
