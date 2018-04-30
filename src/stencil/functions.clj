@@ -28,3 +28,6 @@
                          {:msg (.getMessage e)})))))
 
 (defmethod call-fn "length" [_ items] (count items))
+
+(defmethod call-fn "hideColumn" [_] (->HideTableColumnMarker))
+

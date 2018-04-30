@@ -1,6 +1,9 @@
 (ns stencil.types
   "Utility types"
-  (:require [clojure.pprint]))
+  (:require [clojure.pprint])
+  (:gen-class))
+
+(set! *warn-on-reflection* true)
 
 (def open-tag "{%")
 (def close-tag "%}")
@@ -23,6 +26,8 @@
 
 ;; ez a marker jeloli, hogy egy oszlopot el kell rejteni.
 (defrecord HideTableColumnMarker [])
+
+(defn hide-table-column-marker? [x] (instance? HideTableColumnMarker x))
 
 ;; ez a marker valamilyen kesleltetett erteket jelol.
 (defrecord DelayedValueMarker [delay-object]

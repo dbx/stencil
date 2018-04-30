@@ -1,8 +1,7 @@
 (ns stencil.tree-postprocess
   "XML fa utofeldolgozasat vegzo kod."
-  (:import [stencil.types HideTableColumnMarker])
   (:require [clojure.zip :as zip]
-            [stencil.types :as types]
+            [stencil.types :refer [hide-table-column-marker?]]
             [stencil.util :refer :all]))
 
 (set! *warn-on-reflection* true)
@@ -15,9 +14,6 @@
   (assert (zipper? tree))
   (assert (fn? pred))
   (find-first (comp pred zip/node) (take-while (complement zip/end?) (iterate zip/next tree))))
-
-
-; (fixpt #(conj % 1) #{2})
 
 (defn- first-right-sibling
   "Megkeresi az elso aktualis poziciotol jobbra eso helyet, amire teljesul a feltetel."
@@ -128,8 +124,7 @@
   "Megkeresi az elso HideTableColumnMarkert es a tablazatbol a hozza tartozo
    oszlopot kitorli. Visszaadja az XML fat."
   [xml-tree]
-  (if-let [marker (find-first-in-tree
-                   #(instance? HideTableColumnMarker %) (xml-zip xml-tree))]
+  (if-let [marker (find-first-in-tree hide-table-column-marker? (xml-zip xml-tree))]
     (remove-current-column marker)
     xml-tree))
 
