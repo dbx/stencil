@@ -56,12 +56,18 @@
 (def xml-zip
   "Like clojure.zip/xml-zip but more flexible."
   ;; TODO: milyen modon jobb???
-  (partial
-   clojure.zip/zipper
-   map?
-   (comp seq :content)
-   (fn [node children]
-     (assoc node :content (and children (apply vector children))))))
+  (partial clojure.zip/zipper
+           map?
+           (comp seq :content)
+           (fn [node children] (assoc node :content (and children (apply vector children))))))
 
 (defn suffixes [xs] (take-while seq (iterate next xs)))
 (defn prefixes [xs] (take-while seq (iterate butlast xs)))
+
+(defn ->int [x]
+  (cond (nil? x)    nil
+        (string? x) (Integer/parseInt (str x))
+        (number? x) (int x)
+        :default    (assert false (format "Unexpected type %s of %s" (type x) (str x)))))
+
+:OK

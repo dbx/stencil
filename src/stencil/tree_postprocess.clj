@@ -38,16 +38,24 @@
   (assert (zipper? loc))
   (nth (filter loc-cell? (iterations zip/right (zip/leftmost loc))) n))
 
+(defn- child-of-tag [tag-name loc]
+  (assert (string? tag-name))
+  (assert (zipper? loc))
+  ;    (println :> (map zip/node (take-while some? (iterations zip/right (zip/down loc)))))
+  (first (filter #(some-> % zip/node :tag name (= tag-name)) (take-while some? (iterations zip/right (zip/down loc))))))
 
-(defn cell-width
+(defn- cell-width
   "Az aktualis TD table cella szelesseget adja vissza. Alapertelmezetten 1."
   [loc]
   (assert (zipper? loc))
-  (let [cell (zip/node (find-enclosing-cell loc))]
-    ;; TODO: itt nyilvan majd a megfelelo attributumot (html)
-    ;;       vagy a megfelelo gyermek csomopontbol kell kiolvasni.
-    (::width cell 1)
-    ))
+  (let [cell-loc      (find-enclosing-cell loc)
+        cell          (zip/node cell-loc)]
+    (case (name (:tag cell))
+      ;; html
+      ("td" "th") (-> cell :colspan ->int (or 1))
+
+      ;; ooxml
+      "tc" (or (some->> loc (child-of-tag "tcPr") (child-of-tag "w:gridSpan") zip/node :attrs (#(get % "w:val")) ->int) 1))))
 
 
 (defn shrink-column
@@ -55,8 +63,16 @@
   [col-loc shrink-amount]
   (assert (zipper? col-loc))
   (assert (pos? shrink-amount))
-  (assert (< shrink-amount (cell-width col-loc)))
-  (zip/edit col-loc update ::width - shrink-amount))
+
+  (let [old-width (cell-width col-loc)]
+    (assert (< shrink-amount old-width))
+    ;; TODO: itt kell megoldani a frissitest
+    (case (name (:tag (zip/node col-loc)))
+      "td" (zip/edit col-loc update :width - shrink-amount)
+      ("th" "tc")
+      ;;  ez a resz atkozottul trukkos. kompatibilisnek kell maradni a cell-width fuggvennyel!
+      col-loc
+      )))
 
 
 (defn- current-column-indices

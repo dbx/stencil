@@ -19,6 +19,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Check that table columns are hidden.
@@ -47,10 +48,6 @@ public class DocxTableColumnsTest {
         process = null;
     }
 
-    @Test public void print () {
-        System.out.println(">" + template.getSecretObject());
-    }
-
     @Test
     @SuppressWarnings("unchecked")
     public void test() throws IOException {
@@ -60,18 +57,19 @@ public class DocxTableColumnsTest {
         data.put("customerName", "DBX Kft.");
         data.put("y", "bela");
 
-        System.out.println("---");
-
         // WHEN
         process.renderTemplate(template, TemplateData.fromMap(data), outputFile);
         String output = getOutputContents();
-        System.out.println("---");
 
-        System.out.println(output);
+        // these cells are still visilbe
+        for (String cellValue : asList("B1", "B2", "B3", "D1", "D2", "D3"))
+            assertTrue(output.contains(cellValue));
 
         // these cells are hidden because of the hideTableColumnMarker marker in cells.
         for (String cellValue : asList("A1", "A2", "A3", "C1", "C2", "C3", "E1", "E2", "E3"))
             assertFalse(output.contains(cellValue));
+
+
     }
 
     private String getOutputContents() throws IOException {

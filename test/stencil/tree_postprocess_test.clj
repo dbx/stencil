@@ -1,28 +1,52 @@
 (ns stencil.tree-postprocess-test
-  (:import [stencil.types HideTableColumnMarker])
   (:require [clojure.zip :as zip]
-            [stencil.types :as types]
+            [stencil.types :refer :all]
             [clojure.test :refer [deftest is are testing]]
             [stencil.tree-postprocess :refer :all]))
 
-(def xml1 {:tag "HEJHO"
+(defn- table [& contents] {:tag "tbl" :content (vec contents)})
+
+(defn- cell [& contents]
+  {:tag "tc" :content (vec contents)})
+
+(defn- row [& contents]
+  {:tag "tr" :content (vec contents)})
+
+(defn- cell-of-width [width & contents]
+  {:tag "tc"
+   :content (vec (list*
+                   {:tag "tcPr" :content [{:tag "w:gridSpan" :attrs {"w:val" (str width)}}]}
+                   contents
+                   ))})
+
+(def xml-2 {:tag "div"
            :content
-           [
-            {:tag "tbl"
-             :content [{:tag "tr" :content [{:tag "tc" :content ["a"]}
-                                            {:tag "tc" ::width 2
-                                             :content ["d"
-                                                       (HideTableColumnMarker.)
-                                                       "1234" "e"]}]}
-                       {:tag "tr" :content [{:tag "tc" ::width 2 :content ["x1"]}
-                                            {:tag "tc" :content ["x2"]}]}
-                       {:tag "tr" :content [{:tag "tc" ::width 3
-                                             :content ["totalszeles"]}]}
-                       {:tag "tr" :content [{:tag "tc" :content ["d1"]}
-                                            {:tag "tc" :content ["d2"]}
-                                            {:tag "tc" :content ["d3"]}]}]}]})
+                [
+                 {:tag     "tbl"
+                  :content [{:tag "tr" :content [(cell "x1")
+                                                 (cell-of-width 2 (->HideTableColumnMarker) "x2+x3")]}
+                            {:tag "tr" :content [(cell-of-width 2 "y1+y2")
+                                                 (cell "y3")]}
+                            {:tag "tr" :content [(cell-of-width 3 "z123")]}
+                            {:tag "tr" :content [(cell "d1")
+                                                 (cell "d2")
+                                                 (cell "d3")]}]}]})
 
 
-; (println (postprocess xml1))
+#_
+(deftest test-column-merging-simple
+  (testing "Second column is being hidden here."
+    (is (=  (table (row (cell "x1"))
+                   (row (cell "d1")))
+            (postprocess (table (row (cell "x1") (cell (->HideTableColumnMarker)))
+                                (row (cell "d1") (cell "d2"))))))))
+
+
+(deftest test-column-merging-joined
+  (testing "Second column is being hidden here."
+    (is (=  (table (row (cell "x1") (cell "x3"))
+                   (row (cell "d1") (cell "d2")))
+            (postprocess (table (row (cell "x1") (cell (->HideTableColumnMarker) "x2") (cell "x3"))
+                                (row (cell "d1") (cell-of-width 2 "d2"))))))))
 
 ;; TODO: szelesseg normalis kezelese!
