@@ -1,6 +1,7 @@
 (ns stencil.infix-test
   (:import [clojure.lang ExceptionInfo])
   (:require [stencil.infix :as infix :refer :all]
+            [stencil.types :refer [hide-table-column-marker?]]
             [clojure.test :refer [deftest testing is]]))
 
 (defn- run [xs] (infix/eval-rpn {} (infix/parse xs)))
@@ -176,5 +177,8 @@
 (deftest test-unexpected
   (is (thrown? ExceptionInfo (parse "aaaa:bbbb"))))
 
+
+(deftest test-colhide-expr
+  (is (hide-table-column-marker? (run "hideColumn()"))))
 
 :ok

@@ -1,5 +1,4 @@
 (ns stencil.types
-  "Utility types"
   (:require [clojure.pprint])
   (:gen-class))
 
@@ -7,7 +6,6 @@
 
 (def open-tag "{%")
 (def close-tag "%}")
-
 
 (defrecord OpenTag [open])
 (defmethod clojure.pprint/simple-dispatch OpenTag [t] (print (str "<" (:open t) ">")))
@@ -33,3 +31,7 @@
 (defrecord DelayedValueMarker [delay-object]
   clojure.lang.IDeref
   (deref [_] @delay-object))
+
+(defmulti control? type)
+(defmethod control? :default [_] false)
+(defmethod control? HideTableColumnMarker [_] true)

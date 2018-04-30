@@ -1,6 +1,7 @@
 (ns stencil.eval
   "converts Normalized Control AST -> Evaled token seq"
-  (:require [stencil.infix :refer [eval-rpn]]))
+  (:require [stencil.infix :refer [eval-rpn]]
+            [stencil.types :refer [control?]]))
 
 (set! *warn-on-reflection* true)
 
@@ -34,7 +35,8 @@
     (mapcat (partial eval-step function data) (:else item))))
 
 (defmethod eval-step :echo [function data item]
-  [{:text (str (eval-rpn data function (:expression item)))}])
+  (let [value (eval-rpn data function (:expression item))]
+    [{:text (if (control? value) value (str value))}]))
 
 (defmethod eval-step :for [function data item]
   (if-let [items (seq (eval-rpn data function (:expression item)))]
