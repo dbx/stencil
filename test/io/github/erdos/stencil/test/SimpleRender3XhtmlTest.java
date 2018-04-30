@@ -1,5 +1,6 @@
 package io.github.erdos.stencil.test;
 
+import io.github.erdos.stencil.PreparedTemplate;
 import io.github.erdos.stencil.Process;
 import io.github.erdos.stencil.ProcessFactory;
 import io.github.erdos.stencil.TemplateData;
@@ -14,17 +15,20 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
 
 /**
  * Checks simple function calls.
  */
+@Ignore
 public class SimpleRender3XhtmlTest {
 
     private final static URL TEMPLATE_URL = SimpleRender3XhtmlTest.class.getClassLoader().getResource("tests/2/input.xhtml");
     private final static File TEMPLATE_FILE = new File(TEMPLATE_URL.getFile());
 
+    private PreparedTemplate template;
     private Process process;
     private File outputFile;
 
@@ -33,6 +37,7 @@ public class SimpleRender3XhtmlTest {
         process = ProcessFactory.fromLibreOfficeHome(new File("/usr/lib64/libreoffice"));
         process.start();
         outputFile = File.createTempFile("stencil", "test.xml");
+        template = process.prepareTemplateFile(TEMPLATE_FILE);
     }
 
     @After
@@ -41,18 +46,27 @@ public class SimpleRender3XhtmlTest {
         process = null;
     }
 
+    /**
+     * Ellenorizzuk, hogy minden sablon valtozot sikerult felolvasni.
+     */
     @Test
-    @Ignore
+    public void testTemplateVariables() {
+        Set<String> variables = template.getVariables();
+
+        assertTrue(variables.contains("customerName"));
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void test() throws IOException {
         // GIVEN
         final Map data = new HashMap();
 
-        data.put("x", "Geza kek az eg");
+        data.put("customerName", "DBX Kft.");
         data.put("y", "bela");
 
         // WHEN
-        process.render(TEMPLATE_FILE, TemplateData.fromMap(data), outputFile);
+        process.renderTemplate(template, TemplateData.fromMap(data), outputFile);
         String output = getOutputContents();
 
         System.out.println(output);
