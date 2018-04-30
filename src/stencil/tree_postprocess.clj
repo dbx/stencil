@@ -38,11 +38,13 @@
   (assert (zipper? loc))
   (nth (filter loc-cell? (iterations zip/right (zip/leftmost loc))) n))
 
-(defn- child-of-tag [tag-name loc]
-  (assert (string? tag-name))
+(defn- find-first-child [pred loc]
+  (assert (ifn? pred))
   (assert (zipper? loc))
-  ;    (println :> (map zip/node (take-while some? (iterations zip/right (zip/down loc)))))
-  (first (filter #(some-> % zip/node :tag name (= tag-name)) (take-while some? (iterations zip/right (zip/down loc))))))
+  (first (filter (comp pred zip/node) (take-while some? (iterations zip/right (zip/down loc))))))
+
+(defn- child-of-tag [tag-name loc]
+  (find-first-child #(some-> % :tag name (= tag-name)) loc))
 
 (defn- cell-width
   "Az aktualis TD table cella szelesseget adja vissza. Alapertelmezetten 1."
