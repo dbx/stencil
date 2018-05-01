@@ -57,7 +57,7 @@
         cell          (zip/node cell-loc)]
     (case (name (:tag cell))
       ;; html
-      ("td" "th") (-> cell :colspan ->int (or 1))
+      ("td" "th") (-> cell :attrs :colspan ->int (or 1))
 
       ;; ooxml
       "tc" (or (some->> loc (child-of-tag "tcPr") (child-of-tag "gridSpan") zip/node :attrs (#(get % "val")) ->int) 1))))
@@ -71,7 +71,7 @@
   (let [old-width (cell-width col-loc)]
     (assert (< shrink-amount old-width))
     (case (name (:tag (zip/node col-loc)))
-      "td"        (zip/edit col-loc update :width - shrink-amount)
+      "td"        (zip/edit col-loc update-in [:attrs :colspan] - shrink-amount)
       ("th" "tc") (-> (->> col-loc (child-of-tag "tcPr") (child-of-tag "gridSpan"))
                       (zip/edit update-in [:attrs "val"] #(str (- (->int %) shrink-amount))) (zip/up) (zip/up)))))
 
