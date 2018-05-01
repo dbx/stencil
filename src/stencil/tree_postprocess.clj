@@ -49,10 +49,13 @@
   (assert (string? tag-name))
   (find-first-child #(some-> % :tag name (= tag-name)) loc))
 
+(def ooxml-val :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/val)
+
 (defn- cell-width
   "Az aktualis TD table cella szelesseget adja vissza. Alapertelmezetten 1."
   [loc]
   (assert (zipper? loc))
+  (assert (loc-cell? loc))
   (let [cell-loc      (find-enclosing-cell loc)
         cell          (zip/node cell-loc)]
     (case (name (:tag cell))
@@ -60,12 +63,14 @@
       ("td" "th") (-> cell :attrs :colspan ->int (or 1))
 
       ;; ooxml
-      "tc" (or (some->> loc (child-of-tag "tcPr") (child-of-tag "gridSpan") zip/node :attrs (#(get % "val")) ->int) 1))))
+      "tc"        (or (some-> loc (some->> (child-of-tag "tcPr") (child-of-tag "gridSpan")) zip/node :attrs ooxml-val ->int) 1))))
+
 
 (defn shrink-column
   "Az aktualis td cella szelesseget csokkenti"
   [col-loc shrink-amount]
   (assert (zipper? col-loc))
+  (assert (loc-cell? col-loc))
   (assert (pos? shrink-amount))
 
   (let [old-width (cell-width col-loc)]
@@ -73,7 +78,7 @@
     (case (name (:tag (zip/node col-loc)))
       "td"        (zip/edit col-loc update-in [:attrs :colspan] - shrink-amount)
       ("th" "tc") (-> (->> col-loc (child-of-tag "tcPr") (child-of-tag "gridSpan"))
-                      (zip/edit update-in [:attrs "val"] #(str (- (->int %) shrink-amount))) (zip/up) (zip/up)))))
+                      (zip/edit update-in [:attrs ooxml-val] #(str (- (->int %) shrink-amount))) (zip/up) (zip/up)))))
 
 (defn- current-column-indices
   "Visszaadja egy halmazban, hogy hanyadik oszlop(ok)ban vagyunk benne eppen."
@@ -94,10 +99,12 @@
    Visszater a row lokatorral."
   [row-loc removable-columns]
   (assert (zipper? row-loc) "Elso parameter zipper legyen!")
+  (assert (seq removable-columns))
   (let [row-loc           (find-enclosing-row row-loc)
         removable-columns (set removable-columns)]
     (assert (some? row-loc)         "Nem cell-ben vagyunk!")
     (assert (seq removable-columns) "Melyik oszlopokat tavolitsuk el?")
+
     (loop [current-loc (goto-nth-sibling-cell 0 (zip/down row-loc))
            current-idx 0]
       (let [column-width (cell-width current-loc)

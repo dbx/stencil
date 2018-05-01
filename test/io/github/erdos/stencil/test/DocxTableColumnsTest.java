@@ -68,8 +68,6 @@ public class DocxTableColumnsTest {
         // these cells are hidden because of the hideTableColumnMarker marker in cells.
         for (String cellValue : asList("A1", "A2", "A3", "C1", "C2", "C3", "E1", "E2", "E3"))
             assertFalse(output.contains(cellValue));
-
-
     }
 
     private String getOutputContents() throws IOException {

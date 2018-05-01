@@ -8,7 +8,7 @@
 (defn- cell [& contents] {:tag "tc" :content (vec contents)})
 (defn- row [& contents] {:tag "tr" :content (vec contents)})
 (defn- cell-of-width [width & contents]
-  {:tag "tc" :content (vec (list* {:tag "tcPr" :content [{:tag "gridSpan" :attrs {"val" (str width)}}]} contents))})
+  {:tag "tc" :content (vec (list* {:tag "tcPr" :content [{:tag "gridSpan" :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/val (str width)}}]} contents))})
 
 (deftest test-column-merging-simple
   (testing "Second column is being hidden here."
