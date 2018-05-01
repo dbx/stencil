@@ -8,7 +8,7 @@
 
 (defn- loc-cell?  [loc] (some-> loc zip/node :tag name #{"tc" "td" "th"}))
 (defn- loc-row?   [loc] (some-> loc zip/node :tag name #{"tr"}))
-(defn- loc-table? [loc] (some-> loc zip/node :tag name #{"tbl" "table"}))
+; (defn- loc-table? [loc] (some-> loc zip/node :tag name #{"tbl" "table"}))
 
 (defn- find-first-in-tree [pred tree]
   (assert (zipper? tree))
@@ -28,7 +28,7 @@
 
 (defn- find-enclosing-cell [loc] (first-parent loc-cell? loc))
 (defn- find-enclosing-row [loc] (first-parent loc-row? loc))
-(defn- find-enclosing-table [loc] (first-parent loc-table? loc))
+; (defn- find-enclosing-table [loc] (first-parent loc-table? loc))
 
 (defn- find-closest-row-right [loc] (first-right-sibling loc-row? loc))
 (defn- find-closest-cell-right [loc] (first-right-sibling loc-cell? loc))
@@ -41,7 +41,7 @@
 (defn- find-first-child [pred loc]
   (assert (ifn? pred))
   (assert (zipper? loc))
-  (first (filter (comp pred zip/node) (take-while some? (iterations zip/right (zip/down loc))))))
+  (find-first (comp pred zip/node) (take-while some? (iterations zip/right (zip/down loc)))))
 
 ;; finds first child with given tag name
 (defn- child-of-tag [tag-name loc]
@@ -60,7 +60,7 @@
       ("td" "th") (-> cell :colspan ->int (or 1))
 
       ;; ooxml
-      "tc" (or (some->> loc (child-of-tag "tcPr") (child-of-tag "w:gridSpan") zip/node :attrs (#(get % "w:val")) ->int) 1))))
+      "tc" (or (some->> loc (child-of-tag "tcPr") (child-of-tag "gridSpan") zip/node :attrs (#(get % "val")) ->int) 1))))
 
 (defn shrink-column
   "Az aktualis td cella szelesseget csokkenti"
@@ -72,8 +72,8 @@
     (assert (< shrink-amount old-width))
     (case (name (:tag (zip/node col-loc)))
       "td"        (zip/edit col-loc update :width - shrink-amount)
-      ("th" "tc") (-> (->> col-loc (child-of-tag "tcPr") (child-of-tag "w:gridSpan"))
-                      (zip/edit update-in [:attrs "w:val"] #(str (- (->int %) shrink-amount))) (zip/up) (zip/up)))))
+      ("th" "tc") (-> (->> col-loc (child-of-tag "tcPr") (child-of-tag "gridSpan"))
+                      (zip/edit update-in [:attrs "val"] #(str (- (->int %) shrink-amount))) (zip/up) (zip/up)))))
 
 (defn- current-column-indices
   "Visszaadja egy halmazban, hogy hanyadik oszlop(ok)ban vagyunk benne eppen."
@@ -96,10 +96,8 @@
   (assert (zipper? row-loc) "Elso parameter zipper legyen!")
   (let [row-loc           (find-enclosing-row row-loc)
         removable-columns (set removable-columns)]
-
     (assert (some? row-loc)         "Nem cell-ben vagyunk!")
     (assert (seq removable-columns) "Melyik oszlopokat tavolitsuk el?")
-
     (loop [current-loc (goto-nth-sibling-cell 0 (zip/down row-loc))
            current-idx 0]
       (let [column-width (cell-width current-loc)
@@ -125,8 +123,7 @@
   "A jelenlegi csomoponthoz tartozo oszlopot eltavolitja a tablazatbol.
    Visszater a gyoker elemmel."
   [start]
-  (let [table          (find-enclosing-table start)
-        column-indices (current-column-indices start)
+  (let [column-indices (current-column-indices start)
         first-row      (find-closest-row-right (zip/leftmost (find-enclosing-row start)))]
     (loop [current-row first-row]
       (let [fixed-row (remove-columns current-row column-indices)]
