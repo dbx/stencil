@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Checks simple substitutions and iterations on an example file.
  */
+@Ignore
 public class SimpleRenderTest {
 
     private final static URL TEMPLATE_URL = SimpleRenderTest.class.getClassLoader().getResource("tests/test1.docx");
@@ -47,7 +48,6 @@ public class SimpleRenderTest {
     }
 
     @Test
-    @Ignore
     @SuppressWarnings("unchecked")
     public void test() throws IOException {
         // GIVEN
@@ -86,7 +86,6 @@ public class SimpleRenderTest {
     }
 
     @Test
-    @Ignore
     @SuppressWarnings("unchecked")
     public void testTemplateMetadata() throws IOException {
         // GIVEN

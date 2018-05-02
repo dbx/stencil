@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Checks simple function calls.
  */
+@Ignore
 public class SimpleRender2Test {
 
     private final static URL TEMPLATE_URL = SimpleRender2Test.class.getClassLoader().getResource("tests/test2.odt");
@@ -42,7 +43,6 @@ public class SimpleRender2Test {
     }
 
     @Test
-    @Ignore
     @SuppressWarnings("unchecked")
     public void test() throws IOException {
         // GIVEN

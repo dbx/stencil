@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import static java.util.Optional.empty;
 
+@Ignore
 public class TestsFromFiles {
 
     /**
@@ -47,7 +48,6 @@ public class TestsFromFiles {
         }
     }
 
-    @Ignore
     @Test
     public void test1() throws URISyntaxException, IOException {
         runTest(1);
