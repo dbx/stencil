@@ -8,7 +8,7 @@
 
 (defn- loc-cell?  [loc] (some-> loc zip/node :tag name #{"tc" "td" "th"}))
 (defn- loc-row?   [loc] (some-> loc zip/node :tag name #{"tr"}))
-; (defn- loc-table? [loc] (some-> loc zip/node :tag name #{"tbl" "table"}))
+(defn- loc-table? [loc] (some-> loc zip/node :tag name #{"tbl" "table"}))
 
 (defn- find-first-in-tree [pred tree]
   (assert (zipper? tree))
@@ -28,7 +28,7 @@
 
 (defn- find-enclosing-cell [loc] (first-parent loc-cell? loc))
 (defn- find-enclosing-row [loc] (first-parent loc-row? loc))
-; (defn- find-enclosing-table [loc] (first-parent loc-table? loc))
+(defn- find-enclosing-table [loc] (first-parent loc-table? loc))
 
 (defn- find-closest-row-right [loc] (first-right-sibling loc-row? loc))
 (defn- find-closest-cell-right [loc] (first-right-sibling loc-cell? loc))
@@ -63,7 +63,7 @@
       ("td" "th") (-> cell :attrs :colspan ->int (or 1))
 
       ;; ooxml
-      "tc"        (or (some-> loc (some->> (child-of-tag "tcPr") (child-of-tag "gridSpan")) zip/node :attrs ooxml-val ->int) 1))))
+      "tc"        (or (some->> loc (child-of-tag "tcPr") (child-of-tag "gridSpan") zip/node :attrs ooxml-val ->int) 1))))
 
 
 (defn shrink-column
@@ -126,17 +126,21 @@
             (recur (find-closest-cell-right (zip/right current-loc))
                    (int (+ current-idx column-width)))))))))
 
+(defn- map-each-rows [f table]
+  (assert (fn? f))
+  (assert (loc-table? table))
+  (loop [current-row (find-closest-row-right (zip/down table))]
+    (let [fixed-row (f current-row)]
+      (if-let [next-row (some-> fixed-row zip/right find-closest-row-right)]
+        (recur next-row)
+        (find-enclosing-table fixed-row)))))
+
 (defn- remove-current-column
   "A jelenlegi csomoponthoz tartozo oszlopot eltavolitja a tablazatbol.
    Visszater a gyoker elemmel."
   [start]
-  (let [column-indices (current-column-indices start)
-        first-row      (find-closest-row-right (zip/leftmost (find-enclosing-row start)))]
-    (loop [current-row first-row]
-      (let [fixed-row (remove-columns current-row column-indices)]
-        (if-let [next-row (some-> fixed-row zip/right find-closest-row-right)]
-          (recur next-row)
-          (zip/root fixed-row))))))
+  (let [column-indices (current-column-indices start)]
+    (zip/root (map-each-rows #(remove-columns % column-indices) (find-enclosing-table start)))))
 
 ;; kulonbozo fazisok
 
@@ -146,6 +150,19 @@
   [xml-tree]
   (if-let [marker (find-first-in-tree hide-table-column-marker? (xml-zip xml-tree))]
     (remove-current-column marker)
+    xml-tree))
+
+(def ooxml-w :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w)
+
+(def min-col-width 20)
+
+(defn remove-table-thin-columns-1
+  "Ha a tablazatban van olyan oszlop, amely szelessege nagyon kicsi, az egesz oszlopot eltavolitja."
+  [xml-tree]
+  (if-let [loc (find-first-in-tree #(and (map? %) (some-> % :attrs ooxml-w ->int (< min-col-width))) (xml-zip xml-tree))]
+    (let [col-idx (count (filter #(some-> % zip/node :tag) (next (iterations zip/left loc))))
+          table-loc (find-enclosing-table (zip/remove loc))]
+      (zip/root (map-each-rows #(remove-columns % #{col-idx}) table-loc)))
     xml-tree))
 
 (defn remove-empty-table-rows-1 [xml-tree]
@@ -169,6 +186,7 @@
 
 (defn postprocess [xml-tree]
   (->> xml-tree
+      (fixpt remove-table-thin-columns-1)
       (fixpt remove-columns-by-markers-1)
       (fixpt remove-empty-table-rows-1)
       (fixpt remove-empty-tables-1)

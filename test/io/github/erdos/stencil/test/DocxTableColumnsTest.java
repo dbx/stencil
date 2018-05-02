@@ -59,7 +59,10 @@ public class DocxTableColumnsTest {
 
         // WHEN
         process.renderTemplate(template, TemplateData.fromMap(data), outputFile);
+
         String output = getOutputContents();
+
+        // THEN
 
         // these cells are still visilbe
         for (String cellValue : asList("B1", "B2", "B3", "D1", "D2", "D3"))
@@ -68,6 +71,14 @@ public class DocxTableColumnsTest {
         // these cells are hidden because of the hideTableColumnMarker marker in cells.
         for (String cellValue : asList("A1", "A2", "A3", "C1", "C2", "C3", "E1", "E2", "E3"))
             assertFalse(output.contains(cellValue));
+
+        // second table: visible cells.
+        for (String cellValue : asList("H1", "J1", "H2+I2", "J2", "H3", "I3+J3", "H4", "J4", "F5+G5+H5+I5+J5"))
+            assertTrue(output.contains(cellValue));
+
+        // these columns are hidden thus removed from the document
+        for (String cellValue : asList("F1", "I1", "F3+G3", "F4", "G4", "I4"))
+            assertFalse("Should be hidden: " + cellValue, output.contains(cellValue));
     }
 
     private String getOutputContents() throws IOException {
