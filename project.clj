@@ -20,7 +20,7 @@
   :aliases      {"junit" ["with-profile" "test" "do" "test-out" "junit" "junit.xml"]}
   :javadoc-opts {:package-names ["io.github.erdos.stencil"]
                  :additional-args ["-overview" "java-src/overview.html"
-                                   "-top" "<style>a[title~=class], a[title~=interface], a[title~=enum]{text-decoration: underline; font-weight: bold} dd>code{background:#eee}</style>"
+                                   "-top" "<style>kbd{background:#ddd}; a[title~=class], a[title~=interface], a[title~=enum]{text-decoration: underline; font-weight: bold} dd>code{background:#eee}</style>"
                                    ]}
   :jar-exclusions [#".*\.xml"]
   :profiles {:test {:dependencies [[junit/junit "4.12"]

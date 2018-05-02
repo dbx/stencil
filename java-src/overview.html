@@ -36,11 +36,13 @@
 <section>
     <h3>Repeating blocks</h3>
     <p>Repeat a block for each item in a list in the data object.</p>
+    <p>For example if <kbd>xs</kbd> is a list then the following repeats the <i>BODY</i> part for every item: <kbd>{%for x in xs%} <i>BODY</i> {%end%}</kbd></p>
+    <p>The <i>BODY</i> part has a new binding on every iteration so you can access every element in a collection via the <kbd>x</kbd> iterator variable.</p>
 </section>
 <section>
     <h3>Function calls and arithmetic</h3>
-    <p>You can all functions in expressions</p>
-    <p>You can also call many arithmetic operators. For example the following is valid: <kbd>{%= x*x+x+2%}</kbd></p>
+    <p>You can call custom functions in expressions. For example: <kbd>{%=coalesce(x.price, x.cost, "N/A")%}</kbd></p>
+    <p>You can also call many arithmetic operators. For example: <kbd>{%= x*x+x+2%}</kbd></p>
 </section>
 
 <h2>Concepts</h2>
@@ -50,7 +52,8 @@
 
 <h3>Process</h3>
 <p>
-    A {@link io.github.erdos.stencil.Process} instance helps you manage the lifecycle of the converters and the whole document processing process.
+    A {@link io.github.erdos.stencil.Process} instance helps you manage the lifecycle of the converters and the whole
+    document processing process.
     Use the {@link io.github.erdos.stencil.ProcessFactory} to receive Process instances.
 </p>
 
@@ -68,15 +71,7 @@
 
 <h3>Custom Functions</h3>
 <p>
-    It is possible to define custom functions on the host code and invoke them from  within the template files.
-    Custom functions must implement the {@link io.github.erdos.stencil.functions.Function} interface and be registered
-    to the template evaluator engine.
-</p>
-<p>
-    Functions are found by their case-insensitive name so make sure not to override any existing function implementation.
-    Functions are variadic, i.e. they accept a variable number of arguments. Handling the correct number and type of
-    arguments is the responsibility of the functions implementation. Make your functions as flexible as possible by
-    considering proper type and error handling.
+    See: {@link io.github.erdos.stencil.functions} package.
 </p>
 
 <h2>Example code</h2>
@@ -85,8 +80,7 @@
     This example takes a DOCX from the file system, feeds it some template data and produces a PDF file.
 </p>
 
-<p>
-  <blockquote>
+<blockquote>
     <pre>
 
       // load template data
@@ -105,7 +99,6 @@
       // we stop the service.
       process.stop();
     </pre>
-  </blockquote>
-</p>
+</blockquote>
 </body>
 </html>
