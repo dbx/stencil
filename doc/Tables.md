@@ -35,18 +35,15 @@ It is a little bit tricky to dynamically manage column but it is certainly possi
 
 It is a little more complicated to dynamically hide a column.
 
-Place a `{%=HIDE_COLUMN%}` marker to make sure the current column is hidden.
+Place a `{%=hideColumn()%}` marker to hide the current column. It makes sense to include it inside a **conditional**  block.
 
-| Name  | Price `{%if price_hidden %}` `{%=HIDE_COLUMN%}` `{%end%}` |
+The following example will hide the second column if the `price_hidden` property is true.
+
+| Name  | Price `{%if price_hidden %}` `{%=hideColumn()%}` `{%end%}` |
 | ----- | ------ |
 |  Tennis ball | $12 |
 |  Basket ball | $123 |
-so
+
 ### Repeating columns
 
-It is rarely a good idea to dynamically create column therefore we will use a trick to simulate this feature.
-
-
-
-
-
+It is currently not supported to insert repeating columns. Use copies of the column and conditional column hiding to achieve a similar effect.
