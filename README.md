@@ -12,12 +12,13 @@ Tesztek statusza: <a href="http://ci.dbx.hu/job/stencil-unit-tests/lastCompleted
 
 - [Fejlesztői dokumentáció](development.md)
 - [Sablonfájlok nyelvtana](doc/Syntax.md)
+- [Futtatás önálló programként](doc/Standalone.md)
 - Javadoc: futtassuk a `javadoc.sh` parancsot. A kimenet a `./javadoc` mappaba kerul.
 - Generalt javadoc a dbx ci szerveren: http://ci.dbx.hu/job/stencil-unit-tests/Javadoc/
 
 ## Fejlesztői konvenciók
 
-A következő konvenciók szerint rendezzük a kódot. 
+A következő konvenciók szerint rendezzük a kódot.
 
 - [Java Style Guide](http://cr.openjdk.java.net/~alundblad/styleguide/index-v6.html)
 - [Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide)
