@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static org.apache.commons.io.FileUtils.forceMkdir;
+
 /**
  * Various helpers for handling ZIP files.
  */
@@ -34,15 +36,13 @@ public final class ZipHelper {
         if (unzipTargetDirectory.exists())
             throw new IllegalStateException("unzip target dir already exists: " + unzipTargetDirectory);
 
-        FileUtils.forceMkdir(unzipTargetDirectory);
+        forceMkdir(unzipTargetDirectory);
 
         byte[] buffer = new byte[1024];
         int len;
 
         try (ZipInputStream zis = new ZipInputStream(zipFileStream)) {
-
             for (ZipEntry zipEntry = zis.getNextEntry(); zipEntry != null; zipEntry = zis.getNextEntry()) {
-                System.out.print("Unzipping" + zipEntry.getName());
                 File newFile = new File(unzipTargetDirectory, zipEntry.getName());
                 FileUtils.forceMkdirParent(newFile);
                 try (FileOutputStream fos = new FileOutputStream(newFile)) {
@@ -51,7 +51,6 @@ public final class ZipHelper {
                     }
                 }
             }
-
             zis.closeEntry();
         }
         zipFileStream.close();

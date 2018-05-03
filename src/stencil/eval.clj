@@ -5,29 +5,24 @@
 
 (set! *warn-on-reflection* true)
 
-(def schema-tag Object)
+(defmulti ^:private eval-step (fn [function data item] (or (:cmd item) [:tag (:tag item)])))
 
-(def schema-condition
-  {:cmd :if
-   :condition [Object]
-   :then      [schema-tag]
-   :else      [schema-tag]})
+(defmethod eval-step :default [_ _ item] [item])
 
-(def schema-loop
-  {:cmd :for
-   :variable String
-   :expression [Object]
-   :body-run-once [schema-tag]
-   :body-run-none [schema-tag]
-   :body-run-next [schema-tag]})
+;; ha ez egy kep, aminek attributumai vannak
 
-(def schema-echo
-  {:cmd :echo
-   :expression [Object]})
+#_(defmethod eval-step [:tag :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/drawing] [fun data item]
+    (if-let [name-tag (some-> item (find-first :name) str .trim)]
+      ;; ha a name fuggvenyhivasnak nez ki, akkor megprobaljuk vegrehajtani.
+      ;; a generalt dokumentumba binariskent betesszuk a letrehozott kepfajlt
+      ;; tovabba 
 
-(defmulti ^:private eval-step (fn [function data item] (:cmd item)))
-
-(defmethod eval-step nil [_ _ item] [item])
+      ;; ha a name egy barcode(x) tipusu, akkor harapunk.
+      (let [uuid (str (java.util.UUID/randomUUID))]
+        - a barcode erteket be kell helyettesiteni a name helyere.
+        -
+        )
+      [item]))
 
 (defmethod eval-step :if [function data item]
   (if (eval-rpn data  function (:condition item))
@@ -49,3 +44,5 @@
   (assert (map? data))
   (assert (ifn? function))
   (mapcat (partial eval-step function data) items))
+
+;; TODO: creating image files for qr code or barcode should take place here

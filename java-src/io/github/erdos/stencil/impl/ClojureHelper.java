@@ -56,4 +56,13 @@ public class ClojureHelper {
     public static IFn findFunction(String functionName) {
         return RT.var("stencil.process", functionName);
     }
+
+
+    /**
+     * Shuts down clojure agents
+     */
+    public static void callShutdownAgents() {
+        RT.var("clojure.core", "shutdown-agents").run();
+    }
 }
+

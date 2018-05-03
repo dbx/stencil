@@ -12,14 +12,14 @@ import static java.util.Optional.empty;
 
 final class JsonParser {
 
-    private final ScriptEngineManager em = new ScriptEngineManager();
-    private final ScriptEngine engine = em.getEngineByExtension("js");
+    private static final ScriptEngineManager em = new ScriptEngineManager();
+    private static final ScriptEngine engine = em.getEngineByExtension("js");
 
     /**
      * Parses string and returns read object if any.
      */
     @SuppressWarnings({"unchecked", "unused"})
-    public Optional<Object> parse(String contents) {
+    public static Optional<Object> parse(String contents) {
         try {
             ScriptObjectMirror parser = (ScriptObjectMirror) engine.eval("JSON.parse");
             Function<String, Object> caller = x -> parser.call("", x);
@@ -27,6 +27,5 @@ final class JsonParser {
         } catch (ScriptException e) {
             return empty();
         }
-
     }
 }
