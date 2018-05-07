@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static io.github.erdos.stencil.impl.ClojureHelper.callShutdownAgents;
+import static io.github.erdos.stencil.impl.FileHelper.extension;
 import static io.github.erdos.stencil.impl.FileHelper.removeExtension;
 
 /**
@@ -58,9 +59,21 @@ public final class Main {
 
     @SuppressWarnings("unchecked")
     private static TemplateData readTemplateData(File dataFile) throws IOException {
-        Optional<Object> parsed = JsonParser.parse(new String(Files.readAllBytes(dataFile.toPath())));
+
+        String extension = extension(dataFile).toLowerCase();
+        final Optional<Object> parsed;
+
+        if ("json".equals(extension)) {
+            parsed = JsonParser.parse(new String(Files.readAllBytes(dataFile.toPath())));
+        } else if ("edn".equals(extension)) {
+            parsed = EdnParser.parse(new String(Files.readAllBytes(dataFile.toPath())));
+        } else {
+            throw new IllegalArgumentException("Unexpected file format: " + extension);
+        }
+        
         if (!parsed.isPresent())
-            throw new IllegalArgumentException("Could not parse JSON file: " + dataFile);
+            throw new IllegalArgumentException("Could not parse data file: " + dataFile);
+
         return TemplateData.fromMap((Map) parsed.get());
     }
 }
