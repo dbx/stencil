@@ -18,7 +18,7 @@ final class JsonParser {
     /**
      * Parses string and returns read object if any.
      */
-    @SuppressWarnings({"unchecked", "unused"})
+    @SuppressWarnings({"unchecked", "unused", "WeakerAccess"})
     public static Optional<Object> parse(String contents) {
         try {
             ScriptObjectMirror parser = (ScriptObjectMirror) engine.eval("JSON.parse");

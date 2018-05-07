@@ -1,13 +1,11 @@
 package io.github.erdos.stencil.test;
 
-import io.github.erdos.stencil.PreparedTemplate;
+import io.github.erdos.stencil.*;
 import io.github.erdos.stencil.Process;
-import io.github.erdos.stencil.ProcessFactory;
-import io.github.erdos.stencil.TemplateData;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Check that table columns are hidden.
  */
-@Ignore
+@Category(IntegrationTest.class)
 public class DocxTableColumnsTest {
 
     private final static URL TEMPLATE_URL = DocxTableColumnsTest.class.getClassLoader().getResource("tests/table_columns/test.docx");

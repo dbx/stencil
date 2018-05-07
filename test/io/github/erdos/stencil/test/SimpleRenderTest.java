@@ -1,13 +1,12 @@
 package io.github.erdos.stencil.test;
 
-import io.github.erdos.stencil.PreparedTemplate;
+import io.github.erdos.stencil.*;
 import io.github.erdos.stencil.Process;
-import io.github.erdos.stencil.ProcessFactory;
-import io.github.erdos.stencil.TemplateData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Checks simple substitutions and iterations on an example file.
  */
-@Ignore
+@Category(IntegrationTest.class)
 public class SimpleRenderTest {
 
     private final static URL TEMPLATE_URL = SimpleRenderTest.class.getClassLoader().getResource("tests/test1.docx");

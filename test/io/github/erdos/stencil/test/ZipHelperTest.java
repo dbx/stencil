@@ -26,6 +26,7 @@ public class ZipHelperTest {
     public TemporaryFolder outputDirectoryFactory = new TemporaryFolder();
 
     private File outputDirectory;
+
     @Before
     public void setup() throws IOException {
         outputDirectory = outputDirectoryFactory.newFolder();

@@ -1,5 +1,6 @@
 package io.github.erdos.stencil.test;
 
+import io.github.erdos.stencil.IntegrationTest;
 import io.github.erdos.stencil.Process;
 import io.github.erdos.stencil.ProcessFactory;
 import io.github.erdos.stencil.TemplateData;
@@ -7,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Checks simple function calls.
  */
-@Ignore
+@Category(IntegrationTest.class)
 public class SimpleRender2Test {
 
     private final static URL TEMPLATE_URL = SimpleRender2Test.class.getClassLoader().getResource("tests/test2.odt");

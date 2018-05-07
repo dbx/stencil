@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.Optional;
 
 import static io.github.erdos.stencil.impl.ClojureHelper.callShutdownAgents;
 import static io.github.erdos.stencil.impl.FileHelper.removeExtension;
@@ -30,6 +31,10 @@ public final class Main {
         final File templateFile = parsedArgs.getTemplateFile();
         final PreparedTemplate template = process.prepareTemplateFile(templateFile);
 
+        if (parsedArgs.isPrintTemplateInfo()) {
+            printTemplateInfo(template);
+        }
+
         try {
             for (File dataFile : parsedArgs.getDataFiles()) {
                 final String outputFileName = String.format("%s-%s.%s", removeExtension(templateFile), removeExtension(dataFile), parsedArgs.getOutputFormat().getExtension());
@@ -45,8 +50,17 @@ public final class Main {
         }
     }
 
+    private static void printTemplateInfo(PreparedTemplate template) {
+        System.out.println("Template file: " + template.getTemplateFile());
+        System.out.println("Template arguments:");
+        template.getVariables().forEach(line -> System.out.println(" - " + line));
+    }
+
     @SuppressWarnings("unchecked")
     private static TemplateData readTemplateData(File dataFile) throws IOException {
-        return TemplateData.fromMap((Map) JsonParser.parse(new String(Files.readAllBytes(dataFile.toPath()))).get());
+        Optional<Object> parsed = JsonParser.parse(new String(Files.readAllBytes(dataFile.toPath())));
+        if (!parsed.isPresent())
+            throw new IllegalArgumentException("Could not parse JSON file: " + dataFile);
+        return TemplateData.fromMap((Map) parsed.get());
     }
 }

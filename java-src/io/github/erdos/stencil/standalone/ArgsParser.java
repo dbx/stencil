@@ -19,16 +19,19 @@ import static java.util.stream.Collectors.toList;
 /**
  * Parses CLI arg list.
  */
+@SuppressWarnings("WeakerAccess")
 public final class ArgsParser {
 
     private final OutputDocumentFormats outputFormat;
     private final File templateFile;
     private final List<File> dataFiles;
+    private final boolean printTemplateInfo;
 
-    private ArgsParser(OutputDocumentFormats outputFormat, File templateFile, List<File> dataFiles) {
+    private ArgsParser(OutputDocumentFormats outputFormat, File templateFile, List<File> dataFiles, boolean printTemplateInfo) {
         this.outputFormat = outputFormat;
         this.templateFile = templateFile;
         this.dataFiles = dataFiles;
+        this.printTemplateInfo = printTemplateInfo;
     }
 
     /**
@@ -53,17 +56,37 @@ public final class ArgsParser {
     }
 
     /**
+     * Tries to read a boolean switch.
+     */
+    private static boolean maybeReadFlag(Queue<String> items, String shortKey, String longKey) {
+        if (items.isEmpty()) {
+            return false;
+        } else if (items.element().equals(shortKey)) {
+            items.remove();
+            return true;
+        } else if (items.element().equals(longKey)) {
+            items.remove();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
      * Parses CLI args and returns an ArgsParser instance
      *
      * @param args CLI arg list
      * @return new instance holding arguments
      * @throws IllegalArgumentException on arg format error
      */
+    @SuppressWarnings("WeakerAccess")
     public static ArgsParser parse(String... args) {
 
         final Queue<String> arguments = new LinkedList<>(asList(args));
 
         OutputDocumentFormats outputFormat = null;
+        boolean printTemplateInfo = false;
 
         while (!arguments.isEmpty()) {
             Optional<OutputDocumentFormats> mOut = maybeRead(arguments, "-T", "--output-type", (x) -> OutputDocumentFormats.ofExtension(x).orElseThrow(() -> new RuntimeException("Unexpected output format.")));
@@ -72,13 +95,15 @@ public final class ArgsParser {
                 continue;
             }
 
+            printTemplateInfo = printTemplateInfo || maybeReadFlag(arguments, "-P", "--print-info");
+
             File templateFile = new File(arguments.remove());
             List<File> dataFiles = arguments.stream().map(File::new).collect(toList());
 
             if (outputFormat == null)
                 outputFormat = OutputDocumentFormats.ofExtension(extension(templateFile))
                         .orElseThrow(iae("Can not parse template file extension '%s' as output type", extension(templateFile)));
-            return new ArgsParser(outputFormat, templateFile, dataFiles);
+            return new ArgsParser(outputFormat, templateFile, dataFiles, printTemplateInfo);
         }
 
         throw iae("Template file parameter is missing!").get();
@@ -98,5 +123,9 @@ public final class ArgsParser {
 
     public OutputDocumentFormats getOutputFormat() {
         return outputFormat;
+    }
+
+    public boolean isPrintTemplateInfo() {
+        return printTemplateInfo;
     }
 }
