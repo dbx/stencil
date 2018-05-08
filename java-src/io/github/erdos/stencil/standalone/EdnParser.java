@@ -7,7 +7,6 @@ import clojure.lang.Var;
 
 import java.util.Optional;
 
-@SuppressWarnings({"unchecked", "unused", "WeakerAccess"})
 final class EdnParser {
 
     static {
