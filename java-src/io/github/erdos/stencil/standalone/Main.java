@@ -22,8 +22,15 @@ import static io.github.erdos.stencil.impl.FileHelper.removeExtension;
 public final class Main {
 
     public static void main(String... args) throws IOException {
-        final Process process = ProcessFactory.fromLocalLibreOffice();
         final ArgsParser parsedArgs = ArgsParser.parse(args);
+
+
+        final Process process;
+
+        if (parsedArgs.getOfficeHome() == null)
+            process = ProcessFactory.fromLocalLibreOffice();
+        else
+            process = ProcessFactory.fromLibreOfficeHome(parsedArgs.getOfficeHome());
 
         if (parsedArgs.getDataFiles().isEmpty())
             throw new IllegalArgumentException("Missing data files to export!");
@@ -70,7 +77,7 @@ public final class Main {
         } else {
             throw new IllegalArgumentException("Unexpected file format: " + extension);
         }
-        
+
         if (!parsed.isPresent())
             throw new IllegalArgumentException("Could not parse data file: " + dataFile);
 

@@ -26,12 +26,14 @@ public final class ArgsParser {
     private final File templateFile;
     private final List<File> dataFiles;
     private final boolean printTemplateInfo;
+    private final File officeHome;
 
-    private ArgsParser(OutputDocumentFormats outputFormat, File templateFile, List<File> dataFiles, boolean printTemplateInfo) {
+    private ArgsParser(OutputDocumentFormats outputFormat, File templateFile, List<File> dataFiles, boolean printTemplateInfo, File officeHome) {
         this.outputFormat = outputFormat;
         this.templateFile = templateFile;
         this.dataFiles = dataFiles;
         this.printTemplateInfo = printTemplateInfo;
+        this.officeHome = officeHome;
     }
 
     /**
@@ -50,7 +52,7 @@ public final class ArgsParser {
             return Optional.of(parser.apply(items.remove()));
         } else if (items.element().startsWith(longKey + "=")) {
             String poke = items.remove();
-            return Optional.of(parser.apply(poke.substring(0, poke.length() - 1)));
+            return Optional.of(parser.apply(poke.substring(longKey.length() + 1)));
         } else
             return Optional.empty();
     }
@@ -87,11 +89,18 @@ public final class ArgsParser {
 
         OutputDocumentFormats outputFormat = null;
         boolean printTemplateInfo = false;
+        File officeHome = null;
 
         while (!arguments.isEmpty()) {
-            Optional<OutputDocumentFormats> mOut = maybeRead(arguments, "-T", "--output-type", (x) -> OutputDocumentFormats.ofExtension(x).orElseThrow(() -> new RuntimeException("Unexpected output format.")));
+            final Optional<OutputDocumentFormats> mOut = maybeRead(arguments, "-T", "--output-type", (x) -> OutputDocumentFormats.ofExtension(x).orElseThrow(() -> new RuntimeException("Unexpected output format: " + x)));
             if (mOut.isPresent()) {
                 outputFormat = mOut.get();
+                continue;
+            }
+
+            final Optional<File> mOfficeHome = maybeRead(arguments, "-H", "--office-home", File::new);
+            if (mOfficeHome.isPresent()) {
+                officeHome = mOfficeHome.get();
                 continue;
             }
 
@@ -103,7 +112,7 @@ public final class ArgsParser {
             if (outputFormat == null)
                 outputFormat = OutputDocumentFormats.ofExtension(extension(templateFile))
                         .orElseThrow(iae("Can not parse template file extension '%s' as output type", extension(templateFile)));
-            return new ArgsParser(outputFormat, templateFile, dataFiles, printTemplateInfo);
+            return new ArgsParser(outputFormat, templateFile, dataFiles, printTemplateInfo, officeHome);
         }
 
         throw iae("Template file parameter is missing!").get();
@@ -127,5 +136,9 @@ public final class ArgsParser {
 
     public boolean isPrintTemplateInfo() {
         return printTemplateInfo;
+    }
+
+    public File getOfficeHome() {
+        return officeHome;
     }
 }
