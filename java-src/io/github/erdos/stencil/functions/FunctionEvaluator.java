@@ -1,5 +1,6 @@
 package io.github.erdos.stencil.functions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,12 +41,19 @@ public final class FunctionEvaluator {
      * @return result of function call
      * @throws IllegalArgumentException when function name is null or missing
      */
-    public final Object call(String functionName, Object... arguments) {
+    public Object call(String functionName, Object... arguments) {
         if (functionName == null)
             throw new IllegalArgumentException("Function name is missing");
         final Function fun = functions.get(functionName.toLowerCase());
         if (fun == null)
             throw new IllegalArgumentException("Did not find function for name " + functionName);
         return fun.call(arguments);
+    }
+
+    /**
+     * Returns a sequence of all registered functions.
+     */
+    public Iterable<Function> listFunctios() {
+        return new ArrayList<>(functions.values());
     }
 }

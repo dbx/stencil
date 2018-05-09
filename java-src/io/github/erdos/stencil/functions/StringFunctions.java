@@ -18,6 +18,12 @@ public enum StringFunctions implements Function {
     FORMAT() {
         @Override
         public Object call(Object... arguments) {
+            if (arguments.length == 0) {
+                throw new IllegalArgumentException("At least one arg is expected!");
+            }
+            if (!(arguments[0] instanceof String)) {
+                throw new IllegalArgumentException("Unexpected first arg.");
+            }
             try {
                 return String.format((String) arguments[0], Arrays.copyOfRange(arguments, 1, arguments.length - 1));
             } catch (ClassCastException | IllegalFormatException e) {
@@ -82,7 +88,7 @@ public enum StringFunctions implements Function {
             if (arguments[0] == null)
                 return null;
             return Arrays.stream(arguments[0].toString().split("\\s"))
-                    .map(x -> x.substring(0,1).toUpperCase() + x.substring(1).toLowerCase())
+                    .map(x -> x.substring(0, 1).toUpperCase() + x.substring(1).toLowerCase())
                     .collect(Collectors.joining(" "));
         }
     };
