@@ -1,6 +1,7 @@
 package io.github.erdos.stencil.impl;
 
 import java.io.File;
+import java.io.IOException;
 
 public final class FileHelper {
 
@@ -23,5 +24,30 @@ public final class FileHelper {
             return fileName.substring(0, loc);
         } else
             return fileName;
+    }
+
+    /**
+     * Creates a directory. Recursively creates parent directories too.
+     *
+     * @param directory not null dir to create
+     * @throws IOException              on IO error
+     * @throws IllegalArgumentException when input is null or already exists
+     */
+    public static void forceMkdir(final File directory) throws IOException {
+        if (directory == null)
+            throw new IllegalArgumentException("Missing directory for forceMkdir");
+        if (directory.exists()) {
+            if (!directory.isDirectory()) {
+                throw new IOException("File exists and not a directory: " + directory);
+            }
+        } else {
+            if (!directory.mkdirs()) {
+                // Double-check that some other thread or process hasn't made
+                // the directory in the background
+                if (!directory.isDirectory()) {
+                    throw new IOException("Unable to create directory " + directory);
+                }
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static io.github.erdos.stencil.impl.FileHelper.forceMkdir;
+
 /**
  * Various helpers for handling ZIP files.
  */
@@ -52,21 +54,5 @@ public final class ZipHelper {
         zipFileStream.close();
     }
 
-    private static void forceMkdir(final File directory) throws IOException {
-        if (directory == null)
-            throw new IllegalArgumentException("Missing directory for forceMkdir");
-        if (directory.exists()) {
-            if (!directory.isDirectory()) {
-                throw new IOException("File exists and not a directory: " + directory);
-            }
-        } else {
-            if (!directory.mkdirs()) {
-                // Double-check that some other thread or process hasn't made
-                // the directory in the background
-                if (!directory.isDirectory()) {
-                    throw new IOException("Unable to create directory " + directory);
-                }
-            }
-        }
-    }
+
 }
