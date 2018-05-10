@@ -159,7 +159,10 @@
 (defn remove-table-thin-columns-1
   "Ha a tablazatban van olyan oszlop, amely szelessege nagyon kicsi, az egesz oszlopot eltavolitja."
   [xml-tree]
-  (if-let [loc (find-first-in-tree #(and (map? %) (some-> % :attrs ooxml-w ->int (< min-col-width))) (xml-zip xml-tree))]
+  ;; Ha talalunk olyan gridCol oszlopot, ami nagyon kicsi
+  (if-let [loc (find-first-in-tree #(and (map? %)
+                                         (some-> % :tag name (#{"gridCol"}))
+                                         (some-> % :attrs ooxml-w ->int (< min-col-width))) (xml-zip xml-tree))]
     (let [col-idx (count (filter #(some-> % zip/node :tag) (next (iterations zip/left loc))))
           table-loc (find-enclosing-table (zip/remove loc))]
       (zip/root (map-each-rows #(remove-columns % #{col-idx}) table-loc)))
@@ -186,8 +189,8 @@
 
 (defn postprocess [xml-tree]
   (->> xml-tree
-      (fixpt remove-table-thin-columns-1)
-      (fixpt remove-columns-by-markers-1)
-      (fixpt remove-empty-table-rows-1)
-      (fixpt remove-empty-tables-1)
-      (deref-delayed-values)))
+       (fixpt remove-table-thin-columns-1)
+       (fixpt remove-columns-by-markers-1)
+       (fixpt remove-empty-table-rows-1)
+       (fixpt remove-empty-tables-1)
+       (deref-delayed-values)))

@@ -71,19 +71,16 @@
   (testing "There are infinitely thin columns that are being removed."
     (is (=
           (table
-            {:tag :w:tblGrid
-             :content [{:tag :w:gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "2000"}}
-                       {:tag :w:gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "3000"}}]}
+            {:tag :tblGrid
+             :content [{:tag :gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "2000"}}
+                       {:tag :gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "3000"}}]}
             (row (cell "X1") (cell "X3"))
             (row (cell "Y1") (cell "Y3")))
           (postprocess
-            (table
-              {:tag :w:tblGrid
-               :content [{:tag :w:gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "2000"}}
-                         {:tag :w:gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "4"}}
-                         {:tag :w:gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "3000"}}]}
-              (row (cell "X1") (cell "X2") (cell "X3"))
-              (row (cell "Y1") (cell "Y2") (cell "Y3"))))))))
-
-
-;; TODO: szelesseg normalis kezelese!
+           (table
+            {:tag :tblGrid
+             :content [{:tag :gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "2000"}}
+                       {:tag :gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "4"}}
+                       {:tag :gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "3000"}}]}
+            (row (cell "X1") (cell "X2") (cell "X3"))
+            (row (cell "Y1") (cell "Y2") (cell "Y3"))))))))
