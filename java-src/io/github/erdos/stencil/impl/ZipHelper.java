@@ -1,15 +1,11 @@
 package io.github.erdos.stencil.impl;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import static org.apache.commons.io.FileUtils.forceMkdir;
 
 /**
  * Various helpers for handling ZIP files.
@@ -44,7 +40,7 @@ public final class ZipHelper {
         try (ZipInputStream zis = new ZipInputStream(zipFileStream)) {
             for (ZipEntry zipEntry = zis.getNextEntry(); zipEntry != null; zipEntry = zis.getNextEntry()) {
                 File newFile = new File(unzipTargetDirectory, zipEntry.getName());
-                FileUtils.forceMkdirParent(newFile);
+                forceMkdir(newFile.getParentFile());
                 try (FileOutputStream fos = new FileOutputStream(newFile)) {
                     while ((len = zis.read(buffer)) > 0) {
                         fos.write(buffer, 0, len);
@@ -54,5 +50,23 @@ public final class ZipHelper {
             zis.closeEntry();
         }
         zipFileStream.close();
+    }
+
+    private static void forceMkdir(final File directory) throws IOException {
+        if (directory == null)
+            throw new IllegalArgumentException("Missing directory for forceMkdir");
+        if (directory.exists()) {
+            if (!directory.isDirectory()) {
+                throw new IOException("File exists and not a directory: " + directory);
+            }
+        } else {
+            if (!directory.mkdirs()) {
+                // Double-check that some other thread or process hasn't made
+                // the directory in the background
+                if (!directory.isDirectory()) {
+                    throw new IOException("Unable to create directory " + directory);
+                }
+            }
+        }
     }
 }
