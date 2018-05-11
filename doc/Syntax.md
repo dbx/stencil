@@ -16,7 +16,7 @@ This lets you conditionally hide or show parts of your document.
 Syntax:
 
 - `{%if CONDITION%}`THEN`{%else%}`
-- `{%if CONDITION%}`THEN`{%else%}`ELSE`{%else%}`
+- `{%if CONDITION%}`THEN`{%else%}`ELSE`{%end%}`
 
 Here the `THEN` part is only shown when the `CONDITION` part is evaluated to a true value. Otherwise
 the `ELSE` part is shown (when specified).
