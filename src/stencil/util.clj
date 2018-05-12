@@ -6,7 +6,7 @@
 
 (defn stacks-difference-key
   "Mindkey listanak levagja azt a kozos prefixet, amire a kulcsfuggveny ua az erteket adja."
-  [stack1 stack2 key-fn]
+  [key-fn stack1 stack2]
   (let [cnt (count (take-while true?
                                (map (fn [a b] (= (key-fn a) (key-fn b)))
                                     (reverse stack1) (reverse stack2))))]
@@ -14,10 +14,9 @@
      (take (- (count stack2) cnt) stack2)]))
 
 
-(defn stacks-difference
+(def stacks-difference
   "mindket listanak levagja a kozos szuffixet"
-  [stack1 stack2]
-  (stacks-difference-key stack1 stack2 identity))
+  (partial identity stacks-difference-key))
 
 
 (defn mod-stack-top-last

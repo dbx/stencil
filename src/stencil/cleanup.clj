@@ -64,7 +64,7 @@
 
      (fn after-cmd-block [_ block]
        (let [stack-before (:before block)
-             [a b]        (stacks-difference-key stack-before @stack :open)]
+             [a b]        (stacks-difference-key :open stack-before @stack)]
          (assoc block :before a :after b)))
 
      (fn child [item]
