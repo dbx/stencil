@@ -8,8 +8,7 @@
 
 (set! *warn-on-reflection* true)
 
-;; TODO: itt mindengyiknel az operandust is at kell adni.
-;; TODO: ahol algebrai kifejezes van, azt ki kell ertekelni. ehhez kellhet egy rendes parszer is.
+
 (defn text->cmd [^String text]
   (assert (string? text))
   (let [text (.trim text)]
@@ -61,6 +60,9 @@
          (map map-token))))
 
 
+(def empty-stack '(()))
+
+
 (defn- tokens-seq-reducer [stack token]
   (cond
     (:text token)
@@ -88,8 +90,8 @@
 (defn tokens-seq->document
   "Token listabol XML fat csinal."
   [tokens-seq]
-  (let [result (reduce tokens-seq-reducer [()] tokens-seq)]
-    (assert (= 1 (count result)))
+  (let [result (reduce tokens-seq-reducer empty-stack tokens-seq)]
+    (assert (= 1 (count result)) (str (pr-str result)))
     (assert (= 1 (count (first result))))
     (ffirst result)))
 

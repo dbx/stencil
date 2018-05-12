@@ -21,8 +21,7 @@
                  (lazy-seq (f stack ts)))
          (recur (cons t stack) ts))))
    nil tokens))
-;; (peek-next-text [{:a 1} {:b  2} {:text "abc"} {:c 3} {:d 4} {:text "def"}])
-;; (peek-next-text [{:open 1}])
+
 
 (defn find-first-code
   [^String s]

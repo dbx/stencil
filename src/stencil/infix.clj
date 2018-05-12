@@ -122,7 +122,7 @@
       (empty? characters)
       tokens
 
-      (contains? #{\space \tab} first-char)
+      (contains? #{\space \tab \newline} first-char)
       (recur next-chars tokens)
 
       (contains? #{\, \;} first-char)

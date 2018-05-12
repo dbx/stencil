@@ -15,7 +15,7 @@
     (if-let [name-tag (some-> item (find-first :name) str .trim)]
       ;; ha a name fuggvenyhivasnak nez ki, akkor megprobaljuk vegrehajtani.
       ;; a generalt dokumentumba binariskent betesszuk a letrehozott kepfajlt
-      ;; tovabba 
+      ;; tovabba
 
       ;; ha a name egy barcode(x) tipusu, akkor harapunk.
       (let [uuid (str (java.util.UUID/randomUUID))]
@@ -43,6 +43,7 @@
 (defn normal-control-ast->evaled-seq [data function items]
   (assert (map? data))
   (assert (ifn? function))
+  (assert (or (nil? items) (sequential? items)))
   (mapcat (partial eval-step function data) items))
 
 ;; TODO: creating image files for qr code or barcode should take place here

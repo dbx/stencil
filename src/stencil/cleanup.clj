@@ -14,23 +14,23 @@
 
 (declare control-ast-normalize)
 
+(defn- tokens->ast-step [[queue & ss0 :as stack] token]
+  ;; TODO: itt ellenorizni kell, hogy az if-then-else, for-end parban legyen!
+  (case (:cmd token)
+    (:if :for) (conj (mod-stack-top-conj stack token) [])
+
+    :else      (conj (mod-stack-top-last ss0 update :blocks (fnil conj []) {:children queue}) [])
+
+    :end       (mod-stack-top-last ss0 update :blocks conj {:children queue})
+
+    (:echo nil)        (mod-stack-top-conj stack token)))
+
 (defn tokens->ast
   "Flat token listabol nested AST-t csinal (listak listai)"
   [tokens]
-  ;; TODO: itt ellenorizni kell, hogy az if-then-else, for-end parban legyen!
-  (peek
-   (reduce
-    (fn [[queue & ss0 :as stack] token]
-      (case (:cmd token)
-        (:if :for) (conj (mod-stack-top-conj stack token) [])
-
-        :else      (conj (mod-stack-top-last ss0 update :blocks (fnil conj []) {:children queue}) [])
-
-        :end       (mod-stack-top-last ss0 update :blocks conj {:children queue})
-
-        (:echo nil)        (mod-stack-top-conj stack token)))
-    '([]) tokens)))
-
+  (let [result (reduce tokens->ast-step '([]) tokens)]
+    (assert (= 1 (count result)))
+    (peek result)))
 
 (defn nested-tokens-fmap-postwalk
   "Melysegi bejaras egy XML fan.
