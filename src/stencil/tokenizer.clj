@@ -61,34 +61,36 @@
          (map map-token))))
 
 
+(defn- tokens-seq-reducer [stack token]
+  (cond
+    (:text token)
+    (mod-stack-top-conj stack (:text token))
+
+    (:open+close token)
+    (let [elem (xml/element (:open+close token) (:attrs token))]
+      (mod-stack-top-conj stack elem))
+
+    (:open token)
+    (let [elem (xml/element (:open token) (:attrs token))]
+      (-> stack (mod-stack-top-conj elem) (conj [])))
+
+    (:close token)
+    (let [[s & stack] stack]
+      ;; TODO: itt megnezhetnenk, hogy a verem tetejen milyen elem volt utoljara es ossze lehetne hasonlitani oket.
+      (if (seq s)
+        (mod-stack-top-last stack assoc :content s)
+        stack))
+
+    :default
+    (throw (ex-info (str "Unexpected token!" token) {:token token}))))
+
+
 (defn tokens-seq->document
   "Token listabol XML fat csinal."
   [tokens-seq]
-  ;; TODO: put some error handling here in case we receive invalid arg
-  (ffirst
-   (reduce
-    (fn [stack token]
-      (cond
-        (:text token)
-        (mod-stack-top-conj stack (:text token))
-
-        (:open+close token)
-        (let [elem (xml/element (:open+close token) (:attrs token))]
-          (mod-stack-top-conj stack elem))
-
-        (:open token)
-        (let [elem (xml/element (:open token) (:attrs token))]
-          (-> stack (mod-stack-top-conj elem) (conj [])))
-
-        (:close token)
-        (let [[s & stack] stack]
-          (if (seq s)
-            (mod-stack-top-last stack assoc :content s)
-            stack))
-
-        :default
-        (throw (ex-info (str "Unexpected token!" token) {:token token}))))
-    [()]
-    tokens-seq)))
+  (let [result (reduce tokens-seq-reducer [()] tokens-seq)]
+    (assert (= 1 (count result)))
+    (assert (= 1 (count (first result))))
+    (ffirst result)))
 
 :OK
