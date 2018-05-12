@@ -198,7 +198,7 @@
                  {:text "THEN"}
                  {:close :a}
                  {:open :a, :attrs {:a "three"}}],
-          :else ({:close :a}{:open :a, :attrs {:a "three"}})}
+          :else ()}
          {:close :a}
          {:close :body}]
 

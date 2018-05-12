@@ -3,15 +3,21 @@
 
 (set! *warn-on-reflection* true)
 
+
+(defn stacks-difference-key
+  "Mindkey listanak levagja azt a kozos prefixet, amire a kulcsfuggveny ua az erteket adja."
+  [stack1 stack2 key-fn]
+  (let [cnt (count (take-while true?
+                               (map (fn [a b] (= (key-fn a) (key-fn b)))
+                                    (reverse stack1) (reverse stack2))))]
+    [(take (- (count stack1) cnt) stack1)
+     (take (- (count stack2) cnt) stack2)]))
+
+
 (defn stacks-difference
   "mindket listanak levagja a kozos szuffixet"
   [stack1 stack2]
-  ;(assert (list? stack1))
-  ;(assert (list? stack2))
-  (let [cnt (count (take-while (partial apply =)
-                               (map vector (reverse stack1) (reverse stack2))))]
-    [(take (- (count stack1) cnt) stack1)
-     (take (- (count stack2) cnt) stack2)]))
+  (stacks-difference-key stack1 stack2 identity))
 
 
 (defn mod-stack-top-last

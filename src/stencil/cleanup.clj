@@ -7,8 +7,7 @@
 
   valid XML String -> tokens -> Annotated Control AST -> Normalized Control AST -> Evaled AST -> Hiccup or valid XML String
   "
-  (:require [clojure.zip :as zip]
-            [stencil [util :refer :all] [types :refer :all]]))
+  (:require [stencil [util :refer :all] [types :refer :all]]))
 
 (set! *warn-on-reflection* true)
 
@@ -65,7 +64,7 @@
 
      (fn after-cmd-block [_ block]
        (let [stack-before (:before block)
-             [a b]        (stacks-difference stack-before @stack)]
+             [a b]        (stacks-difference-key stack-before @stack :open)]
          (assoc block :before a :after b)))
 
      (fn child [item]
