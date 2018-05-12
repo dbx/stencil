@@ -104,17 +104,13 @@
             else2 (concat (stack-revert-close (:before then))
                           (:after then)
                           (map control-ast-normalize (:children else)))]
-        (-> control-ast
-            (dissoc :blocks)
-            (assoc :then then2
-                   :else else2)))
+        (-> (dissoc control-ast :blocks)
+            (assoc :then then2, :else else2)))
 
     1 (let [[then] (:blocks control-ast)
             else   (:after then)]
         (-> (dissoc control-ast :blocks)
-            (assoc
-             :then (:children then)
-             :else else)))))
+            (assoc :then (:children then), :else else)))))
 
 ;; Egy ciklusnal kulon kell valasztani a kovetkezo eseteket:
 ;; - body-run-none: a body resz egyszer sem fut le, mert a lista nulla elemu.

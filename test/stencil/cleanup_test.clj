@@ -188,4 +188,30 @@
     ;; TODO: legyen e gymasban ket for ciklus meg egy echo?
     ))
 
+(deftest test-process-if-then-else
+  (is (=
+       '[{:open :body}
+         {:open :a}
+         {:cmd :if, :condition [a],
+          :then [{:close :a}
+                 {:open :a}
+                 {:text "THEN"}
+                 {:close :a}
+                 {:open :a, :attrs {:a "three"}}],
+          :else ({:close :a}{:open :a, :attrs {:a "three"}})}
+         {:close :a}
+         {:close :body}]
+
+       (:executable (process '({:open :body}
+                               {:open :a}
+                               {:cmd :if, :condition [a]}
+                               {:close :a}
+                               {:open :a}
+                               {:text "THEN"}
+                               {:close :a}
+                               {:open :a, :attrs {:a "three"}}
+                               {:cmd :end}
+                               {:close :a}
+                               {:close :body}))))))
+
 :OK
