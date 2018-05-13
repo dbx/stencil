@@ -26,5 +26,7 @@
   :main io.github.erdos.stencil.standalone.Main
   :jar-exclusions [#".*\.xml"]
   :profiles {:test {:dependencies [[junit/junit "4.12"]
-                                   [org.xmlunit/xmlunit-core "2.5.1"]]
+                                   [org.xmlunit/xmlunit-core "2.5.1"]
+                                   [hiccup "1.0.5"]]
+                    :resources    ["test-resources"]
                     :java-source-paths ["java-src" "test"]}})
