@@ -16,7 +16,7 @@
 
 (def stacks-difference
   "mindket listanak levagja a kozos szuffixet"
-  (partial identity stacks-difference-key))
+  (partial stacks-difference-key identity))
 
 
 (defn mod-stack-top-last

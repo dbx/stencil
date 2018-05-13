@@ -22,7 +22,6 @@
          (recur (cons t stack) ts))))
    nil tokens))
 
-
 (defn find-first-code
   [^String s]
   (assert (string? s))
