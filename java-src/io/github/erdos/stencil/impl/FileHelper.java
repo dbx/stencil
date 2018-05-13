@@ -2,8 +2,16 @@ package io.github.erdos.stencil.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
+/**
+ * File handling utilities.
+ * Some methods may be called from Clojure core.
+ */
+@SuppressWarnings("WeakerAccess")
 public final class FileHelper {
+
+    private final static File TEMP_DIRECTORY = new File(System.getProperty("java.io.tmpdir"));
 
     public static String extension(File f) {
         return extension(f.getName());
@@ -24,6 +32,17 @@ public final class FileHelper {
             return fileName.substring(0, loc);
         } else
             return fileName;
+    }
+
+    /**
+     * Creates a temporary file that is guaranteed not to exist on file system.
+     *
+     * @param prefix file name starts with this file
+     * @param suffix file name ends with this file
+     * @return a new file object pointing to a non-existing file in temp directory.
+     */
+    public static File createNonexistentTempFile(String prefix, String suffix) {
+        return new File(TEMP_DIRECTORY, prefix + UUID.randomUUID().toString() + suffix);
     }
 
     /**

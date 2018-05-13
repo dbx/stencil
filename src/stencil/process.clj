@@ -1,7 +1,9 @@
 (ns stencil.process
   "A konvertalas folyamat osszefogasa"
   (:gen-class)
-  (:import [java.io File])
+  (:import [java.io File PipedInputStream PipedOutputStream InputStream]
+           [java.util.zip ZipEntry ZipOutputStream]
+           [io.github.erdos.stencil.impl FileHelper ZipHelper])
   (:require [clojure.data.xml :as xml]
             [clojure.java.io :as io]
             [stencil
@@ -17,12 +19,13 @@
   (with-open [r (io/reader readable)]
     (cleanup/process (tokenizer/parse-to-tokens-seq r))))
 
-(defmulti prepare-template (fn [extension stream] (some-> extension name .trim .toLowerCase keyword)))
+(defmulti prepare-template
+  ;; extension: template file name extension
+  ;; stream: template file contents
+  (fn [extension stream] (some-> extension name .trim .toLowerCase keyword)))
 
-(defmethod prepare-template :default [extension _]
-  ; (println "Unexpected extension: " extension)
-  (throw (ex-info (str "Unrecognized extension: " extension)
-                  {:extension extension})))
+(defmethod prepare-template :default [ext _]
+  (throw (ex-info (format "Unrecognized extension: '%s'" ext) {:extension ext})))
 
 (defmethod prepare-template :xml [_ stream]
   (let [m (->executable stream)]
@@ -30,21 +33,22 @@
      :type       :xml
      :executable (:executable m)}))
 
-(defmethod  prepare-template :docx [suffix ^java.io.InputStream stream]
-  ;; TODO: itt lehet h header es footer fajlt is kellene ertelmezni!
+(defmethod  prepare-template :docx [suffix ^InputStream stream]
   (assert (some? suffix))
-  (assert (some? stream))
-  (let [zip-dir   (doto (File/createTempFile "stencil-" (str suffix ".zip.contents")) .delete)
-        xml-list  ["word/document.xml"]
-        execs     (delay (zipmap xml-list
-                                 (for [d xml-list]
-                                   (->executable (File. ^File zip-dir (str d))))))]
-    (with-open [zip-stream stream]
-      (io.github.erdos.stencil.impl.ZipHelper/unzipStreamIntoDirectory zip-stream zip-dir))
-    {:zip-dir    zip-dir
-     :type       :docx
-     :variables  (set (mapcat :variables (vals @execs)))
-     :exec-files (into {} (for [[k v] @execs] [k (:executable v)]))}))
+  (assert (instance? InputStream stream))
+  (let [zip-dir   (FileHelper/createNonexistentTempFile "stencil-" (str suffix ".zip.contents"))]
+    (with-open [zip-stream stream] ;; FIXME: maybe not deleted immediately
+      (ZipHelper/unzipStreamIntoDirectory zip-stream zip-dir))
+    (let [xml-files (for [w (.list (File. zip-dir "word"))
+                          :when (.endsWith (str w) ".xml")]
+                      (str "word/" w))
+          execs     (zipmap xml-files (map #(->executable (File. zip-dir (str %))) xml-files))]
+      ;; TODO: maybe make it smarter by loading only important xml files
+      ;; such as document.xml and footers/headers
+      {:zip-dir    zip-dir
+       :type       :docx
+       :variables  (set (mapcat :variables (vals execs)))
+       :exec-files (into {} (for [[k v] execs] [k (:executable v)]))})))
 
 (defn- run-executable-and-write [executable function data output-stream]
   (let [result (-> (eval/normal-control-ast->evaled-seq data function executable)
@@ -61,18 +65,18 @@
   (assert (:exec-files template))
   (let [data   (into {} data)
         {:keys [zip-dir exec-files]} template
-        source-dir   (clojure.java.io/file zip-dir)
+        source-dir   (io/file zip-dir)
         pp           (.toPath source-dir)
-        outstream    (new java.io.PipedOutputStream)
-        input-stream (new java.io.PipedInputStream outstream)]
+        outstream    (new PipedOutputStream)
+        input-stream (new PipedInputStream outstream)]
     (future
       (try
-        (with-open [zipstream (new java.util.zip.ZipOutputStream outstream)]
+        (with-open [zipstream (new ZipOutputStream outstream)]
           (doseq [file  (file-seq source-dir)
                   :when (not      (.isDirectory ^File file))
                   :let  [path     (.toPath ^File file)
                          rel-path (str (.relativize pp path))
-                         ze       (new java.util.zip.ZipEntry rel-path)]]
+                         ze       (new ZipEntry rel-path)]]
             (.putNextEntry zipstream ze)
             (if-let [executable (get exec-files rel-path)]
               (run-executable-and-write executable function data zipstream)
@@ -87,8 +91,8 @@
   (assert (:executable template))
   (let [data         (into {} data)
         executable   (:executable template)
-        out-stream    (new java.io.PipedOutputStream)
-        input-stream (new java.io.PipedInputStream out-stream)]
+        out-stream   (new PipedOutputStream)
+        input-stream (new PipedInputStream out-stream)]
     (future
       ;; TODO: itt hogyan kezeljunk hibat?
       (try
