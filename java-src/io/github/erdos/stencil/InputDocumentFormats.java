@@ -10,20 +10,23 @@ import static io.github.erdos.stencil.impl.FileHelper.extension;
  * You can write the original template files in these file types.
  */
 public enum InputDocumentFormats {
-    DOCX(TemplateDocumentFormats.DOCX, false),
-    DOC(TemplateDocumentFormats.DOCX, true),
-    ODT(TemplateDocumentFormats.DOCX, true),
-    RTF(TemplateDocumentFormats.DOCX, true),
-    HTML(TemplateDocumentFormats.XML, false),
-    XHTML(TemplateDocumentFormats.XML, false),
-    XML(TemplateDocumentFormats.XML, false),
-    TXT(TemplateDocumentFormats.TXT, false);
+    DOCX(TemplateDocumentFormats.DOCX, false, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    DOC(TemplateDocumentFormats.DOCX, true, "application/msword"),
+    ODT(TemplateDocumentFormats.DOCX, true, "application/vnd.oasis.opendocument.text"),
+    RTF(TemplateDocumentFormats.DOCX, true, "application/rtf"),
+    HTML(TemplateDocumentFormats.XML, false, "text/html"),
+    XHTML(TemplateDocumentFormats.XML, false, "application/xhtml+xml"),
+    XML(TemplateDocumentFormats.XML, false, "application/xml"),
+    TXT(TemplateDocumentFormats.TXT, false, "text/plain");
+
     private final TemplateDocumentFormats templateFormat;
     private final boolean templateShouldConvert;
+    private final String mimeType;
 
-    InputDocumentFormats(TemplateDocumentFormats templateFormat, boolean templateShouldConvert) {
+    InputDocumentFormats(TemplateDocumentFormats templateFormat, boolean templateShouldConvert, String mimeType) {
         this.templateFormat = templateFormat;
         this.templateShouldConvert = templateShouldConvert;
+        this.mimeType = mimeType;
     }
 
     /**
@@ -63,5 +66,13 @@ public enum InputDocumentFormats {
      */
     public boolean templateShouldConvert() {
         return templateShouldConvert;
+    }
+
+
+    /**
+     * Returns mime type as string value.
+     */
+    public String getMimeType() {
+        return mimeType;
     }
 }

@@ -12,43 +12,48 @@ public enum OutputDocumentFormats {
     /**
      * OOXML file (Microsoft Word)
      */
-    DOCX,
+    DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
 
     /**
      * Word document (old format, need conversion from DOCX)
      */
-    DOC,
+    DOC("application/msword"),
 
     /**
      * LibreOffice format (needs conversion from DOCX).
      */
-    ODT,
+    ODT("application/vnd.oasis.opendocument.text"),
 
     /**
      * HTML for the Web
      */
-    HTML,
+    HTML("text/html"),
 
     /**
      * PDF document type (needs conversion from DOCX).
      */
-    PDF,
+    PDF("application/pdf"),
 
     /**
      * Simple text file.
      */
-    TXT,
+    TXT("text/plain"),
 
     /**
      * Rich Text Format (oldie)
      */
-    RTF,
+    RTF("application/rtf"),
 
     /**
      * Just XML.
      */
-    XML
-    ;
+    XML("application/xml");
+
+    private final String mimeType;
+
+    OutputDocumentFormats(String mimeType) {
+        this.mimeType = mimeType;
+    }
 
     /**
      * Tries to find an output document format instance for a given extension string.
@@ -74,5 +79,12 @@ public enum OutputDocumentFormats {
      */
     public String getExtension() {
         return name().toLowerCase();
+    }
+
+    /**
+     * Returns mime type as string value.
+     */
+    public String getMimeType() {
+        return this.mimeType;
     }
 }
