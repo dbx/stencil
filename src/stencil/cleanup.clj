@@ -109,7 +109,7 @@
     1 (let [[then] (:blocks control-ast)
             else   (:after then)]
         (-> (dissoc control-ast :blocks)
-            (assoc :then (:children then), :else else)))))
+            (assoc :then (map control-ast-normalize (:children then)), :else else)))))
 
 ;; Egy ciklusnal kulon kell valasztani a kovetkezo eseteket:
 ;; - body-run-none: a body resz egyszer sem fut le, mert a lista nulla elemu.
@@ -137,7 +137,7 @@
     (:close control-ast)  control-ast
     (:cmd control-ast)    (control-ast-normalize-step control-ast)
     (:open+close control-ast) control-ast
-    :else                 (throw (ex-info "Unexpected object" {:ast control-ast}))))
+    :else                 (throw (ex-info (str "Unexpected object: " (type control-ast)) {:ast control-ast}))))
 
 (defn find-variables [control-ast]
   ;; meg a normalizalas lepes elott

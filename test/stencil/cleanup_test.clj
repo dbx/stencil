@@ -214,4 +214,26 @@
                                {:close :a}
                                {:close :body}))))))
 
+(deftest test-process-if-nested
+  (is (=
+       [<a>
+        {:cmd :if, :condition '[x.a],
+         :then [<／a>
+                {:cmd :if, :condition '[x.b],
+                 :then [<a> {:text "THEN"}]
+                 :else [<a>]}
+                <／a>]
+         :else ()}]
+            (:executable
+             (process
+              [<a>
+               ,,{:cmd :if, :condition '[x.a]}
+               <／a>
+               {:cmd :if, :condition '[x.b]}
+               <a>
+               ,,{:text "THEN"}
+               ,,{:cmd :end}
+               <／a>
+               {:cmd :end}])))))
+
 :OK
