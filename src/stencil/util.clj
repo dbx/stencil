@@ -33,25 +33,14 @@
 (defn mod-stack-top-conj
   "Egy stack legfelso elemehez hozzafuz egy elemet"
   [stack & items]
-  ; (assert (list? stack))
   (conj (rest stack) (apply conj (first stack) items)))
 
 
 (defn update-peek
   "Egy stack legfelso elemet modositja."
   [xs f & args]
-  ; (assert (list? xs))
   (assert (ifn? f))
   (conj (pop xs) (apply f (peek xs) args)))
-
-
-(def extension->mime-type
-  {"pdf"  "application/pdf"
-   "html" "text/html"
-   "rtf"  "application/rtf"
-   "docx" "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-   "doc"  "application/msword"
-   "odt"  "application/vnd.oasis.opendocument.text"})
 
 (defn fixpt [f x] (let [fx (f x)] (if (= fx x) x (recur f fx))))
 (defn zipper? [loc] (-> loc meta (contains? :zip/branch?)))
@@ -74,5 +63,12 @@
         (string? x) (Integer/parseInt (str x))
         (number? x) (int x)
         :default    (assert false (format "Unexpected type %s of %s" (type x) (str x)))))
+
+(def print-trace? false)
+
+(defmacro trace [msg & details]
+  (assert (string? msg) "Log message must be a string")
+  `(when print-trace?
+     (println (format ~msg ~(for [d details] `(pr-str ~d))))))
 
 :OK
