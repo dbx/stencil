@@ -20,6 +20,11 @@
       {:cmd       :if
        :condition (infix/parse (.substring text 3))}
 
+      (.startsWith text "unless ")
+      {:cmd       :if
+       :condition (conj (vec (infix/parse (.substring text 7))) :not)}
+
+
       (.startsWith text "for ")
       (let [[v expr] (vec (.split (.substring text 4) " in "))]
         {:cmd        :for

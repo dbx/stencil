@@ -27,9 +27,16 @@ Example:
 
 In this example the text `Life insurance` is shown when the value of `x.coverData.coverType` is equal to the `"LIFE"` string.
 
+#### Reverted conditionals
+
+Sometimes it makes sense to swap the THEN and ELSE branches to make the expression more readable.
+Therefore you can write `unless` instead of `if !` (if-not) to express the negation of the condition.
+
+For example, `{%unless CODITION%} Apples {%else%} Oranges {%end%}` is the same as `{%if ! CONDITION%} Oranges {%else%} Apples {%end%}`.
+
 ### Iteration
 
-You can iterate over the elements of a list to repeatedly embed content in your document. The body part of the 
+You can iterate over the elements of a list to repeatedly embed content in your document. The body part of the
 iteration is inserted for each item of the list.
 
 Syntax:

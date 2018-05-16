@@ -56,6 +56,16 @@
             {:text " utana"}
             {:close :a}]))))
 
+(deftest read-tokens-unless-then
+  (testing "Simple conditional with THEN branch only"
+    (is (= (run "<a>{%unless x%} akkor {% end %}</a>")
+           [{:open :a} {:cmd :if :condition '(x :not)} {:text " akkor "} {:cmd :end} {:close :a}]))))
+
+(deftest read-tokens-unless-then-else
+  (testing "Simple conditional with THEN branch only"
+    (is (= (run "<a>{%unless x%} akkor {%else%} egyebkent {%end %}</a>")
+           [{:open :a} {:cmd :if :condition '(x :not)} {:text " akkor "} {:cmd :else} {:text " egyebkent "} {:cmd :end} {:close :a}]))))
+
 (deftest read-tokens-for
   (testing "Simple for loop"
     ; TODO: meg kell irni!
