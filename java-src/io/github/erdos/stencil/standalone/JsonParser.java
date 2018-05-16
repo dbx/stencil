@@ -5,11 +5,16 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
 import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 final class JsonParser {
 
@@ -31,19 +36,28 @@ final class JsonParser {
         }
     }
 
+    /**
+     * Maps Nashorn types to simple java types.
+     * <p>
+     * We need it because javascript arrays are maps too and it makes them more difficult to tell type in Clojure.
+     */
     @SuppressWarnings("unchecked")
     private static Object cleanup(Object o) {
-        if (o == null)
+        if (o == null) {
             return null;
-        if (!(o instanceof ScriptObjectMirror)) {
-            return o;
-        } else {
-            ScriptObjectMirror m = (ScriptObjectMirror) o;
+        } else if (o instanceof ScriptObjectMirror) {
+            final ScriptObjectMirror m = (ScriptObjectMirror) o;
             if (m.isArray()) {
-                return m.values().stream().map(JsonParser::cleanup).collect(Collectors.toList());
+                return unmodifiableList(m.values().stream().map(JsonParser::cleanup).collect(toList()));
             } else {
-                return m.entrySet().stream().collect(Collectors.toMap(x -> cleanup(x.getKey()), x -> cleanup(x.getValue())));
+                return unmodifiableMap(m.entrySet().stream().collect(toMap(x -> cleanup(x.getKey()), x -> cleanup(x.getValue()))));
             }
+        } else if (o instanceof List) {
+            return unmodifiableList(((List<Object>) o).stream().map(JsonParser::cleanup).collect(toList()));
+        } else if (o instanceof Map) {
+            return unmodifiableMap(((Map<Object, Object>) o).entrySet().stream().collect(toMap(x -> cleanup(x.getKey()), x -> cleanup(x.getValue()))));
+        } else {
+            return o;
         }
     }
 }

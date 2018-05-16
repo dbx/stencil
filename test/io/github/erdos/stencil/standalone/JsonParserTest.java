@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JsonParserTest {
 
@@ -26,8 +25,22 @@ public class JsonParserTest {
         Optional<Object> parsed = JsonParser.parse("[11, 22, 33]");
 
         assertTrue(parsed.isPresent());
-        System.out.println(parsed.get().getClass());
         assertTrue(parsed.get() instanceof List);
         assertFalse(parsed.get() instanceof Map);
+
+        List p = (List) parsed.get();
+        assertEquals(11, p.iterator().next());
+    }
+
+    @Test
+    public void testParseVectorNested() {
+        Optional<Object> parsed = JsonParser.parse("{\"a\": [11, 22, 33]}");
+
+        assertTrue(parsed.isPresent());
+        assertTrue(parsed.get() instanceof Map);
+
+        List vec = (List) ((Map) parsed.get()).get("a");
+        assertFalse(vec instanceof Map);
+        assertEquals(11, vec.iterator().next());
     }
 }
