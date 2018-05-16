@@ -11,9 +11,7 @@
                  [org.clojure/data.xml "0.2.0-alpha5"]
                  [org.jodconverter/jodconverter-local "4.1.0"] ;; pdf conversion
                  ]
-  :pom-addition [:properties
-                 ["maven.compiler.source" "8"]
-                 ["maven.compiler.target" "8"]]
+  :pom-addition ([:properties ["maven.compiler.source" "8"] ["maven.compiler.target" "8"]])
   :plugins [[quickie "0.4.2" :exclusions [org.clojure/clojure]]
             [lein-javadoc "0.3.0"]
             [lein-test-out "0.3.1"]]
@@ -28,5 +26,5 @@
   :profiles {:test {:dependencies [[junit/junit "4.12"]
                                    [org.xmlunit/xmlunit-core "2.5.1"]
                                    [hiccup "1.0.5"]]
-                    :resources    ["test-resources"]
+                    :resource-paths    ["test-resources"]
                     :java-source-paths ["java-src" "test"]}})
