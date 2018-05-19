@@ -8,7 +8,6 @@
 
 (set! *warn-on-reflection* true)
 
-
 (defn text->cmd [^String text]
   (assert (string? text))
   (let [text (.trim text)]
@@ -24,7 +23,6 @@
       {:cmd       :if
        :condition (conj (vec (infix/parse (.substring text 7))) :not)}
 
-
       (.startsWith text "for ")
       (let [[v expr] (vec (.split (.substring text 4) " in "))]
         {:cmd        :for
@@ -34,6 +32,12 @@
       (.startsWith text "=")
       {:cmd        :echo
        :expression (infix/parse (.substring text 1))}
+
+      ;; `else if` expression
+      (seq (re-seq #"^else\s+if\s+" text))
+      (let [prefix-len (count (first (re-seq #"^else\s+if\s+" text)))]
+        {:cmd :else-if
+         :expression (infix/parse (.substring text prefix-len))})
 
       :otherwise (throw (ex-info "Unexpected command" {:command text})))))
 
