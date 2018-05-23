@@ -91,7 +91,7 @@ public class SimpleRenderTest {
 
         // WHEN
         final PreparedTemplate template = process.prepareTemplateFile(TEMPLATE_FILE);
-        final Set<String> variables = template.getVariables();
+        final Set<String> variables = template.getVariables().getAllVariables();
 
         // THEN
         assertTrue(variables.contains("customer.fullName"));

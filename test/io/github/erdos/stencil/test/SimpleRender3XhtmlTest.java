@@ -50,7 +50,7 @@ public class SimpleRender3XhtmlTest {
      */
     @Test
     public void testTemplateVariables() {
-        Set<String> variables = template.getVariables();
+        Set<String> variables = template.getVariables().getAllVariables();
 
         assertTrue(variables.contains("customerName"));
     }

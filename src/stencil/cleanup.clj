@@ -13,8 +13,8 @@
 
 (declare control-ast-normalize)
 
+
 (defn- tokens->ast-step [[queue & ss0 :as stack] token]
-  ;; TODO: itt ellenorizni kell, hogy az if-then-else, for-end parban legyen!
   (case (:cmd token)
     (:if :for) (conj (mod-stack-top-conj stack token) [])
 
@@ -30,6 +30,7 @@
   (let [result (reduce tokens->ast-step '([]) tokens)]
     (assert (= 1 (count result)))
     (peek result)))
+
 
 (defn nested-tokens-fmap-postwalk
   "Melysegi bejaras egy XML fan.
@@ -172,7 +173,7 @@
               :for  (let [variable (maybe-variable mapping (:expression x))
                           exprs    (expr mapping (:expression x))
                           mapping  (if variable
-                                     (assoc mapping (:variable x) variable)
+                                     (assoc mapping (:variable x) (str variable "[]"))
                                      mapping)]
                       (concat exprs (collect mapping (apply concat (:blocks x)))))
               []))]

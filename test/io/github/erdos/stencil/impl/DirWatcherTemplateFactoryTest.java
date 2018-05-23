@@ -2,6 +2,7 @@ package io.github.erdos.stencil.impl;
 
 import io.github.erdos.stencil.PreparedTemplate;
 import io.github.erdos.stencil.TemplateFactory;
+import io.github.erdos.stencil.TemplateVariables;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -106,7 +107,7 @@ public class DirWatcherTemplateFactoryTest implements TemplateFactory {
             }
 
             @Override
-            public Set<String> getVariables() {
+            public TemplateVariables getVariables() {
                 return null;
             }
         };

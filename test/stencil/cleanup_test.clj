@@ -170,9 +170,14 @@
                                    :blocks [[] [{:cmd :echo :expression '[x]}]]}]))))
 
   (testing "Variables from loop expressions"
-    (is (= ["xs"] (find-variables [{:cmd :for :variable 'y :expression '[xs]
-                                    :blocks [[{:cmd :echo :expression '[y 1 :plus]}]]}])))
-    (is (= ["xs" "xs.z.k"]
+    (is (= ["xs" "xs[]"]
+           (find-variables '[{:cmd :for, :variable y, :expression [xs],
+                             :blocks [[{:cmd :echo, :expression [y 1 :plus]}]]}])))
+    (is (= ["xs" "xs[]" "xs[][]"]
+           (find-variables '[{:cmd :for, :variable y, :expression [xs]
+                              :blocks [[{:cmd :for :variable w :expression [y]
+                                         :blocks [[{:cmd :echo :expression [1 w :plus]}]]}]]}])))
+    (is (= ["xs" "xs[].z.k"]
            (find-variables
             '[{:cmd :for :variable y :expression [xs]
                :blocks [[{:cmd :echo :expression [y.z.k 1 :plus]}]]}]))))

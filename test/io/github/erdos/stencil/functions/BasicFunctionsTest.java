@@ -15,6 +15,8 @@ public class BasicFunctionsTest {
         assertEquals(3, SWITCH.call("a", "b", 1, "c", 2, "a", 3));
         assertEquals(3, SWITCH.call("a", "b", 1, "c", 2, "a", 3, "default"));
         assertEquals(1, SWITCH.call("a", "a", 1));
+        assertEquals(555, SWITCH.call(null, "b", 1, null, 555, "a", 3, "default"));
+
         assertNull(SWITCH.call("a", "x", 1, "y", 2));
     }
 
@@ -22,6 +24,7 @@ public class BasicFunctionsTest {
     public void testCoalesce() {
         assertEquals(3, COALESCE.call("", null, emptyList(), 3, emptyList()));
         assertEquals(3, COALESCE.call(3, null, null, emptyList()));
+
         assertNull(COALESCE.call());
         assertNull(COALESCE.call(null, emptyList(), "", null, emptyList()));
     }

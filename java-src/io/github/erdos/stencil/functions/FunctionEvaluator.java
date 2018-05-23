@@ -53,6 +53,7 @@ public final class FunctionEvaluator {
     /**
      * Returns a sequence of all registered functions.
      */
+    @SuppressWarnings("WeakerAccess")
     public Iterable<Function> listFunctios() {
         return new ArrayList<>(functions.values());
     }

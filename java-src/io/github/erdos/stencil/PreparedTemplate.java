@@ -2,7 +2,6 @@ package io.github.erdos.stencil;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  * Represents an already preprocessed template file.
@@ -42,14 +41,9 @@ public interface PreparedTemplate {
      */
     Object getSecretObject();
 
+
     /**
      * Set of template variables found in file.
-     * <p>
-     * A template variable is represented as a path in the template data object
-     * where path items are separated by '.' dot characters.
-     *
-     * @return string represeting paths in acceptable template data object.
      */
-    Set<String> getVariables();
-
+    TemplateVariables getVariables();
 }

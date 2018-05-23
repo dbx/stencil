@@ -61,7 +61,7 @@ public final class Main {
     private static void printTemplateInfo(PreparedTemplate template) {
         System.out.println("Template file: " + template.getTemplateFile());
         System.out.println("Template arguments:");
-        template.getVariables().forEach(line -> System.out.println(" - " + line));
+        template.getVariables().getAllVariables().forEach(line -> System.out.println(" - " + line));
     }
 
     @SuppressWarnings("unchecked")

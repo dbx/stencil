@@ -79,6 +79,7 @@ public final class NativeTemplateFactory implements TemplateFactory {
                 : emptySet();
 
         final LocalDateTime now = LocalDateTime.now();
+        final TemplateVariables vars = new TemplateVariables(variablesSet);
 
         return new PreparedTemplate() {
             @Override
@@ -102,8 +103,8 @@ public final class NativeTemplateFactory implements TemplateFactory {
             }
 
             @Override
-            public Set<String> getVariables() {
-                return variablesSet;
+            public TemplateVariables getVariables() {
+                return vars;
             }
         };
     }
