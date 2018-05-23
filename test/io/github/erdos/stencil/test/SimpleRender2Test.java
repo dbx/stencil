@@ -6,7 +6,6 @@ import io.github.erdos.stencil.ProcessFactory;
 import io.github.erdos.stencil.TemplateData;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -17,6 +16,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public class SimpleRender2Test {
 
     private final static URL TEMPLATE_URL = SimpleRender2Test.class.getClassLoader().getResource("tests/test2.odt");
-    private final static File TEMPLATE_FILE = new File(TEMPLATE_URL.getFile());
+    private final static File TEMPLATE_FILE = new File(requireNonNull(TEMPLATE_URL).getFile());
 
     private Process process;
     private File outputFile;

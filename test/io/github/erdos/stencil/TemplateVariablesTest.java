@@ -69,6 +69,7 @@ public class TemplateVariablesTest {
         }
     }
 
+    @SafeVarargs
     private static <T> Set<T> set(T... elems) {
         return unmodifiableSet(new HashSet<>(asList(elems)));
     }

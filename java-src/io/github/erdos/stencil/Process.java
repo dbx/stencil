@@ -6,6 +6,8 @@ import io.github.erdos.stencil.impl.LibreOfficeConverter;
 import io.github.erdos.stencil.impl.NativeEvaluator;
 import io.github.erdos.stencil.impl.NativeTemplateFactory;
 import org.jodconverter.office.OfficeManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +23,8 @@ import java.util.Optional;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Process implements TemplateFactory {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(Process.class);
 
     private final Converter converter;
     private final TemplateFactory templateFactory;
@@ -109,6 +113,19 @@ public final class Process implements TemplateFactory {
 
     @Override
     public PreparedTemplate prepareTemplateFile(File templateFile) throws IOException {
-        return templateFactory.prepareTemplateFile(templateFile);
+        long before = 0;
+        if (LOGGER.isDebugEnabled()) {
+            before = System.currentTimeMillis();
+        }
+
+        final PreparedTemplate result = templateFactory.prepareTemplateFile(templateFile);
+        LOGGER.info("Prepared template file {} at {}", templateFile, result.creationDateTime());
+
+        if (LOGGER.isDebugEnabled()) {
+            long after = System.currentTimeMillis();
+            LOGGER.debug("Template file {} took {}ms", templateFile, after - before);
+        }
+
+        return result;
     }
 }

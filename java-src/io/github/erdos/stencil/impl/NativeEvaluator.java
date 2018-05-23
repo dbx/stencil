@@ -5,14 +5,19 @@ import clojure.lang.IFn;
 import clojure.lang.Keyword;
 import io.github.erdos.stencil.*;
 import io.github.erdos.stencil.functions.FunctionEvaluator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static io.github.erdos.stencil.impl.ClojureHelper.*;
+import static io.github.erdos.stencil.impl.Logging.debugStopWatch;
 import static java.util.Collections.emptyList;
 
 /**
@@ -21,6 +26,8 @@ import static java.util.Collections.emptyList;
 public class NativeEvaluator implements Evaluator {
 
     private final FunctionEvaluator functions = new FunctionEvaluator();
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(NativeEvaluator.class);
 
     public FunctionEvaluator getFunctionEvaluator() {
         return functions;
@@ -33,10 +40,15 @@ public class NativeEvaluator implements Evaluator {
         if (data == null)
             throw new IllegalArgumentException("Template data is missing!");
 
+        final Consumer<Supplier<String>> stopwatch = debugStopWatch(LOGGER);
+        stopwatch.accept(() -> "Starting document rendering for template " + template.getName());
+
         final IFn fn = findFunction("do-eval-stream");
         final Object result = fn.invoke(makeArgsMap(template.getSecretObject(), data.getData()));
         final InputStream resultStream = resultInputStream((Map) result);
         final OutputDocumentFormats templateForm = resultTemplateFormat((Map) result);
+
+        stopwatch.accept(() -> "Rendering " + template.getName() + " took {}ms");
 
         return new EvaluatedDocument() {
             @Override

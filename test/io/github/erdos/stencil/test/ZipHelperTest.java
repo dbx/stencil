@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Objects;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ZipHelperTest {
     private final static URL TEMPLATE_URL = SimpleRender2Test.class.getClassLoader().getResource("tests/test2.odt");
-    private final static File TEMPLATE_FILE = new File(Objects.requireNonNull(TEMPLATE_URL).getFile());
+    private final static File TEMPLATE_FILE = new File(requireNonNull(TEMPLATE_URL).getFile());
 
     @Rule
     public TemporaryFolder outputDirectoryFactory = new TemporaryFolder();

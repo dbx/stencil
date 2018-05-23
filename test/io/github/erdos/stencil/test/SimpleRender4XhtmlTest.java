@@ -13,6 +13,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Checks simple function calls.
  */
@@ -20,7 +22,7 @@ import java.util.HashMap;
 public class SimpleRender4XhtmlTest {
 
     private final static URL TEMPLATE_URL = SimpleRender4XhtmlTest.class.getClassLoader().getResource("tests/3/test-table-3.xml");
-    private final static File TEMPLATE_FILE = new File(TEMPLATE_URL.getFile());
+    private final static File TEMPLATE_FILE = new File(requireNonNull(TEMPLATE_URL).getFile());
 
     private PreparedTemplate template;
     private Process process;
@@ -41,7 +43,7 @@ public class SimpleRender4XhtmlTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "unused"})
     public void test() throws IOException {
         process.renderTemplate(template, TemplateData.fromMap(new HashMap()), outputFile);
         String output = getOutputContents();

@@ -4,7 +4,6 @@ import io.github.erdos.stencil.*;
 import io.github.erdos.stencil.Process;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -16,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 public class SimpleRender3XhtmlTest {
 
     private final static URL TEMPLATE_URL = SimpleRender3XhtmlTest.class.getClassLoader().getResource("tests/2/input.xhtml");
-    private final static File TEMPLATE_FILE = new File(TEMPLATE_URL.getFile());
+    private final static File TEMPLATE_FILE = new File(requireNonNull(TEMPLATE_URL).getFile());
 
     private PreparedTemplate template;
     private Process process;
