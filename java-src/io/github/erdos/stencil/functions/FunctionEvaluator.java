@@ -12,6 +12,7 @@ public final class FunctionEvaluator {
         registerFunctions(BasicFunctions.values());
         registerFunctions(StringFunctions.values());
         registerFunctions(NumberFunctions.values());
+        registerFunctions(DateFunctions.values());
     }
 
     private void registerFunction(Function function) {
