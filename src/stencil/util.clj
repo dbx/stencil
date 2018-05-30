@@ -1,5 +1,6 @@
 (ns stencil.util
-  (:require [clojure.zip]))
+  (:require [clojure.zip])
+  (:import [io.github.erdos.stencil.exceptions EvalException ParsingException]))
 
 (set! *warn-on-reflection* true)
 
@@ -70,5 +71,11 @@
   (assert (string? msg) "Log message must be a string")
   `(when print-trace?
      (println (format ~msg ~(for [d details] `(pr-str ~d))))))
+
+(defn parsing-exception [expression message]
+  (ParsingException/fromMessage (str expression) (str message)))
+
+(defn eval-exception-missing [expression]
+  (EvalException/fromMissingValue (str expression)))
 
 :OK

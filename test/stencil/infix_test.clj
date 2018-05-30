@@ -2,7 +2,7 @@
   (:import [clojure.lang ExceptionInfo])
   (:require [stencil.infix :as infix :refer :all]
             [stencil.types :refer [hide-table-column-marker?]]
-            [clojure.test :refer [deftest testing is]]))
+            [clojure.test :refer [deftest testing is are]]))
 
 (defn- run [xs] (infix/eval-rpn {} (infix/parse xs)))
 
@@ -33,8 +33,8 @@
 
 (deftest parse-simple
   (testing "Empty"
-    (is (= [] (infix/parse nil)))
-    (is (= [] (infix/parse ""))))
+    (is (thrown? ExceptionInfo (infix/parse nil)))
+    (is (thrown? ExceptionInfo (infix/parse ""))))
 
   (testing "Simple values"
     (is (= [12] (infix/parse "  12 ") (infix/parse "12")))
@@ -173,12 +173,17 @@
     (is (= true (run "length(\"\")==0")))
     (is (= true (run "1 = length(\" \")")))))
 
+(deftest test-colhide-expr
+  (is (hide-table-column-marker? (run "hideColumn()"))))
+
 
 (deftest test-unexpected
   (is (thrown? ExceptionInfo (parse "aaaa:bbbb"))))
 
 
-(deftest test-colhide-expr
-  (is (hide-table-column-marker? (run "hideColumn()"))))
+(deftest tokenize-wrong-tokens
+  (testing "syntax errors should be thrown"
+    (are [x] (thrown? ExceptionInfo (infix/parse x))
+         "1++2" "1 2 3" "++" "1+" "+ 1" "2)(3" "(23)3" "2,3,4" ",,,,2" ",3" "+,-" "+-2" "2 3 *" "* 3 4")))
 
 :ok

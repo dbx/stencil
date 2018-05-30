@@ -22,8 +22,7 @@
          (recur (cons t stack) ts))))
    nil tokens))
 
-(defn find-first-code
-  [^String s]
+(defn find-first-code [^String s]
   (assert (string? s))
   (let [ind        (.indexOf s (str open-tag))]
     (when-not (neg? ind)

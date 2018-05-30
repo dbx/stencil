@@ -34,16 +34,13 @@
            [\& \&] :and
            [\| \|] :or})
 
-
 (def digits
   "A szam literalok igy kezdodnek"
   (set "1234567890"))
 
-
 (def identifier
   "Characters found in an identifier"
   (set "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_.1234567890"))
-
 
 (def operation-tokens
   "Operator precedences.
@@ -203,36 +200,36 @@
             (split-with #(>= (precedence %) (precedence e0)) opstack)]
         (recur next-expr
                (conj keep-ops e0)
-               (into result
-                     (remove #{:open :comma} popped-ops))
+               (into result (remove #{:open :comma} popped-ops))
                (if (= :comma e0)
-                 (update-peek functions update :args inc)
+                 (if (first functions)
+                   (update-peek functions update :args inc)
+                   (throw (ex-info "Unexpected ',' character!" {})))
                  functions))))))
 
-(def reduce-step nil)
-(defmulti ^:private reduce-step
-  (fn [x cmd]
-    (cond (string? cmd)  :string
-          (number? cmd)  :number
-          (symbol? cmd)  :symbol
-          (keyword? cmd) cmd
-          (map? cmd)     FnCall
-          :else (throw (ex-info (str "Unexpected opcode: " cmd) {:opcode cmd})))))
+(defn reduce-step-dispatch [_ cmd]
+  (cond (string? cmd)  :string
+        (number? cmd)  :number
+        (symbol? cmd)  :symbol
+        (keyword? cmd) cmd
+        (map? cmd)     FnCall
+        :else (throw (ex-info (str "Unexpected opcode: " cmd) {:opcode cmd}))))
 
+(defmulti ^:private reduce-step reduce-step-dispatch)
+(defmulti ^:private action-arity (partial reduce-step-dispatch []))
 
-;; itt rezolvalunk
-(defmethod reduce-step :symbol [stack s]
-  (let [value (get-in *calc-vars* (vec (.split (name s) "\\.")))]
-    (conj stack value)))
-
-
-(defmethod reduce-step :number [stack n] (conj stack n))
-(defmethod reduce-step :string [stack s] (conj stack s))
+(defn validate-rpn [rpn]
+  (let [steps (map #(- 1 (action-arity %)) rpn)]
+    (if (or (not-every? pos? (reductions + steps)) (not (= 1 (reduce + steps))))
+      (throw (ex-info (str "Wrong tokens, unsupported arities" rpn " " (vec steps)) {:rpn rpn}))
+      rpn)))
 
 (defmethod call-fn :default [fn-name & args-seq]
   (if-let [default-fn (::functions *calc-vars*)]
     (default-fn fn-name args-seq)
     (throw (new IllegalArgumentException (str "Unknown function: " fn-name)))))
+
+(defmethod action-arity FnCall [{:keys [args]}] args)
 
 (defmethod reduce-step FnCall [stack {:keys [fn args]}]
   (try
@@ -243,32 +240,33 @@
     (catch clojure.lang.ArityException e
       (throw (ex-info (str "Wrong arity: " (.getMessage e)) {:arity (count ops)})))))
 
-;; marks end of vararg arg count
-; (defmethod reduce-step :fncall [stack _] (conj stack :fncall))
+(defmacro def-reduce-step [cmd args body]
+  (assert (keyword? cmd))
+  (assert (every? symbol? args))
+  `(do (defmethod action-arity ~cmd [_#] ~(count args))
+       (defmethod reduce-step ~cmd [[~@args ~'& stack#] action#]
+         (let [~'+action+ action#] (conj stack# ~body)))))
 
-(defmethod reduce-step :neg [[s0 & ss] _] (conj ss (- s0)))
+(def-reduce-step :string [] +action+)
+(def-reduce-step :number [] +action+)
+(def-reduce-step :symbol [] (get-in *calc-vars* (vec (.split (name +action+) "\\."))))
 
-(defmethod reduce-step :times [[s0 s1 & ss] _] (conj ss (* s0 s1)))
-(defmethod reduce-step :divide [[s0 s1 & ss] _] (conj ss (/ s1 s0)))
-
-(defmethod reduce-step :plus [[s0 s1 & ss] _] (conj ss (+ s0 s1)))
-(defmethod reduce-step :minus [[s0 s1 & ss] _] (conj ss (- s1 s0)))
-(defmethod reduce-step :eq [[s0 s1 & ss] _] (conj ss (= s0 s1)))
-(defmethod reduce-step :or [[s0 s1 & ss] _] (conj ss (or s0 s1)))
-(defmethod reduce-step :not [[s0 & ss] _] (conj ss (not s0)))
-
-(defmethod reduce-step :and [[s0 s1 & ss] _] (conj ss (boolean (and s0 s1))))
-
-(defmethod reduce-step :neq [[s0 s1 & ss] _] (conj ss (not= s0 s1)))
-
-(defmethod reduce-step :mod [[s0 s1 & ss] _] (conj ss (mod s0 s1)))
-
-(defmethod reduce-step :lt [[s0 s1 & ss] _] (conj ss (< s1 s0)))
-(defmethod reduce-step :lte [[s0 s1 & ss] _] (conj ss (<= s1 s0)))
-(defmethod reduce-step :gt [[s0 s1 & ss] _] (conj ss (> s1 s0)))
-(defmethod reduce-step :gte [[s0 s1 & ss] _] (conj ss (>= s1 s0)))
-
-(defmethod reduce-step :power [[s0 s1 & ss] _] (conj ss (Math/pow s0 s1)))
+(def-reduce-step :neg [s0] (- s0))
+(def-reduce-step :times [s0 s1] (* s0 s1))
+(def-reduce-step :divide [s0 s1] (/ s1 s0))
+(def-reduce-step :plus [s0 s1] (+ s0 s1))
+(def-reduce-step :minus [s0 s1] (- s1 s0))
+(def-reduce-step :eq [a b] (= a b))
+(def-reduce-step :or [a b] (or a b))
+(def-reduce-step :not [b] (not b))
+(def-reduce-step :and [a b] (and a b))
+(def-reduce-step :neq [a b] (not= a b))
+(def-reduce-step :mod [s0 s1] (mod s0 s1))
+(def-reduce-step :lt [s0 s1] (< s1 s0))
+(def-reduce-step :lte [s0 s1] (<= s1 s0))
+(def-reduce-step :gt [s0 s1] (> s1 s0))
+(def-reduce-step :gte [s0 s1] (>= s1 s0))
+(def-reduce-step :power [s0 s1] (Math/pow s0 s1))
 
 (defn eval-rpn
   ([bindings default-function tokens]
@@ -278,9 +276,11 @@
    (assert (map? bindings))
    (assert (seq tokens))
    (binding [*calc-vars* bindings]
-     (first (reduce reduce-step () tokens)))))
+     (let [result (reduce reduce-step () tokens)]
+       (assert (= 1 (count result)))
+       (first result)))))
 
-(def parse (comp tokens->rpn tokenize))
+(def parse (comp validate-rpn tokens->rpn tokenize))
 
 
 :OK

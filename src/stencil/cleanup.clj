@@ -182,8 +182,10 @@
 ; (find-variables [])
 
 (defn process [raw-token-seq]
-  (let [ast (tokens->ast raw-token-seq)]
+  (let [ast (tokens->ast raw-token-seq)
+        executable (control-ast-normalize (annotate-environments ast))]
     {:variables  (find-variables ast)
-     :executable (control-ast-normalize (annotate-environments ast))}))
+     :dynamic?   (boolean (some :cmd executable))
+     :executable executable}))
 
 :OK

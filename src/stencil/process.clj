@@ -48,7 +48,9 @@
       {:zip-dir    zip-dir
        :type       :docx
        :variables  (set (mapcat :variables (vals execs)))
-       :exec-files (into {} (for [[k v] execs] [k (:executable v)]))})))
+       :exec-files (into {} (for [[k v] execs
+                                  :when (:dynamic? v)]
+                              [k (:executable v)]))})))
 
 (defn- run-executable-and-write [executable function data output-stream]
   (let [result (-> (eval/normal-control-ast->evaled-seq data function executable)
