@@ -4,6 +4,10 @@ node {
       disableConcurrentBuilds(),
       pipelineTriggers([cron('''0 6-18/3 * * *''')])])
   timeout(time: 45) {
+    stage('Checkout') {
+      checkout([$class: 'GitSCM', branches: [[name: "*/master"]], doGenerateSubmoduleConfigurations: false, userRemoteConfigs: [[credentialsId: '14733f3b-5278-42d5-b2b4-fed8e9ec2545', url: 'git@github.com:dbx/stencil.git']]])
+    }
+
     stage('Java tests') {
       sh 'lein pom'
       sh 'mvn test -Dgroups=!io.github.erdos.stencil.IntegrationTest'
