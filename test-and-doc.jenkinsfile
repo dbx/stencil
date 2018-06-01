@@ -5,10 +5,7 @@ node {
       pipelineTriggers([cron('''0 6-18/3 * * *''')])])
   timeout(time: 45) {
     stage('Checkout') {
-      checkout([$class: 'GitSCM', branches: [[name: '*/master']],
-        doGenerateSubmoduleConfigurations: false,
-        extensions: [[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: true, recursiveSubmodules: false, reference: '', trackingSubmodules: false]],
-        submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'erdos-gh', url: 'git@github.com:dbx/stencil.git']]])
+      checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[credentialsId: 'erdos-gh', url: 'git@github.com:dbx/stencil.git']]])
     }
     stage('Java tests') {
       sh 'mvn test -Dgroups=!io.github.erdos.stencil.IntegrationTest'
