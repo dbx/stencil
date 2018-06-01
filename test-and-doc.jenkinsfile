@@ -5,6 +5,7 @@ node {
       pipelineTriggers([cron('''0 6-18/3 * * *''')])])
   timeout(time: 45) {
     stage('Java tests') {
+      sh 'lein pom'
       sh 'mvn test -Dgroups=!io.github.erdos.stencil.IntegrationTest'
     }
     stage('Clojure tests') {
