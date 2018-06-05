@@ -25,7 +25,11 @@
 ;; ez a marker jeloli, hogy egy oszlopot el kell rejteni.
 (defrecord HideTableColumnMarker [])
 
+;; ez a marker jeloli, hogy egy egesz sort el kell rejteni.
+(defrecord HideTableRowMarker [])
+
 (defn hide-table-column-marker? [x] (instance? HideTableColumnMarker x))
+(defn hide-table-row-marker? [x] (instance? HideTableRowMarker x))
 
 ;; ez a marker valamilyen kesleltetett erteket jelol.
 (defrecord DelayedValueMarker [delay-object]
@@ -35,3 +39,4 @@
 (defmulti control? type)
 (defmethod control? :default [_] false)
 (defmethod control? HideTableColumnMarker [_] true)
+(defmethod control? HideTableRowMarker [_] true)

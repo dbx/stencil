@@ -1,7 +1,7 @@
 (ns stencil.tree-postprocess
   "XML fa utofeldolgozasat vegzo kod."
   (:require [clojure.zip :as zip]
-            [stencil.types :refer [hide-table-column-marker?]]
+            [stencil.types :refer :all]
             [stencil.util :refer :all]))
 
 (set! *warn-on-reflection* true)
@@ -142,7 +142,9 @@
   (let [column-indices (current-column-indices start)]
     (zip/root (map-each-rows #(remove-columns % column-indices) (find-enclosing-table start)))))
 
-;; kulonbozo fazisok
+;; TODO: handle rowspan property!
+(defn- remove-current-row [start]
+  (-> start (find-enclosing-row) (zip/remove) (zip/root)))
 
 (defn remove-columns-by-markers-1
   "Megkeresi az elso HideTableColumnMarkert es a tablazatbol a hozza tartozo
@@ -150,6 +152,14 @@
   [xml-tree]
   (if-let [marker (find-first-in-tree hide-table-column-marker? (xml-zip xml-tree))]
     (remove-current-column marker)
+    xml-tree))
+
+(defn remove-rows-by-markers-1
+  "Megkeresi az elso HideTableRowMarkert es a tablazatbol a hozza tartozo
+   sort kitorli. Visszaadja az XML fat."
+  [xml-tree]
+  (if-let [marker (find-first-in-tree hide-table-row-marker? (xml-zip xml-tree))]
+    (remove-current-row marker)
     xml-tree))
 
 (def ooxml-w :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w)
@@ -189,8 +199,11 @@
 
 (defn postprocess [xml-tree]
   (->> xml-tree
+       (deref-delayed-values)
        (fixpt remove-table-thin-columns-1)
        (fixpt remove-columns-by-markers-1)
+       (fixpt remove-rows-by-markers-1)
        (fixpt remove-empty-table-rows-1)
-       (fixpt remove-empty-tables-1)
-       (deref-delayed-values)))
+       (fixpt remove-empty-tables-1)))
+
+:ok

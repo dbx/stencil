@@ -117,7 +117,6 @@
 
   :ok)
 
-
 (deftest negativ-szamok
   (is (= -123 (run " -123")))
   (is (= -6 (run "-3*2")))
@@ -125,17 +124,6 @@
   (is (= -6 (run "2*(-3)")))
   (testing "a minusz jel precedenciaja nagyon magas"
     (is (= 20 (run "10/-1*-2 ")))))
-
-
-(deftest str-function
-  (testing "Simple str() vararg fn call"
-    (is (= "" (run "str()")))
-    (is (= "3" (run "str(1+2)")))
-    (is (= "34" (run "str(3,4)")))
-    (is (= "12345" (run "str(1, (2), (str(3,4)), str((5)))")))
-    (is (= "1234" (run "str(1, str(2,1+1+1), 2*2)")))
-    (is (= true (run "\"123\" == str(1,2,3)")))))
-
 
 (deftest range-function
   (testing "Wrong arity calls"
@@ -148,23 +136,6 @@
     (is (= [0 1 2 3 4] (run "range(5)")))
     (is (= [1 2 3 4] (run "range (1,5)")))
     (is (= [1 3 5] (run "range( 1, 6, 2)")))))
-
-
-(deftest coalesce-function
-  (testing "fn to filter first non-empty value"
-    (is (= nil (run "coalesce()")))
-    (is (= nil (run "coalesce(x)")))
-    (is (= "a" (run "coalesce(_,\"a\",\"b\")")))))
-
-
-(deftest format-function
-  (testing "Simple cases"
-    (is (= "0x3f" (run "format(\"0x%x\", 63)"))))
-  (testing "Illegal args"
-    (is (thrown? ExceptionInfo (run "format()")))
-    (is (thrown? ExceptionInfo (run "format(\"9%3gh\")")))
-    (is (thrown? ExceptionInfo (run "format(\"%\")")))))
-
 
 (deftest length-function
   (testing "Simple cases"
