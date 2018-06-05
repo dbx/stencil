@@ -23,7 +23,14 @@
 ;; egyedi parancs objektumok
 
 ;; ez a marker jeloli, hogy egy oszlopot el kell rejteni.
-(defrecord HideTableColumnMarker [])
+(defrecord HideTableColumnMarker [columns-resize])
+
+(def column-resize-modes #{:resize-last :rational :cut})
+
+(defn ->HideTableColumnMarker
+  ([] (HideTableColumnMarker. :resize-last))
+  ([x] (assert (column-resize-modes x))
+       (HideTableColumnMarker. x)))
 
 ;; ez a marker jeloli, hogy egy egesz sort el kell rejteni.
 (defrecord HideTableRowMarker [])

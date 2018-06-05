@@ -2,7 +2,9 @@
   (:require [clojure.zip :as zip]
             [stencil.types :refer :all]
             [clojure.test :refer [deftest is are testing]]
-            [stencil.tree-postprocess :refer :all]))
+            [stencil.util :refer [xml-zip]]
+            [stencil.tree-postprocess :refer :all]
+            [stencil.postprocess.table :refer :all]))
 
 (defn- table [& contents] {:tag "tbl" :content (vec contents)})
 (defn- cell [& contents] {:tag "tc" :content (vec contents)})
@@ -93,3 +95,72 @@
                        {:tag :gridCol :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w "3000"}}]}
             (row (cell "X1") (cell "X2") (cell "X3"))
             (row (cell "Y1") (cell "Y2") (cell "Y3"))))))))
+
+;; TODO: ennek az egesz tablaatot is at kellene mereteznie!!!!
+(deftest test-column-cut
+  (testing "We hide second column and expect cells to KEEP size"
+    (is (= (table (row (cell-of-width 1 "X1") (cell-of-width 2 "X3"))
+                  (row (cell-of-width 1 "Y1") (cell-of-width 2 "Y3")))
+           (postprocess
+             (table (row (cell-of-width 1 "X1") (cell-of-width 3 "X2" (->HideTableColumnMarker :cut)) (cell-of-width 2 "X3"))
+                    (row (cell-of-width 1 "Y1") (cell-of-width 3 "Y2") (cell-of-width 2 "Y3"))))))))
+
+(deftest resize-cut
+  (is (=
+        (table
+          {:tag :tblGrid,
+           :content [{:tag :gridCol, :attrs {ooxml-w "1000"}}
+                      {:tag :gridCol, :attrs {ooxml-w "2000"}}
+                       (row) (row) (row)]})
+         (zip/node
+         (table-resize-widths
+           (xml-zip (table {:tag :tblGrid
+                            :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
+                                       {:tag :gridCol :attrs {ooxml-w "2000"}}
+                                       {:tag :gridCol :attrs {ooxml-w "2500"}}
+                                       {:tag :gridCol :attrs {ooxml-w "500"}}
+                                       (row)
+                                       (row)
+                                       (row)]}))
+           :cut
+           #{2 3})))))
+
+
+(deftest resize-last
+  (is (=
+        (table
+          {:tag :tblGrid,
+           :content [{:tag :gridCol, :attrs {ooxml-w "1000"}}
+                      {:tag :gridCol, :attrs {ooxml-w "5000"}}]}
+          (row) (row) (row))
+        (zip/node
+          (table-resize-widths
+            (xml-zip (table {:tag :tblGrid
+                             :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
+                                        {:tag :gridCol :attrs {ooxml-w "2000"}}
+                                        {:tag :gridCol :attrs {ooxml-w "2500"}}
+                                        {:tag :gridCol :attrs {ooxml-w "500"}}]}
+                            (row) (row) (row)))
+            :resize-last
+            #{2 3})))))
+
+
+(deftest resize-rational
+  (is (=
+        (table
+          {:tag :tblGrid,
+           :content [{:tag :gridCol, :attrs {ooxml-w "2000"}}
+                     {:tag :gridCol, :attrs {ooxml-w "4000"}}]}
+          (row) (row) (row))
+        (zip/node
+          (table-resize-widths
+            (xml-zip (table {:tag :tblGrid
+                             :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
+                                       {:tag :gridCol :attrs {ooxml-w "2000"}}
+                                       {:tag :gridCol :attrs {ooxml-w "2500"}}
+                                       {:tag :gridCol :attrs {ooxml-w "500"}}]}
+                            (row) (row) (row)))
+            :rational
+            #{2 3})))))
+
+:OK
