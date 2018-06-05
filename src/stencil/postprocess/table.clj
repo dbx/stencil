@@ -145,12 +145,24 @@
 (defn remove-children-at-indices [loc indices]
   (assert (zipper? loc))
   (assert (set? indices))
-  #_(zip/replace loc
-               (update (zip/node loc)
-                       :content
-                       (partial keep-indexed (fn [idx child] (when-not (contains? indices idx) child)))))
   (zip/edit loc update :content
             (partial keep-indexed (fn [idx child] (when-not (contains? indices idx) child)))))
+
+(defn calc-column-widths [original-widths expected-total strategy]
+  (assert (seq original-widths))
+  (assert (number? expected-total))
+  (case strategy
+    :cut
+    (do ; (assert (= expected-total (reduce + original-widths)))
+        original-widths)
+
+    :rational
+    (let [original-total (reduce + original-widths)]
+      (for [w original-widths] (* expected-total (/ w original-total))))
+
+    :resize-last
+    (concat (butlast original-widths)
+            [(reduce - expected-total (butlast original-widths))])))
 
 (defn table-resize-widths
   ;;  eltavolitja az erintett grid itemeket. atmeretezi a maradekot.
@@ -168,9 +180,18 @@
                                (keep (comp ->int ooxml-w :attrs))
                                (reduce +)))
 
+        ;; not used yet
+        fix-row-widths  (fn [expected-width row] nil)
+
         ;; a tablazat full szelesseget megjavitja
         ;; ? tovabba az cellak egyedi szelessegeit is hozzaigazitja?
-        fix-table-width (fn [table-loc] table-loc)]
+        fix-table-width (fn [expected-width table-loc]
+                          (assert (number? expected-width))
+                          (assert (zipper? table-loc))
+                          (-> (some->> table-loc (child-of-tag "tblPr" ) (child-of-tag "tblW"))
+                              (some-> (zip/edit assoc-in [:attrs ooxml-w] (str expected-width))
+                                      (find-enclosing-table))
+                              (or table-loc)))]
     (assert table-loc)
     (if-let [grid-loc (find-grid-loc table-loc)]
       (let [result-table (find-enclosing-table (remove-children-at-indices grid-loc removed-column-indices))
@@ -179,7 +200,7 @@
         (case column-resize-strategy
           ;; TODO: csak a tabla full szelesseget kene modositani!
           :cut
-          (fix-table-width result-table)
+          (fix-table-width after-width result-table)
 
           ;; mindegyik grid elemet aranyosan atmeretezunk
           :rational
@@ -187,14 +208,14 @@
                (map-children (fn [grid-col]
                                (update-in grid-col [:attrs ooxml-w] (fn [w] (str (int (* (/ (double (->int w)) after-width) before-width)))))))
                (find-enclosing-table)
-               (fix-table-width))
+               (fix-table-width before-width))
 
           ;; ha cut, akkor a grid elemek kozul az utolso szelesseget jol megnoveljuk.
           :resize-last
           (-> (zip/rightmost (zip/down (find-grid-loc result-table)))
               (zip/edit update-in [:attrs ooxml-w] (fn [w] (str (+ (->int w) (- before-width after-width)))))
               (find-enclosing-table)
-              (fix-table-width))))
+              (->> (fix-table-width before-width)))))
 
       table-loc)))
 

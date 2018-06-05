@@ -148,13 +148,17 @@
 (deftest resize-rational
   (is (=
         (table
+          {:tag :tblPr :content [{:tag :tblW, :attrs {ooxml-w "6000"}}]}
           {:tag :tblGrid,
            :content [{:tag :gridCol, :attrs {ooxml-w "2000"}}
                      {:tag :gridCol, :attrs {ooxml-w "4000"}}]}
           (row) (row) (row))
         (zip/node
           (table-resize-widths
-            (xml-zip (table {:tag :tblGrid
+            (xml-zip (table {:tag :tblPr
+                             :content [{:tag :tblW :attrs {ooxml-w "?"}}]}
+
+                            {:tag :tblGrid
                              :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
                                        {:tag :gridCol :attrs {ooxml-w "2000"}}
                                        {:tag :gridCol :attrs {ooxml-w "2500"}}
