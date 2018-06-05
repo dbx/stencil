@@ -136,11 +136,13 @@
 (defn- map-each-rows [f table]
   (assert (fn? f))
   (assert (loc-table? table))
-  (loop [current-row (find-closest-row-right (zip/down table))]
-    (let [fixed-row (f current-row)]
-      (if-let [next-row (some-> fixed-row zip/right find-closest-row-right)]
-        (recur next-row)
-        (find-enclosing-table fixed-row)))))
+  (if-let [first-row (find-closest-row-right (zip/down table))]
+    (loop [current-row first-row]
+      (let [fixed-row (f current-row)]
+        (if-let [next-row (some-> fixed-row zip/right find-closest-row-right)]
+          (recur next-row)
+          (find-enclosing-table fixed-row))))
+    table))
 
 (defn remove-children-at-indices [loc indices]
   (assert (zipper? loc))
@@ -180,45 +182,31 @@
                                (keep (comp ->int ooxml-w :attrs))
                                (reduce +)))
 
-        ;; not used yet
-        fix-row-widths  (fn [expected-width row] nil)
+        ;; egy sor cellainak az egyedi szelesseget is beleirja magatol
+        fix-row-widths  (fn [expected-width row] row)
+        fix-table-cells-widths (fn [table-loc] (assert (zipper? table-loc))
+                                               (map-each-rows (partial fix-row-widths (total-width table-loc)) table-loc))
 
-        ;; a tablazat full szelesseget megjavitja
-        ;; ? tovabba az cellak egyedi szelessegeit is hozzaigazitja?
-        fix-table-width (fn [expected-width table-loc]
-                          (assert (number? expected-width))
+        ;; a tablazat teljes szelesseget beleirja a grid szelessegek szummajakent
+        fix-table-width (fn [table-loc]
                           (assert (zipper? table-loc))
                           (-> (some->> table-loc (child-of-tag "tblPr" ) (child-of-tag "tblW"))
-                              (some-> (zip/edit assoc-in [:attrs ooxml-w] (str expected-width))
+                              (some-> (zip/edit assoc-in [:attrs ooxml-w] (str (total-width table-loc)))
                                       (find-enclosing-table))
                               (or table-loc)))]
     (assert table-loc)
     (if-let [grid-loc (find-grid-loc table-loc)]
       (let [result-table (find-enclosing-table (remove-children-at-indices grid-loc removed-column-indices))
             before-width (total-width grid-loc)
-            after-width  (total-width result-table)]
-        (case column-resize-strategy
-          ;; TODO: csak a tabla full szelesseget kene modositani!
-          :cut
-          (fix-table-width after-width result-table)
-
-          ;; mindegyik grid elemet aranyosan atmeretezunk
-          :rational
-          (->> (find-grid-loc result-table)
-               (map-children (fn [grid-col]
-                               (update-in grid-col [:attrs ooxml-w] (fn [w] (str (int (* (/ (double (->int w)) after-width) before-width)))))))
-               (find-enclosing-table)
-               (fix-table-width before-width))
-
-          ;; ha cut, akkor a grid elemek kozul az utolso szelesseget jol megnoveljuk.
-          :resize-last
-          (-> (zip/rightmost (zip/down (find-grid-loc result-table)))
-              (zip/edit update-in [:attrs ooxml-w] (fn [w] (str (+ (->int w) (- before-width after-width)))))
-              (find-enclosing-table)
-              (->> (fix-table-width before-width)))))
-
+            new-widths (calc-column-widths (->> result-table find-grid-loc zip/children (keep (comp ->int ooxml-w :attrs)))
+                                           before-width column-resize-strategy)]
+            (-> (find-grid-loc result-table)
+                (zip/edit update :content (partial map (fn [w cell] (assoc-in cell [:attrs ooxml-w] (str (int w)))) new-widths))
+                (find-enclosing-table)
+                (fix-table-width)
+                (fix-table-cells-widths)))
       table-loc)))
-
+ 
 (defn- remove-current-column
   "A jelenlegi csomoponthoz tartozo oszlopot eltavolitja a tablazatbol.
    Visszater a gyoker elemmel."
