@@ -243,8 +243,10 @@
   [start column-resize-strategy]
   (let [column-indices (current-column-indices start)
         table          (find-enclosing-table start)]
-    ;; TODO: a table szelesseget modosithatjuk is!
-    (zip/root (map-each-rows #(remove-columns % column-indices column-resize-strategy) table))))
+(-> (map-each-rows #(remove-columns % column-indices column-resize-strategy) table)
+    (find-enclosing-table)
+    (table-resize-widths column-resize-strategy column-indices)
+    (zip/root))))
 
 ;; TODO: handle rowspan property!
 (defn- remove-current-row [start]

@@ -28,7 +28,7 @@
 (def column-resize-modes #{:resize-last :rational :cut})
 
 (defn ->HideTableColumnMarker
-  ([] (HideTableColumnMarker. :resize-last))
+  ([] (HideTableColumnMarker. :cut))
   ([x] (assert (column-resize-modes x))
        (HideTableColumnMarker. x)))
 

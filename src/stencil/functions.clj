@@ -17,7 +17,12 @@
 
 (defmethod call-fn "length" [_ items] (count items))
 
-(defmethod call-fn "hideColumn" [_] (->HideTableColumnMarker))
+(defmethod call-fn "hideColumn" [_ & args]
+  (case (first args)
+    ("cut") (->HideTableColumnMarker :cut)
+    ("resize-last" "resizeLast" "resize_last") (->HideTableColumnMarker :resize-last)
+    ("rational")                 (->HideTableColumnMarker :rational)
+    ;; defeault
+    (->HideTableColumnMarker)))
 
 (defmethod call-fn "hideRow" [_] (->HideTableRowMarker))
-
