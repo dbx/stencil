@@ -163,4 +163,38 @@
             :rational
             #{2 3}))))))
 
+
+(deftest test-column-hiding-border-right
+  (let [border-1 {:tag "tcPr" :content [{:tag "tcBorders" :content [{:tag "right" :attrs {:a 1}}]}]}
+        border-2 {:tag "tcPr" :content [{:tag "tcBorders" :content [{:tag "right" :attrs {:a 2}}]}]}]
+  (testing "Second column is being hidden here."
+    (is (=  (into-hiccup (table (row (cell border-1 "ALMA"))
+                                (row (cell border-2 "NARANCS"))))
+            (into-hiccup (postprocess (table (row (cell "ALMA") (cell border-1 (->HideTableColumnMarker) "KORTE"))
+                                             (row (cell "NARANCS") (cell border-2 "BARACK"))))))))))
+
+
+(deftest resize-rational-2
+  (is (= '(nil {:attrs {:x 1}, :tag :right})
+         (get-right-borders (xml-zip (table (tbl-grid "1000" "2000" "2500" "500")
+                              (row (cell "a") (cell-of-width 1 "b"))
+                              (row (cell "v") (cell {:tag :tcPr :content [{:tag :tcBorders :content [{:tag :right :attrs {:x 1}}]}]} "dsf"))))))))
+
+#_
+(deftest map-each-rows-test
+  (is (= 1
+    (zip/node (map-each-rows (fn [row x] (zip/edit row assoc :a x))
+                             (xml-zip (table {:tag :elefant} (row "a") "3" (row "b") (row "c")))
+                             (range)
+                             )))))
+#_
+(deftest map-each-rows-test-2
+ (is (= 1
+   (zip/node (map-each-rows (fn [row x] (zip/edit row assoc :a x))
+                            (xml-zip {:tag "tbl", :content [{:tag "tr", :content [{:tag "tc", :content ["x1"]}]} {:tag "tr", :content [{:tag "tc", :content ["d1"]}]}]})
+                            (range)
+                            )))))
+
+
+
 :OK

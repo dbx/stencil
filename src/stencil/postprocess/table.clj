@@ -18,6 +18,11 @@
   (assert (fn? pred))
   (find-first (comp pred zip/node) (take-while (complement zip/end?) (iterate zip/next tree))))
 
+(defn- find-last-child [pred tree]
+  (assert (zipper? tree))
+  (assert (fn? pred))
+  (last (filter (comp pred zip/node) (take-while some? (iterate zip/right (zip/down tree))))))
+
 (defn- first-right-sibling
   "Megkeresi az elso aktualis poziciotol jobbra eso helyet, amire teljesul a feltetel."
   [pred loc] (find-first pred (iterations zip/right loc)))
@@ -139,14 +144,15 @@
   (assert (zipper? loc))
   (zip/edit loc update :content (partial map f)))
 
-(defn- map-each-rows [f table]
+(defn map-each-rows [f table & colls]
   (assert (fn? f))
   (assert (loc-table? table))
   (if-let [first-row (find-closest-row-right (zip/down table))]
-    (loop [current-row first-row]
-      (let [fixed-row (f current-row)]
+    (loop [current-row first-row
+           colls       colls]
+      (let [fixed-row (apply f current-row (map first colls))]
         (if-let [next-row (some-> fixed-row zip/right find-closest-row-right)]
-          (recur next-row)
+          (recur next-row (map next colls))
           (find-enclosing-table fixed-row))))
     table))
 
@@ -237,16 +243,36 @@
                 (fix-table-cells-widths new-widths)))
       table-loc)))
 
+;; visszaadja soronkent a jobboldali margo objektumot
+(defn get-right-borders [original-start-loc]
+  (for [row   (zip/children (find-enclosing-table original-start-loc))
+        :when (and (map? row) (#{"tr"} (name (:tag row))))
+        :let  [last-of-tag (fn [tag xs] (last (filter  #(and (map? %) (some-> % :tag name #{tag})) (:content xs))))]]
+    (some->> row (last-of-tag "tc") (last-of-tag "tcPr") (last-of-tag "tcBorders") (last-of-tag "right"))))
+
 (defn- remove-current-column
   "A jelenlegi csomoponthoz tartozo oszlopot eltavolitja a tablazatbol.
    Visszater a gyoker elemmel."
-  [start column-resize-strategy]
-  (let [column-indices (current-column-indices start)
-        table          (find-enclosing-table start)]
-(-> (map-each-rows #(remove-columns % column-indices column-resize-strategy) table)
-    (find-enclosing-table)
-    (table-resize-widths column-resize-strategy column-indices)
-    (zip/root))))
+  [start-loc column-resize-strategy]
+  (let [column-indices (current-column-indices start-loc)
+        table          (find-enclosing-table start-loc)
+        right-borders  (get-right-borders table)
+        column-last?   (nil? (find-closest-cell-right (zip/right (find-enclosing-cell start-loc))))
+        row-set-border (fn [row border]
+                         (if border
+                           (-> (find-last-child #(and (map? %) (some-> % :tag name #{"tc"})) row)
+                               (->> (ensure-child "tcPr") (ensure-child "tcBorders") (ensure-child "right"))
+                               (zip/replace border)
+                               (find-enclosing-row))
+                           row))]
+    (-> (map-each-rows #(remove-columns % column-indices column-resize-strategy) table)
+        (find-enclosing-table)
+        (table-resize-widths column-resize-strategy column-indices)
+        ((fn [table]
+           (if column-last?
+             (map-each-rows row-set-border (find-enclosing-table table) right-borders)
+             table)))
+         (zip/root))))
 
 ;; TODO: handle rowspan property!
 (defn- remove-current-row [start]
@@ -269,6 +295,7 @@
     (remove-current-row marker)
     xml-tree))
 
+;; az ennel keskenyebb oszlopokat kidobjuk!
 (def min-col-width 20)
 
 (defn remove-table-thin-columns-1
