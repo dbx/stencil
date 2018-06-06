@@ -25,7 +25,9 @@ For example, when you want to hide a row, see the following:
 
 ### Hiding rows
 
-To hide rows is very similar to the previous example.
+You can use multiple strategies to hide rows. First is to put the parts of the conditional before/after the row to be hidden.
+
+The second way is to embed a `{%=hideRow()%}` marker to the row you want to hide.
 
 ## Dynamic columns
 
@@ -43,6 +45,14 @@ The following example will hide the second column if the `price_hidden` property
 | ----- | ------ |
 |  Tennis ball | $12 |
 |  Basket ball | $123 |
+
+When you hide a column the table's dimensions need to be re-aligned. You can specify strategies to control how the columns will be sized after the column is hidden.
+
+- *Cutting out the column:* `{%=hideColumn('cut')%}` will remove a column and decrease the size of the table by the width of the removed column.
+- *Resizing the last column* `{%=hideColumn('resize-last')%}` will resize the last column in each rows so that the total width of the table is unchanged.
+- *Keeping proportions* `{%=hideColumn('rational')%}` will resize every column in a way that the ratios of their widths and the total width of the table is unchanged.
+
+Default behaviour is `cut`.
 
 ### Repeating columns
 
