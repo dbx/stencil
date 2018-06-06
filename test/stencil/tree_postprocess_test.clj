@@ -10,7 +10,20 @@
 (defn- cell [& contents] {:tag "tc" :content (vec contents)})
 (defn- row [& contents] {:tag "tr" :content (vec contents)})
 (defn- cell-of-width [width & contents]
+  (assert (integer? width))
   {:tag "tc" :content (vec (list* {:tag "tcPr" :content [{:tag "gridSpan" :attrs {:xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/val (str width)}}]} contents))})
+
+(defn tbl-grid [& vals]
+  {:tag :tblGrid, :content (for [v vals] {:tag :gridCol :attrs {ooxml-w (str v)}})})
+
+(defn cell-width
+  ([w] {:tag :tcPr, :content [{:tag :tcW :attrs {ooxml-val (str w)}}]})
+  ([span w] {:tag :tcPr, :content [{:tag :tcW :attrs {ooxml-w (str w)}}
+                                   {:tag :gridSpan :attrs {ooxml-val (str span)}}]}))
+
+
+(defn into-hiccup [c] (if (map? c) (vec (list* (keyword (name (:tag c))) (into {} (:attrs c)) (map into-hiccup (:content c)))) c))
+
 
 (deftest test-row-hiding-simple
   (testing "Second row is being hidden here."
@@ -113,12 +126,7 @@
                (row) (row) (row))
          (zip/node
          (table-resize-widths
-           (xml-zip (table {:tag :tblGrid
-                            :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
-                                       {:tag :gridCol :attrs {ooxml-w "2000"}}
-                                       {:tag :gridCol :attrs {ooxml-w "2500"}}
-                                       {:tag :gridCol :attrs {ooxml-w "500"}}]}
-                           (row) (row) (row)))
+           (xml-zip (table (tbl-grid 1000 2000 2600 500) (row) (row) (row)))
            :cut
            #{2 3})))))
 
@@ -132,36 +140,27 @@
           (row) (row) (row))
         (zip/node
           (table-resize-widths
-            (xml-zip (table {:tag :tblGrid
-                             :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
-                                        {:tag :gridCol :attrs {ooxml-w "2000"}}
-                                        {:tag :gridCol :attrs {ooxml-w "2500"}}
-                                        {:tag :gridCol :attrs {ooxml-w "500"}}]}
-                            (row) (row) (row)))
+            (xml-zip (table (tbl-grid 1000 2000 2500 500) (row) (row) (row)))
             :resize-last
             #{2 3})))))
 
-
 (deftest resize-rational
   (is (=
-        (table
-          {:tag :tblPr :content [{:tag :tblW, :attrs {ooxml-w "6000"}}]}
-          {:tag :tblGrid,
-           :content [{:tag :gridCol, :attrs {ooxml-w "2000"}}
-                     {:tag :gridCol, :attrs {ooxml-w "4000"}}]}
-          (row) (row) (row))
-        (zip/node
+        (into-hiccup (table {:tag :tblPr :content [{:tag :tblW, :attrs {ooxml-w "6000"}}]}
+               (tbl-grid 2000 4000)
+               (row (cell (cell-width 1 2000) "a")
+                    (cell (cell-width 1 4000) "b"))
+               (row (cell (cell-width 2 6000) "ab"))
+               ))
+        (into-hiccup (zip/node
           (table-resize-widths
             (xml-zip (table {:tag :tblPr
                              :content [{:tag :tblW :attrs {ooxml-w "?"}}]}
-
-                            {:tag :tblGrid
-                             :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
-                                       {:tag :gridCol :attrs {ooxml-w "2000"}}
-                                       {:tag :gridCol :attrs {ooxml-w "2500"}}
-                                       {:tag :gridCol :attrs {ooxml-w "500"}}]}
-                            (row) (row) (row)))
+                            (tbl-grid "1000" "2000" "2500" "500")
+                            (row (cell-of-width 1 "a") (cell-of-width 1 "b"))
+                            (row (cell-of-width 2 "ab"))
+                            ))
             :rational
-            #{2 3})))))
+            #{2 3}))))))
 
 :OK

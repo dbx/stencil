@@ -46,6 +46,12 @@
   (assert (zipper? loc))
   (find-first (comp pred zip/node) (take-while some? (iterations zip/right (zip/down loc)))))
 
+(defn- ensure-child [tag-name loc]
+  (assert string? tag-name)
+  (assert (zipper? loc))
+  (or (find-first-child #(and (map? %) (#{tag-name} (name (:tag %)))) loc)
+      (zip/next (zip/insert-child loc {:tag (keyword tag-name) :content []}))))
+
 ;; finds first child with given tag name
 (defn- child-of-tag [tag-name loc]
   (assert (zipper? loc))
@@ -166,14 +172,23 @@
     (concat (butlast original-widths)
             [(reduce - expected-total (butlast original-widths))])))
 
+(defn map-children-filtered [filter-fn map-fn loc & args]
+  (zip/edit loc update :content
+    (fn [content]
+      (loop [out [], content content, args args]
+         (if-let [[head tail] (seq content)]
+           (if (filter-fn head)
+              (recur (conj out (apply map-fn head (map first args))) (next content) (map next args))
+              (recur (conj out head) (next content) args))
+           out)))))
+
 (defn table-resize-widths
-  ;;  eltavolitja az erintett grid itemeket. atmeretezi a maradekot.
+  "Elavolitja a table grid-bol anem haznalatos oszlopokat."
   [table-loc column-resize-strategy removed-column-indices]
-  (assert (zipper? table-loc))
+  (assert (loc-table? table-loc))
   (assert (keyword? column-resize-strategy))
   (assert (set? removed-column-indices))
-  (let [table-loc (find-enclosing-table table-loc)
-        find-grid-loc (fn [loc] (find-first-in-tree (every-pred map? #(some-> % :tag name (#{"tblGrid"}))) loc))
+  (let [find-grid-loc (fn [loc] (find-first-in-tree (every-pred map? #(some-> % :tag name (#{"tblGrid"}))) loc))
         total-width (fn [table-loc]
                       (assert (zipper? table-loc))
                       (some->> table-loc
@@ -183,9 +198,24 @@
                                (reduce +)))
 
         ;; egy sor cellainak az egyedi szelesseget is beleirja magatol
-        fix-row-widths  (fn [expected-width row] row)
-        fix-table-cells-widths (fn [table-loc] (assert (zipper? table-loc))
-                                               (map-each-rows (partial fix-row-widths (total-width table-loc)) table-loc))
+        fix-row-widths (fn [grid-widths row]
+          (assert (zipper? row))
+          (assert (every? number? grid-widths))
+          (loop [cell (some-> row zip/down find-closest-cell-right)
+                 parent row
+                 grid-widths grid-widths]
+            (if-not cell
+              parent
+              (-> (->> cell (ensure-child "tcPr") (ensure-child "tcW"))
+                  (zip/edit assoc-in [:attrs ooxml-w] (str (reduce + (take (cell-width cell) grid-widths))))
+                  (zip/up) (zip/up)
+                  (as-> * (recur (some-> * zip/right find-closest-cell-right)
+                                 (zip/up *) (drop (cell-width cell) grid-widths)))))))
+
+        fix-table-cells-widths (fn [table-loc grid-widths]
+                                 (assert (sequential? grid-widths))
+                                 (assert (loc-table? table-loc))
+                                 (map-each-rows (partial fix-row-widths grid-widths) table-loc))
 
         ;; a tablazat teljes szelesseget beleirja a grid szelessegek szummajakent
         fix-table-width (fn [table-loc]
@@ -204,9 +234,9 @@
                 (zip/edit update :content (partial map (fn [w cell] (assoc-in cell [:attrs ooxml-w] (str (int w)))) new-widths))
                 (find-enclosing-table)
                 (fix-table-width)
-                (fix-table-cells-widths)))
+                (fix-table-cells-widths new-widths)))
       table-loc)))
- 
+
 (defn- remove-current-column
   "A jelenlegi csomoponthoz tartozo oszlopot eltavolitja a tablazatbol.
    Visszater a gyoker elemmel."

@@ -51,6 +51,7 @@
 (def xml-zip
   "Like clojure.zip/xml-zip but more flexible."
   ;; TODO: milyen modon jobb???
+  ;; ha a content tomb ures akkor sem leaf node.
   (partial clojure.zip/zipper
            map?
            (comp seq :content)
