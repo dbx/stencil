@@ -107,21 +107,18 @@
 
 (deftest resize-cut
   (is (=
-        (table
-          {:tag :tblGrid,
-           :content [{:tag :gridCol, :attrs {ooxml-w "1000"}}
-                      {:tag :gridCol, :attrs {ooxml-w "2000"}}
-                       (row) (row) (row)]})
+        (table {:tag :tblGrid,
+                :content [{:tag :gridCol, :attrs {ooxml-w "1000"}}
+                          {:tag :gridCol, :attrs {ooxml-w "2000"}}]}
+               (row) (row) (row))
          (zip/node
          (table-resize-widths
            (xml-zip (table {:tag :tblGrid
                             :content [{:tag :gridCol :attrs {ooxml-w "1000"}}
                                        {:tag :gridCol :attrs {ooxml-w "2000"}}
                                        {:tag :gridCol :attrs {ooxml-w "2500"}}
-                                       {:tag :gridCol :attrs {ooxml-w "500"}}
-                                       (row)
-                                       (row)
-                                       (row)]}))
+                                       {:tag :gridCol :attrs {ooxml-w "500"}}]}
+                           (row) (row) (row)))
            :cut
            #{2 3})))))
 
