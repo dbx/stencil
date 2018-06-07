@@ -10,21 +10,6 @@
 
 (defmethod eval-step :default [_ _ item] [item])
 
-;; ha ez egy kep, aminek attributumai vannak
-
-#_(defmethod eval-step [:tag :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/drawing] [fun data item]
-    (if-let [name-tag (some-> item (find-first :name) str .trim)]
-      ;; ha a name fuggvenyhivasnak nez ki, akkor megprobaljuk vegrehajtani.
-      ;; a generalt dokumentumba binariskent betesszuk a letrehozott kepfajlt
-      ;; tovabba
-
-      ;; ha a name egy barcode(x) tipusu, akkor harapunk.
-      (let [uuid (str (java.util.UUID/randomUUID))]
-        - a barcode erteket be kell helyettesiteni a name helyere.
-        -
-        )
-      [item]))
-
 (defmethod eval-step :if [function data item]
   (let [condition (eval-rpn data  function (:condition item))]
     (trace "Condition %s evaluated to %s" (:condition item) condition)

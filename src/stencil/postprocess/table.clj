@@ -6,6 +6,10 @@
 
 (set! *warn-on-reflection* true)
 
+
+;; az ennel keskenyebb oszlopokat kidobjuk!
+(def min-col-width 20)
+
 (def ooxml-val :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/val)
 (def ooxml-w :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fwordprocessingml%2F2006%2Fmain/w)
 
@@ -205,18 +209,18 @@
 
         ;; egy sor cellainak az egyedi szelesseget is beleirja magatol
         fix-row-widths (fn [grid-widths row]
-          (assert (zipper? row))
-          (assert (every? number? grid-widths))
-          (loop [cell (some-> row zip/down find-closest-cell-right)
-                 parent row
-                 grid-widths grid-widths]
-            (if-not cell
-              parent
-              (-> (->> cell (ensure-child "tcPr") (ensure-child "tcW"))
-                  (zip/edit assoc-in [:attrs ooxml-w] (str (reduce + (take (cell-width cell) grid-widths))))
-                  (zip/up) (zip/up)
-                  (as-> * (recur (some-> * zip/right find-closest-cell-right)
-                                 (zip/up *) (drop (cell-width cell) grid-widths)))))))
+                        (assert (zipper? row))
+                        (assert (every? number? grid-widths))
+                        (loop [cell (some-> row zip/down find-closest-cell-right)
+                               parent row
+                               grid-widths grid-widths]
+                          (if-not cell
+                            parent
+                            (-> (->> cell (ensure-child "tcPr") (ensure-child "tcW"))
+                                (zip/edit assoc-in [:attrs ooxml-w] (str (reduce + (take (cell-width cell) grid-widths))))
+                                (zip/up) (zip/up)
+                                (as-> * (recur (some-> * zip/right find-closest-cell-right)
+                                               (zip/up *) (drop (cell-width cell) grid-widths)))))))
 
         fix-table-cells-widths (fn [table-loc grid-widths]
                                  (assert (sequential? grid-widths))
@@ -230,17 +234,16 @@
                               (some-> (zip/edit assoc-in [:attrs ooxml-w] (str (total-width table-loc)))
                                       (find-enclosing-table))
                               (or table-loc)))]
-    (assert table-loc)
     (if-let [grid-loc (find-grid-loc table-loc)]
       (let [result-table (find-enclosing-table (remove-children-at-indices grid-loc removed-column-indices))
             before-width (total-width grid-loc)
             new-widths (calc-column-widths (->> result-table find-grid-loc zip/children (keep (comp ->int ooxml-w :attrs)))
                                            before-width column-resize-strategy)]
-            (-> (find-grid-loc result-table)
-                (zip/edit update :content (partial map (fn [w cell] (assoc-in cell [:attrs ooxml-w] (str (int w)))) new-widths))
-                (find-enclosing-table)
-                (fix-table-width)
-                (fix-table-cells-widths new-widths)))
+        (-> (find-grid-loc result-table)
+            (zip/edit update :content (partial map (fn [w cell] (assoc-in cell [:attrs ooxml-w] (str (int w)))) new-widths))
+            (find-enclosing-table)
+            (fix-table-width)
+            (fix-table-cells-widths new-widths)))
       table-loc)))
 
 ;; visszaadja soronkent a jobboldali margo objektumot
@@ -250,6 +253,22 @@
         :let  [last-of-tag (fn [tag xs] (last (filter  #(and (map? %) (some-> % :tag name #{tag})) (:content xs))))]]
     (some->> row (last-of-tag "tc") (last-of-tag "tcPr") (last-of-tag "tcBorders") (last-of-tag "right"))))
 
+(defn- table-set-right-borders
+  "Ha egy tablazat utolso oszlopat tavolitottuk el, akkor az utolso elotti oszlop cellaibol a border-right ertekeket
+   at kell masolni az utolso oszlop cellaiba"
+  [table-loc right-borders]
+  (assert (sequential? right-borders))
+  (map-each-rows
+    (fn [row border]
+      (if border
+        (-> (find-last-child #(and (map? %) (some-> % :tag name #{"tc"})) row)
+            (->> (ensure-child "tcPr") (ensure-child "tcBorders") (ensure-child "right"))
+            (zip/replace border)
+            (find-enclosing-row))
+        row))
+    (find-enclosing-table table-loc) right-borders))
+
+
 (defn- remove-current-column
   "A jelenlegi csomoponthoz tartozo oszlopot eltavolitja a tablazatbol.
    Visszater a gyoker elemmel."
@@ -257,22 +276,12 @@
   (let [column-indices (current-column-indices start-loc)
         table          (find-enclosing-table start-loc)
         right-borders  (get-right-borders table)
-        column-last?   (nil? (find-closest-cell-right (zip/right (find-enclosing-cell start-loc))))
-        row-set-border (fn [row border]
-                         (if border
-                           (-> (find-last-child #(and (map? %) (some-> % :tag name #{"tc"})) row)
-                               (->> (ensure-child "tcPr") (ensure-child "tcBorders") (ensure-child "right"))
-                               (zip/replace border)
-                               (find-enclosing-row))
-                           row))]
+        column-last?   (nil? (find-closest-cell-right (zip/right (find-enclosing-cell start-loc))))]
     (-> (map-each-rows #(remove-columns % column-indices column-resize-strategy) table)
         (find-enclosing-table)
         (table-resize-widths column-resize-strategy column-indices)
-        ((fn [table]
-           (if column-last?
-             (map-each-rows row-set-border (find-enclosing-table table) right-borders)
-             table)))
-         (zip/root))))
+        (cond-> column-last? (table-set-right-borders right-borders))
+        (zip/root))))
 
 ;; TODO: handle rowspan property!
 (defn- remove-current-row [start]
@@ -294,9 +303,6 @@
   (if-let [marker (find-first-in-tree hide-table-row-marker? (xml-zip xml-tree))]
     (remove-current-row marker)
     xml-tree))
-
-;; az ennel keskenyebb oszlopokat kidobjuk!
-(def min-col-width 20)
 
 (defn remove-table-thin-columns-1
   "Ha a tablazatban van olyan oszlop, amely szelessege nagyon kicsi, az egesz oszlopot eltavolitja."

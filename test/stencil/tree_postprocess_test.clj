@@ -78,9 +78,9 @@
           (postprocess
             (table
               (row (cell-of-width 2 "F1+G1" (->HideTableColumnMarker)) (cell "H1") (cell-of-width 2 "I1" (->HideTableColumnMarker)) (cell-of-width 2 "J1"))
-               (row (cell "F2") (cell "G2") (cell-of-width 3 "H2 + I2") (cell-of-width 2 "J2"))
+              (row (cell "F2") (cell "G2") (cell-of-width 3 "H2 + I2") (cell-of-width 2 "J2"))
               (row (cell-of-width 2 "F + G") (cell "H") (cell-of-width 4 "I3 + J3"))
-               (row (cell "F") (cell "G") (cell "H") (cell-of-width 2 "I") (cell-of-width 2 "J"))
+              (row (cell "F") (cell "G") (cell "H") (cell-of-width 2 "I") (cell-of-width 2 "J"))
               (row (cell-of-width 7 "F + G + H + I + J"))))))))
 
 
@@ -124,7 +124,7 @@
                 :content [{:tag :gridCol, :attrs {ooxml-w "1000"}}
                           {:tag :gridCol, :attrs {ooxml-w "2000"}}]}
                (row) (row) (row))
-         (zip/node
+        (zip/node
          (table-resize-widths
            (xml-zip (table (tbl-grid 1000 2000 2600 500) (row) (row) (row)))
            :cut
@@ -136,7 +136,7 @@
         (table
           {:tag :tblGrid,
            :content [{:tag :gridCol, :attrs {ooxml-w "1000"}}
-                      {:tag :gridCol, :attrs {ooxml-w "5000"}}]}
+                     {:tag :gridCol, :attrs {ooxml-w "5000"}}]}
           (row) (row) (row))
         (zip/node
           (table-resize-widths
@@ -147,54 +147,38 @@
 (deftest resize-rational
   (is (=
         (into-hiccup (table {:tag :tblPr :content [{:tag :tblW, :attrs {ooxml-w "6000"}}]}
-               (tbl-grid 2000 4000)
-               (row (cell (cell-width 1 2000) "a")
-                    (cell (cell-width 1 4000) "b"))
-               (row (cell (cell-width 2 6000) "ab"))
-               ))
+                      (tbl-grid 2000 4000)
+                      (row (cell (cell-width 1 2000) "a")
+                           (cell (cell-width 1 4000) "b"))
+                      (row (cell (cell-width 2 6000) "ab"))))
+
         (into-hiccup (zip/node
-          (table-resize-widths
-            (xml-zip (table {:tag :tblPr
-                             :content [{:tag :tblW :attrs {ooxml-w "?"}}]}
-                            (tbl-grid "1000" "2000" "2500" "500")
-                            (row (cell-of-width 1 "a") (cell-of-width 1 "b"))
-                            (row (cell-of-width 2 "ab"))
-                            ))
-            :rational
-            #{2 3}))))))
+                      (table-resize-widths
+                        (xml-zip (table {:tag :tblPr
+                                         :content [{:tag :tblW :attrs {ooxml-w "?"}}]}
+                                        (tbl-grid "1000" "2000" "2500" "500")
+                                        (row (cell-of-width 1 "a") (cell-of-width 1 "b"))
+                                        (row (cell-of-width 2 "ab"))))
+
+                        :rational
+                        #{2 3}))))))
 
 
 (deftest test-column-hiding-border-right
   (let [border-1 {:tag "tcPr" :content [{:tag "tcBorders" :content [{:tag "right" :attrs {:a 1}}]}]}
         border-2 {:tag "tcPr" :content [{:tag "tcBorders" :content [{:tag "right" :attrs {:a 2}}]}]}]
-  (testing "Second column is being hidden here."
-    (is (=  (into-hiccup (table (row (cell border-1 "ALMA"))
-                                (row (cell border-2 "NARANCS"))))
-            (into-hiccup (postprocess (table (row (cell "ALMA") (cell border-1 (->HideTableColumnMarker) "KORTE"))
-                                             (row (cell "NARANCS") (cell border-2 "BARACK"))))))))))
+   (testing "Second column is being hidden here."
+     (is (=  (into-hiccup (table (row (cell border-1 "ALMA"))
+                                 (row (cell border-2 "NARANCS"))))
+             (into-hiccup (postprocess (table (row (cell "ALMA") (cell border-1 (->HideTableColumnMarker) "KORTE"))
+                                              (row (cell "NARANCS") (cell border-2 "BARACK"))))))))))
 
 
 (deftest resize-rational-2
   (is (= '(nil {:attrs {:x 1}, :tag :right})
          (get-right-borders (xml-zip (table (tbl-grid "1000" "2000" "2500" "500")
-                              (row (cell "a") (cell-of-width 1 "b"))
-                              (row (cell "v") (cell {:tag :tcPr :content [{:tag :tcBorders :content [{:tag :right :attrs {:x 1}}]}]} "dsf"))))))))
-
-#_
-(deftest map-each-rows-test
-  (is (= 1
-    (zip/node (map-each-rows (fn [row x] (zip/edit row assoc :a x))
-                             (xml-zip (table {:tag :elefant} (row "a") "3" (row "b") (row "c")))
-                             (range)
-                             )))))
-#_
-(deftest map-each-rows-test-2
- (is (= 1
-   (zip/node (map-each-rows (fn [row x] (zip/edit row assoc :a x))
-                            (xml-zip {:tag "tbl", :content [{:tag "tr", :content [{:tag "tc", :content ["x1"]}]} {:tag "tr", :content [{:tag "tc", :content ["d1"]}]}]})
-                            (range)
-                            )))))
-
+                                      (row (cell "a") (cell-of-width 1 "b"))
+                                      (row (cell "v") (cell {:tag :tcPr :content [{:tag :tcBorders :content [{:tag :right :attrs {:x 1}}]}]} "dsf"))))))))
 
 
 :OK

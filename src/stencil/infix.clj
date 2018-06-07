@@ -24,8 +24,8 @@
    \< :lt
    \> :gt
    \& :and
-   \| :or
-   })
+   \| :or})
+
 
 (def ops2 {[\> \=] :gte
            [\< \=] :lte
@@ -62,8 +62,8 @@
    :times 3 :divide 4
    :power 5
    :not 6
-   :neg 7
-   })
+   :neg 7})
+
 
 
 (defn- precedence [token]
@@ -89,8 +89,8 @@
       \“ (read-until \”) ;; english double quotes
       \‘ (read-until \’) ;; english single quotes
       \’ (read-until \’) ;; hungarian single quotes (felidezojel)
-      \„ (read-until \”) ;; hungarian double quotes (macskakorom)
-      )))
+      \„ (read-until \”)))) ;; hungarian double quotes (macskakorom)
+
 
 
 (defn read-number "Beolvas egy szamot.
