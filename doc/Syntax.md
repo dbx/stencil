@@ -15,7 +15,7 @@ This lets you conditionally hide or show parts of your document.
 
 Syntax:
 
-- `{%if CONDITION%}`THEN`{%else%}`
+- `{%if CONDITION%}`THEN`{%end%}`
 - `{%if CONDITION%}`THEN`{%else%}`ELSE`{%end%}`
 
 Here the `THEN` part is only shown when the `CONDITION` part is evaluated to a true value. Otherwise
@@ -32,7 +32,7 @@ In this example the text `Life insurance` is shown when the value of `x.coverDat
 Sometimes it makes sense to swap the THEN and ELSE branches to make the expression more readable.
 Therefore you can write `unless` instead of `if !` (if-not) to express the negation of the condition.
 
-For example, `{%unless CODITION%} Apples {%else%} Oranges {%end%}` is the same as `{%if ! CONDITION%} Oranges {%else%} Apples {%end%}`.
+For example, `{%unless CONDITION%} Apples {%else%} Oranges {%end%}` is the same as `{%if ! CONDITION%} Oranges {%else%} Apples {%end%}`.
 
 ### Iteration
 
