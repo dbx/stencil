@@ -34,7 +34,7 @@ public class DocxTableColumnsTest {
 
     @Before
     public void setUp() throws IOException {
-        process = ProcessFactory.fromLibreOfficeHome(new File("/usr/lib64/libreoffice"));
+        process = ProcessFactory.fromLocalLibreOffice();
         process.start();
         outputFile = File.createTempFile("stencil", "test.txt");
         template = process.prepareTemplateFile(TEMPLATE_FILE);

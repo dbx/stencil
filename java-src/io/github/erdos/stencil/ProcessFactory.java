@@ -46,7 +46,8 @@ public final class ProcessFactory {
      * <p>
      * First, looks for LIBRE_OFFICE_HOME env variable.
      * Second, looks at /usr/lib64/libreoffice (Fedora default install destination).
-     * Third, looks at /opt/libreoffice* and tries to load largest version number.
+     * Third, looks at /usr/lib/libreoffice (for Ubuntu systems).
+     * Finally, looks at /opt/libreoffice* and tries to load largest version number.
      *
      * @return a new Process instance with a running LibreOffice
      * @throws IllegalStateException when no standard directory has been found.
@@ -60,6 +61,11 @@ public final class ProcessFactory {
         final File home1 = new File("/usr/lib64/libreoffice");
         if (home1.exists()) {
             return fromLibreOfficeHome(home1);
+        }
+
+        final File home2 = new File("/usr/lib/libreoffice");
+        if (home2.exists()) {
+            return fromLibreOfficeHome(home2);
         }
 
         final File[] optFiles = new File("/opt").listFiles((dir, name) -> name.startsWith("libreoffice"));

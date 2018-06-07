@@ -33,7 +33,7 @@ public class SimpleRender3XhtmlTest {
 
     @Before
     public void setUp() throws IOException {
-        process = ProcessFactory.fromLibreOfficeHome(new File("/usr/lib64/libreoffice"));
+        process = ProcessFactory.fromLocalLibreOffice();
         process.start();
         outputFile = File.createTempFile("stencil", "test.xml");
         template = process.prepareTemplateFile(TEMPLATE_FILE);
