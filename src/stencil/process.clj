@@ -6,6 +6,7 @@
            [io.github.erdos.stencil.impl FileHelper ZipHelper])
   (:require [clojure.data.xml :as xml]
             [clojure.java.io :as io]
+            [clojure.string :as s]
             [stencil
              [tokenizer :as tokenizer]
              [cleanup :as cleanup]
@@ -52,10 +53,30 @@
                                   :when (:dynamic? v)]
                               [k (:executable v)]))})))
 
+(defn unmap-ignored-attr
+  "A gyoker elemben az Ignored attributumba beir ertekeket"
+  [xml-tree]
+  (let [path [:attrs :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fmarkup-compatibility%2F2006/Ignorable]]
+    (if-let [url->ps (some-> (get-in xml-tree path)
+                             (s/split #"\s+")
+                             (zipmap (repeatedly (comp vector name gensym))))]
+      (-> xml-tree
+          (assoc-in path (s/join " " (map first (vals url->ps))))
+          ;; TODO: itt hasznaljuk a clojure.data.xml.pu-map ns kepessegeit!!!
+
+          (with-meta {:clojure.data.xml/nss
+                      (clojure.data.xml.pu-map/persistent! (reduce (fn [a [k v]] (clojure.data.xml.pu-map/assoc! a k v))
+                                           (clojure.data.xml.pu-map/transient clojure.data.xml.pu-map/EMPTY)
+                               (for [[url ps] url->ps
+                                     p ps]
+                                 [p url])))}))
+      xml-tree)))
+
 (defn- run-executable-and-write [executable function data output-stream]
   (let [result (-> (eval/normal-control-ast->evaled-seq data function executable)
                    (tokenizer/tokens-seq->document)
-                   (tree-postprocess/postprocess))
+                   (tree-postprocess/postprocess)
+                   (unmap-ignored-attr))
         writer (io/writer output-stream)]
     (xml/emit result writer)
     (.flush writer)))

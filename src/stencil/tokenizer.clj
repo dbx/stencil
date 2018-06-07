@@ -1,6 +1,7 @@
 (ns stencil.tokenizer
   "Fog egy XML dokumentumot es tokenekre bontja"
   (:require [clojure.data.xml :as xml]
+            [clojure.string :as s]
             [stencil.infix :as infix]
             [stencil.types :refer :all]
             [stencil.merger :refer [map-actions-in-token-list]]
@@ -58,13 +59,21 @@
 
 (defn- map-token [token] (if (:action token) (text->cmd (:action token)) token))
 
+(defn map-ignored-attr [xml-tree]
+  (let [p->url (get-in (meta xml-tree) [:clojure.data.xml/nss :p->u])
+        path [:attrs :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fmarkup-compatibility%2F2006/Ignorable]]
+    (if (get-in xml-tree path)
+      (update-in xml-tree path #(s/join " " (keep p->url (s/split (str %) #"\s+"))))
+      xml-tree)))
 
 (defn parse-to-tokens-seq
   "Felparszolja az inputot mint token listat"
   [input]
   (let [parsed (xml/parse input)]
     (assert (map? parsed))
-    (->> (structure->seq parsed)
+    (->> parsed
+         (map-ignored-attr)
+         (structure->seq)
          (map-actions-in-token-list)
          (map map-token))))
 

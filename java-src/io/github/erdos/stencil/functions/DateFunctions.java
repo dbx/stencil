@@ -63,13 +63,18 @@ public enum DateFunctions implements Function {
     // new Date().toString() gives this format
     public static final String DATE_TOSTRING = "EEE MMM dd HH:mm:ss Z yyyy";
 
+
+    // new Date().toString() gives this format
+    public static final String DATE_DOTTED = "yyyy. MM. dd.";
+
+
     // standard formats
     public final static String RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public final static String RFC1036 = "EEEE, dd-MMM-yy HH:mm:ss zzz";
     public final static String ASCTIME = "EEE MMM d HH:mm:ss yyyy";
     public final static String ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
-    public final static List<String> PATTERNS = asList(DATETIME1, RFC1036, RFC1123, ASCTIME, ISO8601, DATE_TOSTRING);
+    public final static List<String> PATTERNS = asList(DATETIME1, RFC1036, RFC1123, ASCTIME, ISO8601, DATE_TOSTRING, DATE_DOTTED);
 
     private static Optional<Date> maybeDate(Object obj) {
         if (obj instanceof Date)
