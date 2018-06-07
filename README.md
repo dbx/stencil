@@ -5,7 +5,7 @@ Tesztek statusza: <a href="http://ci.dbx.hu/job/stencil-unit-tests/lastCompleted
 ## Függőségek
 
 - Java 8 (tesztelve: `Java 1.8.0_151 OpenJDK 64-Bit Server VM`)
-- Fejlesztéshez: Leiningen 2.0.0 vagy újabb (tesztelve: `2.7.1`)
+- Fejlesztéshez: Leiningen 2.7.1 vagy újabb (tesztelve: `2.7.1`)
 - Futtatáshoz: LibreOffice 5 (tesztelve: `5.3.7.2.0+` verzió)
 
 ## Dokumentáció
