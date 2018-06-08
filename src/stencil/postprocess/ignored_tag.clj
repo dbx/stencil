@@ -7,10 +7,11 @@
 (def ^:private ignorable-tag :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fmarkup-compatibility%2F2006/Ignorable)
 
 (defn map-ignored-attr [xml-tree]
-  (let [p->url (get-in (meta xml-tree) [:clojure.data.xml/nss :p->u])
-        path [:attrs ignorable-tag]]
+  (let [p->url    (get-in (meta xml-tree) [:clojure.data.xml/nss :p->u])
+        has-attr? (fn [s] (contains? (:attrs xml-tree) (keyword "xmlns" s)))
+        path      [:attrs ignorable-tag]]
     (if (get-in xml-tree path)
-      (update-in xml-tree path #(s/join " " (keep p->url (s/split (str %) #"\s+"))))
+      (update-in xml-tree path #(s/join " " (keep p->url (filter has-attr? (s/split (str %) #"\s+")))))
       xml-tree)))
 
 (defn unmap-ignored-attr
