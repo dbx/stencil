@@ -10,7 +10,8 @@
   (let [p->url    (get-in (meta xml-tree) [:clojure.data.xml/nss :p->u])
         path      [:attrs ignorable-tag]]
     (if (get-in xml-tree path)
-      (update-in xml-tree path #(s/join " " (keep p->url (s/split (str %) #"\s+"))))
+      ; (update-in xml-tree path #(s/join " " (keep p->url (s/split (str %) #"\s+"))))
+      (assoc-in xml-tree path "")
       xml-tree)))
 
 (defn unmap-ignored-attr
