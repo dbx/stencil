@@ -22,7 +22,8 @@
                                  (s/split #"\s+")
                                  (->> (zipmap (repeatedly (comp name gensym)))))]
       (-> xml-tree
-          (assoc-in path (s/join " " (keys prefix->uri)))
-          (with-meta {:clojure.data.xml/nss
-                      (apply pu-map/assoc pu-map/EMPTY (flatten prefix->uri))}))
+          (assoc-in path "")
+          #_(assoc-in path (s/join " " (keys prefix->uri)))
+          #_(with-meta {:clojure.data.xml/nss
+                        (apply pu-map/assoc pu-map/EMPTY (flatten prefix->uri))}))
       xml-tree)))
