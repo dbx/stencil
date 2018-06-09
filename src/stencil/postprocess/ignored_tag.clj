@@ -2,9 +2,7 @@
   "A docx fajlokban van egy Ignored tag, amiben xml namespace alias lista van.
    Ennek a tartalma kimenetkor is valodi xml ns aliasokat kell tartalmazzon."
   (:require [clojure.data.xml.pu-map :as pu-map]
-            [clojure.string :as s]
-            [clojure.pprint]
-            [clojure.walk :refer [prewalk]]))
+            [clojure.string :as s]))
 
 (def ^:private ignorable-tag :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fmarkup-compatibility%2F2006/Ignorable)
 
@@ -37,28 +35,27 @@
                     (let [p->url (get-in (meta form) [:clojure.data.xml/nss :p->u])]
                       (update-in form [:attrs ignorable-tag] (partial map-str p->url)))
                     form))
-      xml-tree))
+                xml-tree))
+
+(defn gen-alias [] (name (gensym "xml")))
 
 ;; last call this
 (defn unmap-ignored-attr
   "A munka vegeztevel, szerializalas elott hivjuk."
   [xml-tree]
-  (println "Tree meta:")
-  (clojure.pprint/pprint (meta xml-tree))
-  (println)
   (let [all-nss (collect-all-nss xml-tree)
         found (volatile! {}) ;; uri -> alias list
         prefix->uri (delay (zipmap (vals @found) (keys @found)))
-        find! (fn [uri] (when true (all-nss uri) (println :! uri)
+        find! (fn [uri] (when (all-nss uri)
                           (or (get @found uri)
-                              (get (vswap! found assoc uri (name (gensym))) uri))))]
+                              (get (vswap! found assoc uri (gen-alias)) uri))))
+        make-nss-map #(apply pu-map/assoc pu-map/EMPTY (interleave (vals @found) (keys @found)))]
     (->
-      (postwalk-xml (fn [form]
-                      (if (contains? (:attrs form) ignorable-tag)
-                        (update-in form [:attrs ignorable-tag] (partial map-str find!))
-                        form))
-                    xml-tree)
-      (with-meta {:clojure.data.xml/nss (apply pu-map/assoc pu-map/EMPTY (flatten @prefix->uri))})
-      (doto (->> meta (println :result-meta)))
-      (doto (do (println :found-meta @found)))
-      (doto (do (println :foudn-pm @prefix->uri))))))
+     (postwalk-xml (fn [form]
+                     (if (contains? (:attrs form) ignorable-tag)
+                       (update-in form [:attrs ignorable-tag] (partial map-str find!))
+                       form))
+                   xml-tree)
+     (with-meta {:clojure.data.xml/nss (make-nss-map)}))))
+
+:OK
