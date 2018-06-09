@@ -1,5 +1,6 @@
 (ns stencil.ignored-tag-test
   (:require [clojure.data.xml :as xml]
+            [clojure.java.io :as io]
             [clojure.walk :as walk]
             [clojure.test :refer [deftest is are testing]]
             [stencil.tokenizer :as tokenizer]
@@ -13,16 +14,14 @@
                     xmlns:b=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"
                     xmlns:gh=\"http://github.com\"
                     xmlns:x=\"http://dbx.hu/1\"
+                    x:teszt=\"teszt1\"
                     b:Ignorable=\"gh x\">"
-    "<aa:body><aa:p xmlns:b=\"http://dbx.hu/2\" b:Ignorable=\"b\"></aa:p></aa:body></aa:document>")
+    "<aa:body><aa:p xmlns:gh=\"http://dbx.hu/2\" gh:x=\"1\" b:Ignorable=\"gh x\"></aa:p></aa:body></aa:document>")
    (java.io.StringReader.)
+
    (tokenizer/parse-to-tokens-seq)
+   (tokenizer/tokens-seq->document)
 
-    ;(unmap-ignored-attr)
-;; do something here that just removes metadata completely
-    ;;(->> (walk/postwalk #(if (map? %) (with-meta % {}) %)))
-
-    ;(map-ignored-attr)
-
-   (tokenizer/tokens-seq->document) (xml/emit-str)
+   (unmap-ignored-attr)
+   (xml/emit-str)
    println))
