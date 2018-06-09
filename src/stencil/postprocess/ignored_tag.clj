@@ -7,12 +7,12 @@
 (def ^:private ignorable-tag :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fmarkup-compatibility%2F2006/Ignorable)
 
 ;; like clojure.walk/postwalk but keeps metadata and calls fn only on nodes
-(defn postwalk-xml [f xml-tree]
+(defn- postwalk-xml [f xml-tree]
   (if (map? xml-tree)
     (f (update xml-tree :content (partial mapv (partial postwalk-xml f))))
     xml-tree))
 
-(defn url-decode [s] (java.net.URLDecoder/decode (str s) "UTF-8"))
+(defn- url-decode [s] (java.net.URLDecoder/decode (str s) "UTF-8"))
 
 (defn- collect-all-nss [form]
   (->> form
@@ -23,7 +23,9 @@
        (map url-decode)
        (into (sorted-set))))
 
-(defn map-str [f s] (s/join " " (keep f (s/split s #"\s+"))))
+(defn- map-str [f s] (s/join " " (keep f (s/split s #"\s+"))))
+
+(defn- gen-alias [] (name (gensym "xml")))
 
 ;; first call this
 (defn map-ignored-attr
@@ -36,8 +38,6 @@
                       (update-in form [:attrs ignorable-tag] (partial map-str p->url)))
                     form))
                 xml-tree))
-
-(defn gen-alias [] (name (gensym "xml")))
 
 ;; last call this
 (defn unmap-ignored-attr
