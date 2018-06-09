@@ -2,7 +2,6 @@
   (:require [clojure.test :refer [deftest testing is]]
             [stencil.util :refer :all]))
 
-
 (deftest stacks-difference-test
   (testing "Empty cases"
     (is (= [[] []] (stacks-difference nil nil)))
@@ -16,7 +15,6 @@
     (is (= [[:a] []] (stacks-difference '(:a :x :y) '(:x :y))))
     (is (= [[] [:b]] (stacks-difference '(:x :y) '(:b :x :y))))))
 
-
 (deftest mod-stack-top-last-test
   (testing "Invalid input"
     (is (thrown? IllegalStateException (mod-stack-top-last '([]) inc)))
@@ -27,7 +25,6 @@
     (is (= '([1 1 2] [1 1 1])
            (mod-stack-top-last '([1 1 1] [1 1 1]) inc)))))
 
-
 (deftest mod-stack-top-conj-test
   (testing "empty input"
     (is (= '([2]) (mod-stack-top-conj '() 2)))
@@ -37,7 +34,6 @@
     (is (= '([1 2]) (mod-stack-top-conj '([1]) 2)))
     (is (= '([1 1 1] [2 2] [3 3])
            (mod-stack-top-conj '([1 1] [2 2] [3 3]) 1)))))
-
 
 (deftest update-peek-test
   (testing "simple cases"

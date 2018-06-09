@@ -43,7 +43,6 @@
 
       :otherwise (throw (ex-info "Unexpected command" {:command text})))))
 
-
 (defn- structure->seq [parsed]
   (cond
     (string? parsed) [{:text parsed}] ; (split-text-token parsed)
@@ -57,9 +56,7 @@
                           (seq (:attrs parsed)) (assoc :attrs (:attrs parsed)))])
     :otherwise       (throw (ex-info "Unexpected node: " {:node parsed}))))
 
-
 (defn- map-token [token] (if (:action token) (text->cmd (:action token)) token))
-
 
 (defn parse-to-tokens-seq
   "Felparszolja az inputot mint token listat"
@@ -72,9 +69,7 @@
          (map-actions-in-token-list)
          (map map-token))))
 
-
 (def empty-stack '(()))
-
 
 (defn- tokens-seq-reducer [stack token]
   (cond
@@ -98,7 +93,6 @@
 
     :default
     (throw (ex-info (str "Unexpected token!" token) {:token token}))))
-
 
 (defn tokens-seq->document
   "Token listabol XML fat csinal."

@@ -69,8 +69,8 @@
 (deftest read-tokens-if-elif-then-else
   (testing "If-elis-then-else branching"
     (is (= '({:open :a} {:text "Hello "} {:cmd :if, :condition [x]} {:text "iksz"}
-             {:cmd :else-if, :expression [y]} {:text "ipszilon"} {:cmd :else}
-             {:text "egyebkent"} {:cmd :end} {:text  " Hola"} {:close :a})
+                        {:cmd :else-if, :expression [y]} {:text "ipszilon"} {:cmd :else}
+                        {:text "egyebkent"} {:cmd :end} {:text  " Hola"} {:close :a})
            (run "<a>Hello {%if x%}iksz{%else if y%}ipszilon{%else%}egyebkent{%end%} Hola</a>")))))
 
 :OK

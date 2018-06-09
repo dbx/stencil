@@ -6,14 +6,12 @@
 
 (defn- run [xs] (infix/eval-rpn {} (infix/parse xs)))
 
-
 (deftest tokenize-test
   (testing "simple fn call"
     (is (= [(->FnCall "sin") 1 :plus 2 :close] (infix/tokenize "   sin(1+2)"))))
 
   (testing "comma"
     (is (= [:open 1 :comma 2 :comma 3 :close] (infix/tokenize "  (1,2   ,3)   ")))))
-
 
 (deftest tokenize-string-literal
   (testing "spaces are kept"
@@ -22,14 +20,12 @@
   (testing "escape characters are supported"
     (is (= ["aaa\"bbb"] (infix/tokenize "\"aaa\\\"bbb\"")))))
 
-
 (deftest tokenize-string-fun-eq
   (testing "tricky"
     (is (=  ["1" :eq #stencil.infix.FnCall{:fn-name "str"} 1 :close]
             (infix/tokenize "\"1\" = str(1)")))
     (is (= ["1" 1 {:fn "str" :args 1} :eq]
            (infix/parse "\"1\" = str(1)")))))
-
 
 (deftest parse-simple
   (testing "Empty"
@@ -53,7 +49,6 @@
     (is (= [3 2 :plus 4 1 :minus :times]
            (infix/parse "(3+2)*(4 - 1)")))))
 
-
 (deftest all-ops-supported
   (testing "Minden operatort vegre tudunk hajtani?"
     (let [ops (-> #{}
@@ -63,7 +58,6 @@
                   (disj :open :close :comma))
           known-ops (set (filter keyword? (keys (methods @#'infix/reduce-step))))]
       (is (every? known-ops ops)))))
-
 
 (deftest basic-arithmetic
   (testing "Alap matek"
@@ -99,7 +93,6 @@
       (is (true? (run "3 = 3 && 4 == 4"))))
 
     :ok))
-
 
 (deftest operator-precedeces
   (testing "Operator precedencia"
@@ -147,14 +140,12 @@
 (deftest test-colhide-expr
   (is (hide-table-column-marker? (run "hideColumn()"))))
 
-
 (deftest test-unexpected
   (is (thrown? ExceptionInfo (parse "aaaa:bbbb"))))
-
 
 (deftest tokenize-wrong-tokens
   (testing "syntax errors should be thrown"
     (are [x] (thrown? ExceptionInfo (infix/parse x))
-         "1++2" "1 2 3" "++" "1+" "+ 1" "2)(3" "(23)3" "2,3,4" ",,,,2" ",3" "+,-" "+-2" "2 3 *" "* 3 4")))
+      "1++2" "1 2 3" "++" "1+" "+ 1" "2)(3" "(23)3" "2,3,4" ",,,,2" ",3" "+,-" "+-2" "2 3 *" "* 3 4")))
 
 :ok

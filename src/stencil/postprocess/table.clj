@@ -6,7 +6,6 @@
 
 (set! *warn-on-reflection* true)
 
-
 ;; az ennel keskenyebb oszlopokat kidobjuk!
 (def min-col-width 20)
 
@@ -80,7 +79,6 @@
 
       ;; ooxml
       "tc"        (or (some->> loc (child-of-tag "tcPr") (child-of-tag "gridSpan") zip/node :attrs ooxml-val ->int) 1))))
-
 
 (defn shrink-column
   "Az aktualis td cella logikai szelesseget csokkenti."
@@ -172,7 +170,7 @@
   (case strategy
     :cut
     (do ; (assert (= expected-total (reduce + original-widths)))
-        original-widths)
+      original-widths)
 
     :rational
     (let [original-total (reduce + original-widths)]
@@ -184,13 +182,13 @@
 
 (defn map-children-filtered [filter-fn map-fn loc & args]
   (zip/edit loc update :content
-    (fn [content]
-      (loop [out [], content content, args args]
-         (if-let [[head tail] (seq content)]
-           (if (filter-fn head)
-              (recur (conj out (apply map-fn head (map first args))) (next content) (map next args))
-              (recur (conj out head) (next content) args))
-           out)))))
+            (fn [content]
+              (loop [out [], content content, args args]
+                (if-let [[head tail] (seq content)]
+                  (if (filter-fn head)
+                    (recur (conj out (apply map-fn head (map first args))) (next content) (map next args))
+                    (recur (conj out head) (next content) args))
+                  out)))))
 
 (defn table-resize-widths
   "Elavolitja a table grid-bol anem haznalatos oszlopokat."
@@ -209,18 +207,18 @@
 
         ;; egy sor cellainak az egyedi szelesseget is beleirja magatol
         fix-row-widths (fn [grid-widths row]
-                        (assert (zipper? row))
-                        (assert (every? number? grid-widths))
-                        (loop [cell (some-> row zip/down find-closest-cell-right)
-                               parent row
-                               grid-widths grid-widths]
-                          (if-not cell
-                            parent
-                            (-> (->> cell (ensure-child "tcPr") (ensure-child "tcW"))
-                                (zip/edit assoc-in [:attrs ooxml-w] (str (reduce + (take (cell-width cell) grid-widths))))
-                                (zip/up) (zip/up)
-                                (as-> * (recur (some-> * zip/right find-closest-cell-right)
-                                               (zip/up *) (drop (cell-width cell) grid-widths)))))))
+                         (assert (zipper? row))
+                         (assert (every? number? grid-widths))
+                         (loop [cell (some-> row zip/down find-closest-cell-right)
+                                parent row
+                                grid-widths grid-widths]
+                           (if-not cell
+                             parent
+                             (-> (->> cell (ensure-child "tcPr") (ensure-child "tcW"))
+                                 (zip/edit assoc-in [:attrs ooxml-w] (str (reduce + (take (cell-width cell) grid-widths))))
+                                 (zip/up) (zip/up)
+                                 (as-> * (recur (some-> * zip/right find-closest-cell-right)
+                                                (zip/up *) (drop (cell-width cell) grid-widths)))))))
 
         fix-table-cells-widths (fn [table-loc grid-widths]
                                  (assert (sequential? grid-widths))
@@ -230,7 +228,7 @@
         ;; a tablazat teljes szelesseget beleirja a grid szelessegek szummajakent
         fix-table-width (fn [table-loc]
                           (assert (zipper? table-loc))
-                          (-> (some->> table-loc (child-of-tag "tblPr" ) (child-of-tag "tblW"))
+                          (-> (some->> table-loc (child-of-tag "tblPr") (child-of-tag "tblW"))
                               (some-> (zip/edit assoc-in [:attrs ooxml-w] (str (total-width table-loc)))
                                       (find-enclosing-table))
                               (or table-loc)))]
@@ -259,15 +257,14 @@
   [table-loc right-borders]
   (assert (sequential? right-borders))
   (map-each-rows
-    (fn [row border]
-      (if border
-        (-> (find-last-child #(and (map? %) (some-> % :tag name #{"tc"})) row)
-            (->> (ensure-child "tcPr") (ensure-child "tcBorders") (ensure-child "right"))
-            (zip/replace border)
-            (find-enclosing-row))
-        row))
-    (find-enclosing-table table-loc) right-borders))
-
+   (fn [row border]
+     (if border
+       (-> (find-last-child #(and (map? %) (some-> % :tag name #{"tc"})) row)
+           (->> (ensure-child "tcPr") (ensure-child "tcBorders") (ensure-child "right"))
+           (zip/replace border)
+           (find-enclosing-row))
+       row))
+   (find-enclosing-table table-loc) right-borders))
 
 (defn- remove-current-column
   "A jelenlegi csomoponthoz tartozo oszlopot eltavolitja a tablazatbol.

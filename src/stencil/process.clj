@@ -55,7 +55,6 @@
                                   :when (:dynamic? v)]
                               [k (:executable v)]))})))
 
-
 (defn- run-executable-and-write [executable function data output-stream]
   (let [result (-> (eval/normal-control-ast->evaled-seq data function executable)
                    (tokenizer/tokens-seq->document)
@@ -104,7 +103,7 @@
       ;; TODO: itt hogyan kezeljunk hibat?
       (try
         (with-open [out-stream out-stream]
-          (run-executable-and-write executable function data out-stream) )
+          (run-executable-and-write executable function data out-stream))
         (catch Throwable e
           (println "Evaling exception: " e))))
     {:stream input-stream

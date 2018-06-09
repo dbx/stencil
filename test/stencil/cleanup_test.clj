@@ -114,7 +114,7 @@
 
            [{:cmd :if
              :then [(->text "bela") <b> <i> (->text "Hello") <／i>]
-             :else [<b> <j>(->text "Virag") <／j>]}
+             :else [<b> <j> (->text "Virag") <／j>]}
             <／b>]))))
 
 (deftest normal-ast-test-condition-only-then
@@ -127,9 +127,9 @@
               <／b>
               <／a>]))
 
-           [<a>{:cmd :if
-                :then [(->text "bela") <b> <i> (->text "Hello") <／i>]
-                :else [<b>]}
+           [<a> {:cmd :if
+                 :then [(->text "bela") <b> <i> (->text "Hello") <／i>]
+                 :else [<b>]}
             <／b>
             <／a>]))))
 
@@ -172,7 +172,7 @@
   (testing "Variables from loop expressions"
     (is (= ["xs" "xs[]"]
            (find-variables '[{:cmd :for, :variable y, :expression [xs],
-                             :blocks [[{:cmd :echo, :expression [y 1 :plus]}]]}])))
+                              :blocks [[{:cmd :echo, :expression [y 1 :plus]}]]}])))
     (is (= ["xs" "xs[]" "xs[][]"]
            (find-variables '[{:cmd :for, :variable y, :expression [xs]
                               :blocks [[{:cmd :for :variable w :expression [y]
@@ -184,14 +184,14 @@
 
   (testing "Variables from loop bindings and bodies"
     ;; TODO: impls this test
-    )
+)
   (testing "Variables from loop bodies (nesting)"
     ;; TODO: impls this test
-    )
+)
 
   (testing "Nested loop bindings"
     ;; TODO: legyen e gymasban ket for ciklus meg egy echo?
-    ))
+))
 
 (deftest test-process-if-then-else
   (is (=
@@ -229,16 +229,16 @@
                  :else [<a>]}
                 <／a>]
          :else ()}]
-            (:executable
-             (process
-              [<a>
-               ,,{:cmd :if, :condition '[x.a]}
-               <／a>
-               {:cmd :if, :condition '[x.b]}
-               <a>
-               ,,{:text "THEN"}
-               ,,{:cmd :end}
-               <／a>
-               {:cmd :end}])))))
+       (:executable
+        (process
+         [<a>
+          ,,{:cmd :if, :condition '[x.a]}
+          <／a>
+          {:cmd :if, :condition '[x.b]}
+          <a>
+          ,,{:text "THEN"}
+          ,,{:cmd :end}
+          <／a>
+          {:cmd :end}])))))
 
 :OK

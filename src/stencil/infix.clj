@@ -26,7 +26,6 @@
    \& :and
    \| :or})
 
-
 (def ops2 {[\> \=] :gte
            [\< \=] :lte
            [\! \=] :neq
@@ -64,11 +63,8 @@
    :not 6
    :neg 7})
 
-
-
 (defn- precedence [token]
   (get operation-tokens token))
-
 
 (defn read-string-literal
   "Beolvas egy string literalt.
@@ -92,7 +88,6 @@
       \„ (read-until \”)))) ;; hungarian double quotes (macskakorom)
 
 
-
 (defn read-number "Beolvas egy szamot.
    Visszad egy ketelemu vektort, ahol az elso elem a beolvasott szam,
    a masodik elem a maradek karakter szekvencia.
@@ -105,7 +100,6 @@
                   (Double/parseDouble content)
                   (Long/parseLong     content))]
     [number (drop (count content) characters)]))
-
 
 ;; TODO: harapni kell, ha ket szam token vagy egymas utan `1 1`
 ;; TODO harapni kell, ha ket operator token van egymas utan `op op`
@@ -282,6 +276,5 @@
        (first result)))))
 
 (def parse (comp validate-rpn tokens->rpn tokenize))
-
 
 :OK

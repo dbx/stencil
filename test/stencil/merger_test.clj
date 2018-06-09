@@ -34,9 +34,7 @@
       {:tokens [{:action "a"} {:action "x"}]}
 
       ""
-      {:tokens []}
-      )))
-
+      {:tokens []})))
 
 (deftest cleanup-runs-test
   (testing "Simple cases"

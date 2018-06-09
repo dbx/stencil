@@ -35,9 +35,7 @@
                                        after-idx)}
             (not (zero? ind)) (assoc :before (.substring s 0 ind))
             (not (= (+ (count close-tag) after-idx) (count s)))
-            (assoc :after (.substring s (+ (count close-tag) after-idx))) ))))))
-
-
+            (assoc :after (.substring s (+ (count close-tag) after-idx)))))))))
 
 (defn text-split-tokens [^String s]
   (assert (string? s))

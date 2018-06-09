@@ -4,7 +4,6 @@
 
 (set! *warn-on-reflection* true)
 
-
 (defn stacks-difference-key
   "Mindkey listanak levagja azt a kozos prefixet, amire a kulcsfuggveny ua az erteket adja."
   [key-fn stack1 stack2]
@@ -14,11 +13,9 @@
     [(take (- (count stack1) cnt) stack1)
      (take (- (count stack2) cnt) stack2)]))
 
-
 (def stacks-difference
   "mindket listanak levagja a kozos szuffixet"
   (partial stacks-difference-key identity))
-
 
 (defn mod-stack-top-last
   "Egy stack legfelso elemenek legutolso elemet modositja.
@@ -30,12 +27,10 @@
         (conj (pop (first stack))
               (apply f (peek (first stack)) args))))
 
-
 (defn mod-stack-top-conj
   "Egy stack legfelso elemehez hozzafuz egy elemet"
   [stack & items]
   (conj (rest stack) (apply conj (first stack) items)))
-
 
 (defn update-peek
   "Egy stack legfelso elemet modositja."

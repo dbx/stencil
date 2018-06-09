@@ -13,7 +13,6 @@
 
 (declare control-ast-normalize)
 
-
 (defn- tokens->ast-step [[queue & ss0 :as stack] token]
   (case (:cmd token)
     (:if :for) (conj (mod-stack-top-conj stack token) [])
@@ -30,7 +29,6 @@
   (let [result (reduce tokens->ast-step '([]) tokens)]
     (assert (= 1 (count result)))
     (peek result)))
-
 
 (defn nested-tokens-fmap-postwalk
   "Melysegi bejaras egy XML fan.
@@ -52,7 +50,6 @@
                                   update-children
                                   (partial f-cmd-block-before token)))))
          (f-child token))))))
-
 
 (defn annotate-environments
   "Vegigmegy minden tokenen es a parancs blokkok :before es :after kulcsaiba
@@ -150,33 +147,33 @@
             ;; megprobal egy adott szimbolumot a mapping alapjan rezolvalni.
             ;; visszaad egy stringet
             (if (.contains (name s) ".")
-              (let [[p1 p2] (vec (.split (name s) "\\." 2))  ]
+              (let [[p1 p2] (vec (.split (name s) "\\." 2))]
                 (if-let [pt (mapping (symbol p1))]
                   (str pt "." p2)
                   (name s)))
               (mapping s (name s))))
           (expr [mapping rpn]
-            (assert (sequential? rpn)) ;; RPN kifejezes kell legyen
-            (keep (partial resolve-sym mapping) (filter symbol? rpn)))
+                (assert (sequential? rpn)) ;; RPN kifejezes kell legyen
+                (keep (partial resolve-sym mapping) (filter symbol? rpn)))
           ;; iff rpn expr consists of 1 variable only -> resolves that one variable.
           (maybe-variable [mapping rpn]
-            (when (and (= 1 (count rpn)) (symbol? (first rpn)))
-              (resolve-sym mapping (first rpn))))
+                          (when (and (= 1 (count rpn)) (symbol? (first rpn)))
+                            (resolve-sym mapping (first rpn))))
           (collect [m xs] (mapcat (partial collect-1 m) xs))
           (collect-1 [mapping x]
-            (case (:cmd x)
-              :echo (expr mapping (:expression x))
+                     (case (:cmd x)
+                       :echo (expr mapping (:expression x))
 
-              :if   (concat (expr mapping (:condition x))
-                            (collect mapping (apply concat (:blocks x))))
+                       :if   (concat (expr mapping (:condition x))
+                                     (collect mapping (apply concat (:blocks x))))
 
-              :for  (let [variable (maybe-variable mapping (:expression x))
-                          exprs    (expr mapping (:expression x))
-                          mapping  (if variable
-                                     (assoc mapping (:variable x) (str variable "[]"))
-                                     mapping)]
-                      (concat exprs (collect mapping (apply concat (:blocks x)))))
-              []))]
+                       :for  (let [variable (maybe-variable mapping (:expression x))
+                                   exprs    (expr mapping (:expression x))
+                                   mapping  (if variable
+                                              (assoc mapping (:variable x) (str variable "[]"))
+                                              mapping)]
+                               (concat exprs (collect mapping (apply concat (:blocks x)))))
+                       []))]
     (distinct (collect {} control-ast))))
 
 ; (find-variables [])
