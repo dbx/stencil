@@ -44,8 +44,7 @@
   "A munka vegeztevel, szerializalas elott hivjuk."
   [xml-tree]
   (let [all-nss (collect-all-nss xml-tree)
-        found (volatile! {}) ;; uri -> alias list
-        prefix->uri (delay (zipmap (vals @found) (keys @found)))
+        found (volatile! {}) ;; url -> alias mapping
         find! (fn [uri] (when (all-nss uri)
                           (or (get @found uri)
                               (get (vswap! found assoc uri (gen-alias)) uri))))
