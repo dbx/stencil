@@ -10,7 +10,13 @@ It is possible to embed complex mathematical equations and logical formulae in t
 
 ## Logics in conditions
 
-- You can use logical `and`, `or`, `not` operators in the logical expressions.
+- You can use logical operators in the expressions. See:
+
+| operator | symbol | example | meaning |
+|-----|----|-------------|---|
+| conjuction (and) | `&` | `a & b` | both `a` and `b` are not null and not false values |
+| disjunction (or) | `\|` | `a\|b` | either `a` or `b` or both are not null or false |
+| negation (not) | `!` | `!a` | value `a` is false or null |
 
 ## Function calls
 
