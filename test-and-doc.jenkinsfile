@@ -7,6 +7,9 @@ node {
     stage('Checkout') {
       checkout([$class: 'GitSCM', branches: [[name: "*/master"]], doGenerateSubmoduleConfigurations: false, userRemoteConfigs: [[credentialsId: '14733f3b-5278-42d5-b2b4-fed8e9ec2545', url: 'git@github.com:dbx/stencil.git']]])
     }
+    stage('Compile') {
+      sh 'lein compile'
+    }
     stage('Java tests') {
       sh 'lein pom'
       sh 'mvn test -DexcludeGroupIds=io.github.erdos.stencil.IntegrationTest'
