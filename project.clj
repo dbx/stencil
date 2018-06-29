@@ -4,13 +4,15 @@
   :java-source-paths ["java-src"]
   :javac-options     ["-target" "8" "-source" "8"]
   :aot               :all
-  :dependencies [
+  :dependencies [;[org.apache.maven.surefire/surefire-providers "2.22.0"]
                  [com.taoensso/timbre "4.10.0"] ;; naplozas
                  [org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/data.xml "0.2.0-alpha5"]
                  [org.jodconverter/jodconverter-local "4.1.0"]] ;; pdf conversion
   :pom-addition ([:properties ["maven.compiler.source" "8"] ["maven.compiler.target" "8"]])
+  :pom-plugins [[org.apache.maven.plugins/maven-surefire-plugin "2.22.0"]]
+
   :plugins [[quickie "0.4.2" :exclusions [org.clojure/clojure]]
             [lein-javadoc "0.3.0"]
             [lein-test-out "0.3.1"]]
