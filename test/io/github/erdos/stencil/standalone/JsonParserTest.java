@@ -13,7 +13,7 @@ public class JsonParserTest {
 
     @Test
     public void testParseMap() {
-        Optional<Object> parsed = JsonParser.parse("{\"a\": 23}");
+        Optional<Object> parsed = JsonParser.parse("{\"a\": 23, \"b\": null}");
 
         assertTrue(parsed.isPresent());
         assertTrue(parsed.get() instanceof Map);

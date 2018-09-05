@@ -5,16 +5,15 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableMap;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 final class JsonParser {
 
@@ -50,14 +49,22 @@ final class JsonParser {
             if (m.isArray()) {
                 return unmodifiableList(m.values().stream().map(JsonParser::cleanup).collect(toList()));
             } else {
-                return unmodifiableMap(m.entrySet().stream().collect(toMap(x -> cleanup(x.getKey()), x -> cleanup(x.getValue()))));
+                return cleanMap(m);
             }
         } else if (o instanceof List) {
             return unmodifiableList(((List<Object>) o).stream().map(JsonParser::cleanup).collect(toList()));
         } else if (o instanceof Map) {
-            return unmodifiableMap(((Map<Object, Object>) o).entrySet().stream().collect(toMap(x -> cleanup(x.getKey()), x -> cleanup(x.getValue()))));
+            return cleanMap((Map) o);
         } else {
             return o;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <K, V> Map<K, V> cleanMap(Map<K, V> originalMap) {
+        // beware: Collectors.toMap throws NullPointerException here
+        final Map<K, V> result = new HashMap<>();
+        originalMap.forEach((k, v) -> result.put((K) cleanup(k), (V) cleanup(v)));
+        return result;
     }
 }
