@@ -24,7 +24,8 @@ public class ClojureHelper {
     /**
      * Clojure :template keyword
      */
-    public static final Keyword KV_TEMPLATE = Keyword.intern("template");
+    public static final Keyword
+            KV_TEMPLATE = Keyword.intern("template");
 
 
     /**

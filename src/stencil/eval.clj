@@ -11,7 +11,7 @@
 (defmethod eval-step :default [_ _ item] [item])
 
 (defmethod eval-step :if [function data item]
-  (let [condition (eval-rpn data  function (:condition item))]
+  (let [condition (eval-rpn data function (:condition item))]
     (trace "Condition %s evaluated to %s" (:condition item) condition)
     (if condition
       (mapcat (partial eval-step function data) (:then item))

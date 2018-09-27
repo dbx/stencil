@@ -23,15 +23,19 @@ public final class FileHelper {
     }
 
     /**
-     * Returns file name without extension part
+     * Returns file name without extension part.
+     *
+     * @return simple file name without extension.
+     * @throws NullPointerException the input is null
      */
     public static String removeExtension(File f) {
         String fileName = f.getName();
         if (fileName.contains(".")) {
             int loc = fileName.lastIndexOf('.');
             return fileName.substring(0, loc);
-        } else
+        } else {
             return fileName;
+        }
     }
 
     /**

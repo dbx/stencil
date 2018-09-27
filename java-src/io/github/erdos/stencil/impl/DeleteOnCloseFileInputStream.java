@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * Egy FileInputStream implementacio, ami torli a fajlt a .close() meghivasa utan.
+ * This implementation deletes the file after calling close() method.
  */
 @SuppressWarnings("unused")
 public final class DeleteOnCloseFileInputStream extends FileInputStream {

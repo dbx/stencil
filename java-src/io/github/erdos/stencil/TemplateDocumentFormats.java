@@ -1,38 +1,38 @@
 package io.github.erdos.stencil;
 
+import java.util.Optional;
+
 /**
  * These types are used when preprocessing a template document.
- *
  */
 public enum TemplateDocumentFormats {
 
     /**
-     * Zipped XML files type. See: OOXML.
+     * Microsoft Word Open XML Format Document file
      */
-    DOCX(OutputDocumentFormats.DOCX),
+    DOCX,
+
+    /**
+     * Microsoft PowerPoint Open XML Presentation file.
+     */
+    PPTX,
 
     /**
      * Raw XML file.
      */
-    XML(OutputDocumentFormats.XML),
+    XML,
 
     /**
      * Simple text file without formatting. Like XML but without a header.
      */
-    TXT(OutputDocumentFormats.TXT);
+    TXT;
 
-    private final OutputDocumentFormats outputFormat;
-
-    TemplateDocumentFormats(OutputDocumentFormats outputFormat) {
-        this.outputFormat = outputFormat;
-    }
-
-    /**
-     * Output format type associated with this template doc format.
-     *
-     * @return its equivalent output format
-     */
-    public OutputDocumentFormats asOutputFormat() {
-        return this.outputFormat;
+    public static Optional<TemplateDocumentFormats> ofExtension(String fileName) {
+        for (TemplateDocumentFormats format : TemplateDocumentFormats.values()) {
+            if (fileName.toUpperCase().endsWith("." + format.name())) {
+                return Optional.of(format);
+            }
+        }
+        return Optional.empty();
     }
 }

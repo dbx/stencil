@@ -26,13 +26,13 @@ public final class ZipHelper {
      * @throws IOException              on file system error
      */
     public static void unzipStreamIntoDirectory(InputStream zipFileStream, File unzipTargetDirectory) throws IOException {
-        if (zipFileStream == null)
+        if (zipFileStream == null) {
             throw new IllegalArgumentException("zip file stream is null!");
-        if (unzipTargetDirectory == null)
+        } else if (unzipTargetDirectory == null) {
             throw new IllegalArgumentException("target directory is null!");
-
-        if (unzipTargetDirectory.exists())
+        } else if (unzipTargetDirectory.exists()) {
             throw new IllegalStateException("unzip target dir already exists: " + unzipTargetDirectory);
+        }
 
         forceMkdir(unzipTargetDirectory);
 
@@ -53,6 +53,4 @@ public final class ZipHelper {
         }
         zipFileStream.close();
     }
-
-
 }

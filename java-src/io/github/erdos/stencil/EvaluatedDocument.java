@@ -7,16 +7,8 @@ import java.io.InputStream;
  */
 public interface EvaluatedDocument {
 
-    OutputDocumentFormats getFormat();
-
+    /**
+     * Content of document as input stream.
+     */
     InputStream getInputStream();
-
-//    EvaluatedStatistics getStatistics();
 }
-
-    /*
-    interface EvaluatedStatistics {
-
-    Optional<Integer> pageCount();
-}
-*/

@@ -24,7 +24,6 @@ import static java.lang.System.currentTimeMillis;
 import static java.nio.file.StandardWatchEventKinds.*;
 import static java.util.Arrays.stream;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Watches file system and automatically loads template files on file changes.
@@ -45,6 +44,7 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
      * @param templatesDirectory not null absolute path directory
      * @param factory            wrapped factory
      */
+    @SuppressWarnings("WeakerAccess")
     public DirWatcherTemplateFactory(File templatesDirectory, TemplateFactory factory) {
         if (templatesDirectory == null)
             throw new IllegalArgumentException("Template directory parameter is null!");
@@ -129,10 +129,16 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
     }
 
     private Stream<File> recurse(File f) {
-        if (f != null && f.isDirectory())
-            return stream(f.list()).map(x -> new File(f, x)).flatMap(this::recurse);
-        else
+        if (f != null && f.isDirectory()) {
+            final String[] files = f.list();
+            if (files == null) {
+                return Stream.empty();
+            } else {
+                return stream(files).map(x -> new File(f, x)).flatMap(this::recurse);
+            }
+        } else {
             return Stream.empty();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -154,6 +160,7 @@ public final class DirWatcherTemplateFactory implements TemplateFactory {
         key.reset();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void stop() {
         if (!running.getAndSet(false))
             throw new IllegalStateException("Already stopped!");

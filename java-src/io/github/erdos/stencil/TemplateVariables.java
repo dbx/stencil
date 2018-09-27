@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Holds information about variables found in template file.
+ * Holds information about variables found in template file. Can be used to validate template data.
  * <p>
  * A variable path looks like the following.
  *
@@ -23,7 +23,7 @@ public final class TemplateVariables {
     private final Set<String> variables;
     private final Node root;
 
-    public TemplateVariables(Set<String> variables) {
+    private TemplateVariables(Set<String> variables) {
         this.variables = unmodifiableSet(variables);
 
         Node r = LEAF;
@@ -112,7 +112,7 @@ public final class TemplateVariables {
         }
     }
 
-    static TemplateVariables fromPaths(Collection<String> allVariablePaths) {
+    public static TemplateVariables fromPaths(Collection<String> allVariablePaths) {
         return new TemplateVariables(new HashSet<>(allVariablePaths));
     }
 
@@ -225,7 +225,6 @@ public final class TemplateVariables {
             }
         };
     }
-
 
     /**
      * Matches list data

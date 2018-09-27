@@ -1,15 +1,14 @@
-(defproject io.github.erdos/stencil "0.1.8-SNAPSHOT"
+(defproject io.github.erdos/stencil-core "0.2.0-SNAPSHOT"
   :description       "Templating engine for office documents."
   :min-lein-version  "2.0.0"
   :java-source-paths ["java-src"]
   :javac-options     ["-target" "8" "-source" "8"]
   :aot               :all
-  :dependencies [;[org.apache.maven.surefire/surefire-providers "2.22.0"]
-                 [com.taoensso/timbre "4.10.0"] ;; naplozas
+  :dependencies [[com.taoensso/timbre "4.10.0"]
                  [org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/data.xml "0.2.0-alpha5"]
-                 [org.jodconverter/jodconverter-local "4.1.0"]] ;; pdf conversion
+                 [org.slf4j/slf4j-api "1.8.0-beta2"]]
   :pom-addition ([:properties ["maven.compiler.source" "8"] ["maven.compiler.target" "8"]])
   :pom-plugins [[org.apache.maven.plugins/maven-surefire-plugin "2.22.0"]]
 
