@@ -3,7 +3,7 @@
   (:gen-class)
   (:import [java.io File PipedInputStream PipedOutputStream InputStream]
            [java.util.zip ZipEntry ZipOutputStream]
-           [io.github.erdos.stencil.impl FileHelper ZipHelper])
+           [stencil FileHelper ZipHelper])
   (:require [clojure.data.xml :as xml]
             [clojure.data.xml.pu-map :as pu-map]
             [clojure.java.io :as io]

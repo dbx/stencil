@@ -12,7 +12,7 @@ node {
     }
     stage('Java tests') {
       sh 'lein pom'
-      sh 'mvn test -DexcludeGroupIds=io.github.erdos.stencil.IntegrationTest'
+      sh 'mvn test -DexcludeGroupIds=stencil.IntegrationTest'
     }
     stage('Clojure tests') {
       sh 'lein test'

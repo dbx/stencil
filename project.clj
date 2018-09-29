@@ -16,7 +16,7 @@
             [lein-javadoc "0.3.0"]
             [lein-test-out "0.3.1"]]
   :aliases      {"junit" ["with-profile" "test" "do" "test-out" "junit" "junit.xml"]}
-  :javadoc-opts {:package-names ["io.github.erdos.stencil"]
+  :javadoc-opts {:package-names ["stencil"]
                  :additional-args ["-overview" "java-src/overview.html"
                                    "-top" "<style>kbd{background:#ddd}; a[title~=class], a[title~=interface], a[title~=enum]{text-decoration: underline; font-weight: bold} dd>code{background:#eee}</style>"]}
   :main io.github.erdos.stencil.standalone.Main
