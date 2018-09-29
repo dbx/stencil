@@ -26,4 +26,8 @@
                                    [org.xmlunit/xmlunit-core "2.5.1"]
                                    [hiccup "1.0.5"]]
                     :resource-paths    ["test-resources"]
-                    :java-source-paths ["java-src" "test"]}})
+                    :java-source-paths ["java-src" "test"]}}
+
+
+  :deploy-repositories [[:clojars {:url "https://clojars.org/erdos/"
+                                   :sign-releases false}]])
