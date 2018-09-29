@@ -1,6 +1,8 @@
-(defproject io.github.erdos/stencil-core "0.2.0-SNAPSHOT"
+(defproject io.github.erdos/stencil-core "0.2.1-SNAPSHOT"
   :url "https://github.com/erdos/stencil-core"
   :description       "Templating engine for office documents."
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
   :min-lein-version  "2.0.0"
   :java-source-paths ["java-src"]
   :javac-options     ["-target" "8" "-source" "8"]
@@ -12,8 +14,7 @@
   :pom-addition ([:properties ["maven.compiler.source" "8"] ["maven.compiler.target" "8"]])
   :pom-plugins [[org.apache.maven.plugins/maven-surefire-plugin "2.22.0"]]
 
-  :plugins [[quickie "0.4.2" :exclusions [org.clojure/clojure]]
-            [lein-javadoc "0.3.0"]
+  :plugins [[lein-javadoc "0.3.0"]
             [lein-test-out "0.3.1"]]
   :aliases      {"junit" ["with-profile" "test" "do" "test-out" "junit" "junit.xml"]}
   :javadoc-opts {:package-names ["stencil"]
@@ -25,10 +26,4 @@
                                    [org.xmlunit/xmlunit-core "2.5.1"]
                                    [hiccup "1.0.5"]]
                     :resource-paths    ["test-resources"]
-                    :java-source-paths ["java-src" "test"]}}
-
-
-  :deploy-repositories [["clojars" {:url "https://clojars.org"
-                                    :sign-releases false
-
-                                    }]])
+                    :java-source-paths ["java-src" "test"]}})
