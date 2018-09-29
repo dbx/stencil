@@ -7,7 +7,6 @@
   :aot               :all
   :dependencies [[com.taoensso/timbre "4.10.0"]
                  [org.clojure/clojure "1.9.0"]
-                 [org.clojure/data.json "0.2.6"]
                  [org.clojure/data.xml "0.2.0-alpha5"]
                  [org.slf4j/slf4j-api "1.8.0-beta2"]]
   :pom-addition ([:properties ["maven.compiler.source" "8"] ["maven.compiler.target" "8"]])
