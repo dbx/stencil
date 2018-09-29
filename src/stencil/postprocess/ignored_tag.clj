@@ -13,8 +13,6 @@
     (f (update xml-tree :content (partial mapv (partial postwalk-xml f))))
     xml-tree))
 
-(defn- url-decode [s] (java.net.URLDecoder/decode (str s) "UTF-8"))
-
 (defn- map-str [f s] (s/join " " (keep f (s/split s #"\s+"))))
 
 (defn- gen-alias [] (name (gensym "xml")))

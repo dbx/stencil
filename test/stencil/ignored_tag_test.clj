@@ -25,14 +25,6 @@
        "<a:x mc:Ignorable=\"bb\" />"
        "</a:document>"))
 
-(deftest collect-all-nss-test
-  (->> test-data-2
-     (java.io.StringReader.)
-     (xml/parse)
-     (-collect-all-nss)
-     (= #{"http://schemas.openxmlformats.org/markup-compatibility/2006" "ns1" "ns2"})
-     (is)))
-
 (defn clear-all-metas [x] (-postwalk-xml (fn [c] (if (meta c) (with-meta c {}) c)) x))
 
 (deftest test-ignored-tag-2
