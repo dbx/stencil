@@ -1,4 +1,5 @@
 (defproject stencil/stencil-core "0.2.0-RELEASE"
+  :url "https://github.com/erdos/stencil-core"
   :description       "Templating engine for office documents."
   :min-lein-version  "2.0.0"
   :java-source-paths ["java-src"]
@@ -30,5 +31,5 @@
 
   :deploy-repositories [["clojars" {:url "https://clojars.org"
                                    :sign-releases false
-                                   :username "erdos"
-                                   :password :env}]])
+
+                                    }]])
