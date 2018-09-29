@@ -29,6 +29,7 @@
 
 
   :deploy-repositories [["clojars" {:url "https://clojars.org"
-                                   :sign-releases false
-
+                                    :sign-releases false
+                                    :username "erdos"
+                                    :password :env
                                     }]])
