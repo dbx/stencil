@@ -19,8 +19,7 @@
   :javadoc-opts {:package-names ["stencil"]
                  :additional-args ["-overview" "java-src/overview.html"
                                    "-top" "<style>kbd{background:#ddd}; a[title~=class], a[title~=interface], a[title~=enum]{text-decoration: underline; font-weight: bold} dd>code{background:#eee}</style>"]}
-  :main io.github.erdos.stencil.standalone.Main
-  :repl-options {:init-ns stencil.process}
+  :repl-options {:init-ns stencil.api}
   :jar-exclusions [#".*\.xml"]
   :profiles {:test {:dependencies [[junit/junit "4.12"]
                                    [org.xmlunit/xmlunit-core "2.5.1"]
