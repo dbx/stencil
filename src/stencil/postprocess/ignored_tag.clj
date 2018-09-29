@@ -5,6 +5,7 @@
             [clojure.string :as s]))
 
 (def ^:private ignorable-tag :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fmarkup-compatibility%2F2006/Ignorable)
+(def ^:private choice-tag :xmlns.http%3A%2F%2Fschemas.openxmlformats.org%2Fmarkup-compatibility%2F2006/Choice)
 
 ;; like clojure.walk/postwalk but keeps metadata and calls fn only on nodes
 (defn- postwalk-xml [f xml-tree]
@@ -14,47 +15,57 @@
 
 (defn- url-decode [s] (java.net.URLDecoder/decode (str s) "UTF-8"))
 
-(defn- collect-all-nss [form]
-  (->> form
-       (tree-seq map? :content)
-       (mapcat #(when (map? %) (list* (:tag %) (keys (:attrs %)))))
-       (keep namespace)
-       (keep #(when (.startsWith (str %) "xmlns.") (.substring (str %) 6)))
-       (map url-decode)
-       (into (sorted-set))))
-
 (defn- map-str [f s] (s/join " " (keep f (s/split s #"\s+"))))
 
 (defn- gen-alias [] (name (gensym "xml")))
 
+(defn- update-if-present [m path f] (if (get-in m path) (update-in m path f) m))
+
+(defn- update-choice-requires
+  "Updates the Requires attribute of a Choice tag with the fn"
+  [elem f]
+  (assert (ifn? f))
+  (if (= (:tag elem) choice-tag)
+    (update-in elem [:attrs :Requires] f)
+    elem))
+
+(defn- with-pu [object pu-map]
+  (assert (map? pu-map))
+  (assert (:tag object))
+  (with-meta object
+    {:clojure.data.xml/nss
+     (apply pu-map/assoc pu-map/EMPTY (interleave (vals pu-map) (keys pu-map)))}))
+
 ;; first call this
 (defn map-ignored-attr
-  "A gyoker elemben az Ignored attributumba beir ertekeket
-   Deszerializalas utan rogton hivjuk az xml fan."
+  "Replaces values in ignorable-tag and requires-tag attributes to
+   the namespace names they are aliased by."
   [xml-tree]
-  (postwalk-xml (fn [form]
-                  (if (contains? (:attrs form) ignorable-tag)
-                    (let [p->url (get-in (meta form) [:clojure.data.xml/nss :p->u])]
-                      (update-in form [:attrs ignorable-tag] (partial map-str p->url)))
-                    form))
-                xml-tree))
+  (postwalk-xml
+   (fn [form]
+     (let [p->url (get-in (meta form) [:clojure.data.xml/nss :p->u])]
+       (-> form
+          (update-if-present [:attrs ignorable-tag] (partial map-str p->url))
+          (update-choice-requires (partial map-str p->url)))))
+   xml-tree))
+
+
 
 ;; last call this
 (defn unmap-ignored-attr
   "A munka vegeztevel, szerializalas elott hivjuk."
   [xml-tree]
-  (let [all-nss (collect-all-nss xml-tree)
-        found (volatile! {}) ;; url -> alias mapping
-        find! (fn [uri] (when (all-nss uri)
-                          (or (get @found uri)
-                              (get (vswap! found assoc uri (gen-alias)) uri))))
-        make-nss-map #(apply pu-map/assoc pu-map/EMPTY (interleave (vals @found) (keys @found)))]
-    (->
-     (postwalk-xml (fn [form]
-                     (if (contains? (:attrs form) ignorable-tag)
-                       (update-in form [:attrs ignorable-tag] (partial map-str find!))
-                       form))
-                   xml-tree)
-     (with-meta {:clojure.data.xml/nss (make-nss-map)}))))
+  (let [found (volatile! {}) ;; url -> alias mapping
+        find! (fn [uri]
+                (or (get @found uri)
+                   (get (vswap! found assoc uri (gen-alias)) uri)))]
+    (with-pu
+      (postwalk-xml
+       (fn [form]
+         (-> form
+            (update-if-present [:attrs ignorable-tag] (partial map-str find!))
+            (update-choice-requires (partial map-str find!))))
+       xml-tree)
+      @found)))
 
 :OK
