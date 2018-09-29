@@ -29,5 +29,7 @@
                     :java-source-paths ["java-src" "test"]}}
 
 
-  :deploy-repositories [[:clojars {:url "https://clojars.org"
-                                   :sign-releases false}]])
+  :deploy-repositories [["clojars" {:url "https://clojars.org"
+                                   :sign-releases false
+                                   :username "erdos"
+                                   :password :env}]])
