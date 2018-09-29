@@ -1,4 +1,4 @@
-(defproject stencil/stencil-core "0.2.0-RELEASE"
+(defproject stencil/stencil-core "0.2.0-SNAPSHOT"
   :url "https://github.com/erdos/stencil-core"
   :description       "Templating engine for office documents."
   :min-lein-version  "2.0.0"
