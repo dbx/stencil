@@ -1,4 +1,4 @@
-(defproject stencil/stencil-core "0.2.0"
+(defproject stencil/stencil-core "0.2.0-RELEASE"
   :description       "Templating engine for office documents."
   :min-lein-version  "2.0.0"
   :java-source-paths ["java-src"]
