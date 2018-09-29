@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-CHANGED=`git diff | grep "defproject io.github.erdos/stencil"`.empty?;
+CHANGED=`git diff | grep "defproject stencil/stencil-core"`.empty?;
 ;
 if CHANGED; then
 

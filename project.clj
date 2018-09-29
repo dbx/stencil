@@ -1,4 +1,4 @@
-(defproject io.github.erdos/stencil-core "0.2.0-SNAPSHOT"
+(defproject stencil/stencil-core "0.2.0-SNAPSHOT"
   :description       "Templating engine for office documents."
   :min-lein-version  "2.0.0"
   :java-source-paths ["java-src"]
