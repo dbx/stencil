@@ -29,5 +29,5 @@
                     :java-source-paths ["java-src" "test"]}}
 
 
-  :deploy-repositories [[:clojars {:url "https://clojars.org/erdos/"
+  :deploy-repositories [[:clojars {:url "https://clojars.org"
                                    :sign-releases false}]])
