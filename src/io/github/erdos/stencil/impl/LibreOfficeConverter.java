@@ -132,8 +132,8 @@ public class LibreOfficeConverter implements Converter {
         if (!started.get())
             throw new IllegalStateException("Service has not yet been started!");
 
-        // we are lazy
-        if (document.getFormat() == outputFormat)
+        // we are lazy. if extensions already match then we need to conversion.
+        if (OutputDocumentFormats.ofExtension(document.getFormat().name()).orElse(null) == outputFormat)
             return new ConversionResult<>(outputFormat, document.getInputStream(), null);
 
         final InputDocumentFormats inputFormat = InputDocumentFormats.valueOf(document.getFormat().name());

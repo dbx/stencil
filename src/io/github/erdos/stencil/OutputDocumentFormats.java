@@ -72,6 +72,8 @@ public enum OutputDocumentFormats {
         return Optional.empty();
     }
 
+
+
     /**
      * Returns a lowercase 3-4 letter string that is the extension of the current file type.
      *
