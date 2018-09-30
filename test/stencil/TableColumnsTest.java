@@ -163,15 +163,15 @@ public class TableColumnsTest {
     /**
      * Returns a concatenation of all string literals from an xml file.
      *
-     * @param f xml file that must exist.
+     * @param xmlFile an existing XML file
      * @return string of text contents
      */
-    private static String extractWords(File f) {
-        assertTrue(f.getName().endsWith(".xml"));
-        assertTrue(f.exists());
+    private static String extractWords(File xmlFile) {
+        assertTrue(xmlFile.getName().endsWith(".xml"));
+        assertTrue(xmlFile.exists());
 
         final StringBuilder buffer = new StringBuilder();
-        try (FileInputStream inputStream = new FileInputStream(f)) {
+        try (FileInputStream inputStream = new FileInputStream(xmlFile)) {
             final XMLStreamReader reader = XMLInputFactory.newFactory().createXMLStreamReader(inputStream);
 
             while (reader.hasNext()) {

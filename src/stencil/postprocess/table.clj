@@ -233,15 +233,15 @@
                                       (find-enclosing-table))
                               (or table-loc)))]
     (if-let [grid-loc (find-grid-loc table-loc)]
-      (let [result-table (find-enclosing-table (remove-children-at-indices grid-loc removed-column-indices))
-            before-width (total-width grid-loc)
-            new-widths (calc-column-widths (->> result-table find-grid-loc zip/children (keep (comp ->int ooxml-w :attrs)))
-                                           before-width column-resize-strategy)]
-        (-> (find-grid-loc result-table)
-            (zip/edit update :content (partial map (fn [w cell] (assoc-in cell [:attrs ooxml-w] (str (int w)))) new-widths))
-            (find-enclosing-table)
-            (fix-table-width)
-            (fix-table-cells-widths new-widths)))
+      (let [result-table (find-enclosing-table (remove-children-at-indices grid-loc removed-column-indices))]
+        (if-let [widths (->> result-table find-grid-loc zip/children (keep (comp ->int ooxml-w :attrs)) seq)]
+          (let [new-widths (calc-column-widths widths (total-width grid-loc) column-resize-strategy)]
+            (-> (find-grid-loc result-table)
+               (zip/edit update :content (partial map (fn [w cell] (assoc-in cell [:attrs ooxml-w] (str (int w)))) new-widths))
+               (find-enclosing-table)
+               (fix-table-width)
+               (fix-table-cells-widths new-widths)))
+          result-table))
       table-loc)))
 
 ;; visszaadja soronkent a jobboldali margo objektumot
@@ -259,10 +259,12 @@
   (map-each-rows
    (fn [row border]
      (if border
-       (-> (find-last-child #(and (map? %) (some-> % :tag name #{"tc"})) row)
-           (->> (ensure-child "tcPr") (ensure-child "tcBorders") (ensure-child "right"))
-           (zip/replace border)
-           (find-enclosing-row))
+       (if-let [last-col (find-last-child #(and (map? %) (some-> % :tag name #{"tc"})) row)]
+         (-> last-col
+            (->> (ensure-child "tcPr") (ensure-child "tcBorders") (ensure-child "right"))
+            (zip/replace border)
+            (find-enclosing-row))
+         row)
        row))
    (find-enclosing-table table-loc) right-borders))
 
