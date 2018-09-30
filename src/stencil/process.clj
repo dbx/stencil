@@ -13,8 +13,7 @@
              [tokenizer :as tokenizer]
              [cleanup :as cleanup]
              [eval :as eval]
-             [tree-postprocess :as tree-postprocess]]
-            [taoensso.timbre :refer [log trace debug info warn error fatal]]))
+             [tree-postprocess :as tree-postprocess]]))
 
 (set! *warn-on-reflection* true)
 
