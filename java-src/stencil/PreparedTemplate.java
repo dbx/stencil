@@ -29,7 +29,9 @@ PreparedTemplate {
     /**
      * Format of template file.
      */
-    TemplateDocumentFormats getTemplateFormat();
+    default TemplateDocumentFormats getTemplateFormat() {
+        return 
+    }
 
     /**
      * Time when the template was processed.
