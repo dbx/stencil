@@ -1,6 +1,7 @@
 package stencil;
 
 import org.junit.Test;
+import stencil.impl.FileHelper;
 import stencil.impl.ZipHelper;
 
 import javax.xml.stream.XMLInputFactory;
@@ -9,8 +10,8 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -119,13 +120,18 @@ public class TableColumnsTest {
 
             EvaluatedDocument result = API.render(prepared, TemplateData.fromMap(data));
 
-            InputStream stream = result.getInputStream();
+            File temporaryDocx = File.createTempFile("sdf", ".docx");
+            assertTrue(temporaryDocx.delete());
+            Files.copy(result.getInputStream(), temporaryDocx.toPath());
+            System.out.println("Temporary docx file: " + temporaryDocx);
 
             File tmpdir = File.createTempFile("stencil-test", "");
             assertTrue(tmpdir.delete()); // so that we can create directory
-
-            ZipHelper.unzipStreamIntoDirectory(stream, tmpdir);
             tmpdir.deleteOnExit();
+
+            try (FileInputStream docxStream = new FileInputStream(temporaryDocx)) {
+                ZipHelper.unzipStreamIntoDirectory(docxStream, tmpdir);
+            }
 
             final String allWords = tree(tmpdir)
                     .stream()
