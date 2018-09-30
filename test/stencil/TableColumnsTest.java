@@ -1,7 +1,6 @@
 package stencil;
 
 import org.junit.Test;
-import stencil.impl.FileHelper;
 import stencil.impl.ZipHelper;
 
 import javax.xml.stream.XMLInputFactory;
@@ -114,18 +113,19 @@ public class TableColumnsTest {
 
             assertNotNull(testFileUrl);
 
-            File testFile = Paths.get(testFileUrl.toURI()).toFile();
+            final File testFile = Paths.get(testFileUrl.toURI()).toFile();
+            assertTrue(testFile.exists());
 
-            PreparedTemplate prepared = API.prepareTemplate(testFile);
+            final PreparedTemplate prepared = API.prepareTemplate(testFile);
+            final EvaluatedDocument result = API.render(prepared, TemplateData.fromMap(data));
 
-            EvaluatedDocument result = API.render(prepared, TemplateData.fromMap(data));
-
-            File temporaryDocx = File.createTempFile("sdf", ".docx");
+            final File temporaryDocx = File.createTempFile("sdf", ".docx");
             assertTrue(temporaryDocx.delete());
             Files.copy(result.getInputStream(), temporaryDocx.toPath());
+
             System.out.println("Temporary docx file: " + temporaryDocx);
 
-            File tmpdir = File.createTempFile("stencil-test", "");
+            final File tmpdir = File.createTempFile("stencil-test", "");
             assertTrue(tmpdir.delete()); // so that we can create directory
             tmpdir.deleteOnExit();
 
@@ -138,8 +138,6 @@ public class TableColumnsTest {
                     .filter(x -> x.getName().endsWith(".xml"))
                     .map(TableColumnsTest::extractWords)
                     .collect(joining(" "));
-
-            System.out.println(allWords);
 
             mustContain.forEach(w -> assertTrue("Should contain " + w, allWords.contains(w)));
             mustNotContain.forEach(w -> assertFalse("Should not contain " + w, allWords.contains(w)));
