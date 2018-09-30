@@ -27,10 +27,12 @@ PreparedTemplate {
     File getTemplateFile();
 
     /**
-     * Format of template file.
+     * Format of template file. Tries to guess from file name by default.
      */
     default TemplateDocumentFormats getTemplateFormat() {
-        return 
+        return TemplateDocumentFormats
+                .ofExtension(getTemplateFile().toString())
+                .orElseThrow(() -> new IllegalStateException("Could not guess extension from file name " + getTemplateFile()));
     }
 
     /**

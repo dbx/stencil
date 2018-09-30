@@ -98,13 +98,6 @@ public class DirWatcherTemplateFactoryTest implements TemplateFactory {
             }
 
             @Override
-            public TemplateDocumentFormats getTemplateFormat() {
-                return TemplateDocumentFormats
-                        .ofExtension(templateFile.getName())
-                        .orElseThrow(() -> new RuntimeException("Could not get extension for " + templateFile));
-            }
-
-            @Override
             public LocalDateTime creationDateTime() {
                 return null;
             }
