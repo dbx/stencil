@@ -43,6 +43,7 @@ public class ClojureHelper {
      */
     public static final Keyword KV_FUNCTION = Keyword.intern("function");
 
+    // requires stencil.process namespace so stencil is loaded.
     static {
         final IFn req = RT.var("clojure.core", "require");
         req.invoke(Symbol.intern("stencil.process"));
@@ -60,7 +61,7 @@ public class ClojureHelper {
 
 
     /**
-     * Shuts down clojure agents
+     * Shuts down clojure agents. Needed to speed up quitting from Clojure programs.
      */
     public static void callShutdownAgents() {
         RT.var("clojure.core", "shutdown-agents").run();

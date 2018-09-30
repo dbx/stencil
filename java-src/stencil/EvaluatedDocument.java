@@ -11,4 +11,6 @@ public interface EvaluatedDocument {
      * Content of document as input stream.
      */
     InputStream getInputStream();
+
+    TemplateDocumentFormats getFormat();
 }

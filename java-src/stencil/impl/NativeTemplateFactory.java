@@ -14,9 +14,9 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static stencil.TemplateDocumentFormats.ofExtension;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableSet;
+import static stencil.TemplateDocumentFormats.ofExtension;
 
 @SuppressWarnings("unused")
 public final class NativeTemplateFactory implements TemplateFactory {
@@ -65,6 +65,11 @@ public final class NativeTemplateFactory implements TemplateFactory {
             @Override
             public File getTemplateFile() {
                 return templateFile;
+            }
+
+            @Override
+            public TemplateDocumentFormats getTemplateFormat() {
+                return templateDocFormat;
             }
 
             @Override

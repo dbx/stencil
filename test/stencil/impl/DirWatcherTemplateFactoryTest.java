@@ -1,13 +1,14 @@
 package stencil.impl;
 
-import stencil.PreparedTemplate;
-import stencil.TemplateFactory;
-import stencil.TemplateVariables;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import stencil.PreparedTemplate;
+import stencil.TemplateDocumentFormats;
+import stencil.TemplateFactory;
+import stencil.TemplateVariables;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -94,6 +95,13 @@ public class DirWatcherTemplateFactoryTest implements TemplateFactory {
             @Override
             public File getTemplateFile() {
                 return templateFile;
+            }
+
+            @Override
+            public TemplateDocumentFormats getTemplateFormat() {
+                return TemplateDocumentFormats
+                        .ofExtension(templateFile.getName())
+                        .orElseThrow(() -> new RuntimeException("Could not get extension for " + templateFile));
             }
 
             @Override

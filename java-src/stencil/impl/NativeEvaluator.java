@@ -2,12 +2,13 @@ package stencil.impl;
 
 import clojure.lang.AFunction;
 import clojure.lang.IFn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import stencil.EvaluatedDocument;
 import stencil.PreparedTemplate;
 import stencil.TemplateData;
+import stencil.TemplateDocumentFormats;
 import stencil.functions.FunctionEvaluator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,22 +18,18 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static java.util.Collections.emptyList;
 import static stencil.impl.ClojureHelper.*;
 import static stencil.impl.Logging.debugStopWatch;
-import static java.util.Collections.emptyList;
 
 /**
  * Default implementation that calls the engine written in Clojure.
  */
-public class NativeEvaluator {
-
-    private final FunctionEvaluator functions = new FunctionEvaluator();
+public final class NativeEvaluator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(NativeEvaluator.class);
 
-    public FunctionEvaluator getFunctionEvaluator() {
-        return functions;
-    }
+    private final FunctionEvaluator functions = new FunctionEvaluator();
 
 
     /**
@@ -55,12 +52,31 @@ public class NativeEvaluator {
 
         final IFn fn = findFunction("do-eval-stream");
         final Object result = fn.invoke(makeArgsMap(template.getSecretObject(), data.getData()));
-        final InputStream resultStream = resultInputStream((Map) result);
+        final InputStream stream = resultInputStream((Map) result);
 
-        return () -> resultStream;
+        return build(stream, template.getTemplateFormat());
     }
 
-    private InputStream resultInputStream(Map result) {
+
+    public FunctionEvaluator getFunctionEvaluator() {
+        return functions;
+    }
+
+    private static EvaluatedDocument build(InputStream stream, TemplateDocumentFormats format) {
+        return new EvaluatedDocument() {
+            @Override
+            public InputStream getInputStream() {
+                return stream;
+            }
+
+            @Override
+            public TemplateDocumentFormats getFormat() {
+                return format;
+            }
+        };
+    }
+
+    private static InputStream resultInputStream(Map result) {
         if (!result.containsKey(KV_STREAM)) {
             throw new IllegalArgumentException("Input map does not contains :stream key!");
         } else {

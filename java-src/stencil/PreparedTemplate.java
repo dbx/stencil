@@ -27,6 +27,11 @@ PreparedTemplate {
     File getTemplateFile();
 
     /**
+     * Format of template file.
+     */
+    TemplateDocumentFormats getTemplateFormat();
+
+    /**
      * Time when the template was processed.
      *
      * @return template preprocess call time

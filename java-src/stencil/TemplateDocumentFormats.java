@@ -8,7 +8,7 @@ import java.util.Optional;
 public enum TemplateDocumentFormats {
 
     /**
-     * Microsoft Word Open XML Format Document file
+     * Microsoft Word Open XML Format Document file.
      */
     DOCX,
 
@@ -16,6 +16,16 @@ public enum TemplateDocumentFormats {
      * Microsoft PowerPoint Open XML Presentation file.
      */
     PPTX,
+
+    /**
+     * OpenDocument Text Document for LibreOffice.
+     */
+    ODT,
+
+    /**
+     * OpenDocument presentation files for LibreOffice.
+     */
+    ODP,
 
     /**
      * Raw XML file.
