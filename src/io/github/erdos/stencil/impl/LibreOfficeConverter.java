@@ -1,12 +1,16 @@
 package io.github.erdos.stencil.impl;
 
-import io.github.erdos.stencil.*;
+import io.github.erdos.stencil.ConversionResult;
+import io.github.erdos.stencil.Converter;
+import io.github.erdos.stencil.InputDocumentFormats;
+import io.github.erdos.stencil.OutputDocumentFormats;
 import org.jodconverter.LocalConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
+import stencil.EvaluatedDocument;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,9 +93,9 @@ public class LibreOfficeConverter implements Converter {
      * @param inputFormat  input file format
      * @param outputFormat output stream is expected in this file format
      * @return a new input stream with the conversion result
-     * @throws IllegalStateException when converter has not yet been started
+     * @throws IllegalStateException    when converter has not yet been started
      * @throws IllegalArgumentException when any argument is null
-     * @throws IOException           on file system IO error
+     * @throws IOException              on file system IO error
      */
     public InputStream convert(InputStream inputStream, InputDocumentFormats inputFormat, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
         if (inputStream == null)

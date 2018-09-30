@@ -1,5 +1,7 @@
 package io.github.erdos.stencil;
 
+import stencil.EvaluatedDocument;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -1,5 +1,9 @@
 package io.github.erdos.stencil;
 
+import stencil.EvaluatedDocument;
+import stencil.PreparedTemplate;
+import stencil.TemplateData;
+
 /**
  * Evaluates a preprocessed template using a given data set.
  */

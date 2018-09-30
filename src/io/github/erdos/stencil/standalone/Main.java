@@ -1,9 +1,9 @@
 package io.github.erdos.stencil.standalone;
 
-import io.github.erdos.stencil.PreparedTemplate;
 import io.github.erdos.stencil.Process;
 import io.github.erdos.stencil.ProcessFactory;
-import io.github.erdos.stencil.TemplateData;
+import stencil.PreparedTemplate;
+import stencil.TemplateData;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import java.nio.file.Files;
 import java.util.Map;
 import java.util.Optional;
 
-import static io.github.erdos.stencil.impl.ClojureHelper.callShutdownAgents;
-import static io.github.erdos.stencil.impl.FileHelper.extension;
-import static io.github.erdos.stencil.impl.FileHelper.removeExtension;
+import static stencil.impl.ClojureHelper.callShutdownAgents;
+import static stencil.impl.FileHelper.extension;
+import static stencil.impl.FileHelper.removeExtension;
 
 /**
  * Standalone template engine runner.
