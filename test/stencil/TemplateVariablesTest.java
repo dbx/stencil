@@ -18,8 +18,9 @@ public class TemplateVariablesTest {
     @Test
     public void testSimple() {
         final Set<String> schema = set("a.x.p", "a.x.q");
+        Map<String, Object> data = map("a", map("x", map("p", null, "q", 23)));
 
-        fromPaths(schema).throwWhenInvalid(fromMap(map("a", map("x", map("p", null, "q", 23)))));
+        fromPaths(schema).throwWhenInvalid(fromMap(data));
     }
 
 

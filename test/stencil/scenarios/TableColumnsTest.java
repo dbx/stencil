@@ -1,6 +1,10 @@
-package stencil;
+package stencil.scenarios;
 
 import org.junit.Test;
+import stencil.API;
+import stencil.EvaluatedDocument;
+import stencil.PreparedTemplate;
+import stencil.TemplateData;
 import stencil.impl.ZipHelper;
 
 import javax.xml.stream.XMLInputFactory;
@@ -134,7 +138,7 @@ public class TableColumnsTest {
      * @param mustNotContain the result must not contains these words.
      */
     @SuppressWarnings("SameParameterValue")
-    private static void testWithData(String testFileName, Map<String, Object> data, List<String> mustContain, List<String> mustNotContain) {
+    public static void testWithData(String testFileName, Map<String, Object> data, List<String> mustContain, List<String> mustNotContain) {
         try {
             final URL testFileUrl = TableColumnsTest.class.getClassLoader().getResource(testFileName);
 
