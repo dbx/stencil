@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public final class API {
 
-    public PreparedTemplate prepareTemplate(File templateFile) throws IOException {
+    public static PreparedTemplate prepareTemplate(File templateFile) throws IOException {
         return new NativeTemplateFactory().prepareTemplateFile(templateFile);
     }
 
-    public EvaluatedDocument render(PreparedTemplate template, TemplateData data) {
+    public static EvaluatedDocument render(PreparedTemplate template, TemplateData data) {
         return new NativeEvaluator().render(template, data);
     }
 }
