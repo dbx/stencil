@@ -2,6 +2,7 @@
 
 First of all, you need to add Stencil to the list of dependencies in your project.
 The Stencil home page shows the current version you can use in your build files.
+1
 
 ## Java API
 
