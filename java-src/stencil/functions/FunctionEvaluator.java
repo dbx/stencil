@@ -13,6 +13,7 @@ public final class FunctionEvaluator {
         registerFunctions(StringFunctions.values());
         registerFunctions(NumberFunctions.values());
         registerFunctions(DateFunctions.values());
+        registerFunctions(LocaleFunctions.values());
     }
 
     private void registerFunction(Function function) {
