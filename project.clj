@@ -25,4 +25,5 @@
                                    [org.xmlunit/xmlunit-core "2.5.1"]
                                    [hiccup "1.0.5"]]
                     :resource-paths    ["test-resources"]
-                    :java-source-paths ["java-src" "test"]}})
+                    :test-paths ["java-test"]
+                    :java-source-paths ["java-src"]}})
