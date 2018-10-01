@@ -10,11 +10,11 @@ import java.util.Queue;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static io.github.erdos.stencil.impl.FileHelper.extension;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import static stencil.impl.FileHelper.extension;
 
 /**
  * Parses CLI arg list.

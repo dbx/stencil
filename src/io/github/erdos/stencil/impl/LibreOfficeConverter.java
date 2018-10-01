@@ -1,16 +1,12 @@
 package io.github.erdos.stencil.impl;
 
-import io.github.erdos.stencil.ConversionResult;
-import io.github.erdos.stencil.Converter;
-import io.github.erdos.stencil.InputDocumentFormats;
-import io.github.erdos.stencil.OutputDocumentFormats;
+import io.github.erdos.stencil.*;
 import org.jodconverter.LocalConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
-import stencil.EvaluatedDocument;
 
 import java.io.File;
 import java.io.FileInputStream;

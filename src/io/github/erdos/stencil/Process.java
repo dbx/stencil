@@ -4,7 +4,6 @@ import io.github.erdos.stencil.impl.LibreOfficeConverter;
 import org.jodconverter.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import stencil.*;
 
 import java.io.File;
 import java.io.IOException;

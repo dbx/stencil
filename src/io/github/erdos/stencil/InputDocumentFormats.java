@@ -2,7 +2,7 @@ package io.github.erdos.stencil;
 
 import java.util.Optional;
 
-import static stencil.impl.FileHelper.extension;
+import static io.github.erdos.stencil.impl.FileHelper.extension;
 
 /**
  * Supported raw template file types.
