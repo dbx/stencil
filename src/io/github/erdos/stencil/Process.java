@@ -99,7 +99,7 @@ public final class Process implements TemplateFactory {
             before = System.currentTimeMillis();
         }
 
-        final PreparedTemplate prepared = API.prepareTemplate(templateFile);
+        final PreparedTemplate prepared = API.prepare(templateFile);
 
         LOGGER.info("Prepared template file {} at {}", templateFile, prepared.creationDateTime());
 

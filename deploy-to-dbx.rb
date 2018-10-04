@@ -1,9 +1,6 @@
 #!/bin/env ruby
 
-puts (`lein clean` or abort("Could not clean up. No leiningen?"))
-puts (`lein pom` or abort("Could not make pom file"))
-puts (`lein uberjar` or abort("Could not compile!"))
-# puts (`mvn package -DskipTests` or abort("Could not make jar package"))
+puts (`mvn clean package -DskipTests` or abort("Could not make jar package"))
 
 JARFILE = Dir.glob("target/stencil-*.jar").find { |fn| not fn.include? "-standalone" }
 UBERJARFILE = Dir.glob("target/stencil-*-standalone.jar").first
