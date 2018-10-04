@@ -1,6 +1,9 @@
 # Dokumentum előállító modul
 
-Tesztek statusza: <a href="http://ci.dbx.hu/job/stencil-unit-tests/lastCompletedBuild/testReport/"><img src="http://ci.dbx.hu/buildStatus/icon?job=stencil-unit-tests"/></a>
+
+Fuggoseg: `hu.dbx/stencil/2.2.0-SNAPSHOT`
+
+A modul epit a [stencil](https://github.com/erdos/stencil) nyilt forrasu megoldasra.
 
 ## Függőségek
 

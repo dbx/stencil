@@ -11,7 +11,7 @@ POMFILE = "pom.xml"
 
 abort('Missing jar file, build it first!') unless JARFILE
 
-GROUP = "io/github/erdos"
+GROUP = "hu/dbx"
 ARTIFACT = "stencil"
 VERSION = /stencil-(.*).jar/.match(JARFILE)[1]
 
