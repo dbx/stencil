@@ -1,10 +1,6 @@
 package io.github.erdos.stencil;
 
-import io.github.erdos.stencil.functions.Function;
-import io.github.erdos.stencil.impl.CachingTemplateFactory;
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
-import io.github.erdos.stencil.impl.NativeEvaluator;
-import io.github.erdos.stencil.impl.NativeTemplateFactory;
 import org.jodconverter.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +23,13 @@ public final class Process implements TemplateFactory {
     private final static Logger LOGGER = LoggerFactory.getLogger(Process.class);
 
     private final Converter converter;
-    private final TemplateFactory templateFactory;
-    private final NativeEvaluator evaluator = new NativeEvaluator();
 
     Process(File libreOfficeHome) {
         converter = new LibreOfficeConverter(libreOfficeHome);
-        templateFactory = new CachingTemplateFactory(new NativeTemplateFactory(converter));
     }
 
     Process(OfficeManager officeManager) {
         converter = new LibreOfficeConverter(officeManager);
-        templateFactory = new CachingTemplateFactory(new NativeTemplateFactory(converter));
     }
 
     /**
@@ -56,17 +48,6 @@ public final class Process implements TemplateFactory {
      */
     public void stop() {
         converter.stop();
-    }
-
-    /**
-     * Registers functions to his evaluator engine.
-     * The registered functions can be called from inside template documents.
-     *
-     * @param functions vary array of function instances.
-     * @throws IllegalArgumentException when any arg is null
-     */
-    public void registerFunctions(Function... functions) {
-        evaluator.getFunctionEvaluator().registerFunctions(functions);
     }
 
     /**
@@ -91,7 +72,7 @@ public final class Process implements TemplateFactory {
         if (!format.isPresent())
             throw new IllegalArgumentException("Unexpected format for file name: " + outputFile.getName());
 
-        final EvaluatedDocument rendered = evaluator.render(template, templateData);
+        EvaluatedDocument rendered = API.render(template, templateData);
 
         try (InputStream stream = converter.convert(rendered, format.get()).getOutput()) {
             Files.copy(stream, outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -118,14 +99,15 @@ public final class Process implements TemplateFactory {
             before = System.currentTimeMillis();
         }
 
-        final PreparedTemplate result = templateFactory.prepareTemplateFile(templateFile);
-        LOGGER.info("Prepared template file {} at {}", templateFile, result.creationDateTime());
+        final PreparedTemplate prepared = API.prepareTemplate(templateFile);
+
+        LOGGER.info("Prepared template file {} at {}", templateFile, prepared.creationDateTime());
 
         if (LOGGER.isDebugEnabled()) {
             long after = System.currentTimeMillis();
             LOGGER.debug("Template file {} took {}ms", templateFile, after - before);
         }
 
-        return result;
+        return prepared;
     }
 }

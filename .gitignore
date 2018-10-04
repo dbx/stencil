@@ -1,7 +1,6 @@
 /target
 /classes
 /checkouts
-pom.xml
 pom.xml.asc
 *.jar
 *.class
@@ -10,7 +9,6 @@ pom.xml.asc
 .hgignore
 .hg/
 *.iml
-pom.xml
 /javadoc
 junit.xml
 .~lock.*

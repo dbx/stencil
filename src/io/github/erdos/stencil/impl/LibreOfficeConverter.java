@@ -89,9 +89,9 @@ public class LibreOfficeConverter implements Converter {
      * @param inputFormat  input file format
      * @param outputFormat output stream is expected in this file format
      * @return a new input stream with the conversion result
-     * @throws IllegalStateException when converter has not yet been started
+     * @throws IllegalStateException    when converter has not yet been started
      * @throws IllegalArgumentException when any argument is null
-     * @throws IOException           on file system IO error
+     * @throws IOException              on file system IO error
      */
     public InputStream convert(InputStream inputStream, InputDocumentFormats inputFormat, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
         if (inputStream == null)
@@ -128,8 +128,8 @@ public class LibreOfficeConverter implements Converter {
         if (!started.get())
             throw new IllegalStateException("Service has not yet been started!");
 
-        // we are lazy
-        if (document.getFormat() == outputFormat)
+        // we are lazy. if extensions already match then we need to conversion.
+        if (OutputDocumentFormats.ofExtension(document.getFormat().name()).orElse(null) == outputFormat)
             return new ConversionResult<>(outputFormat, document.getInputStream(), null);
 
         final InputDocumentFormats inputFormat = InputDocumentFormats.valueOf(document.getFormat().name());

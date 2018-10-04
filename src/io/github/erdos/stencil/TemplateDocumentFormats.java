@@ -2,7 +2,6 @@ package io.github.erdos.stencil;
 
 /**
  * These types are used when preprocessing a template document.
- *
  */
 public enum TemplateDocumentFormats {
 
