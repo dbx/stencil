@@ -1,7 +1,6 @@
 # Dokumentum előállító modul
 
-
-Fuggoseg: `hu.dbx/stencil/2.2.0-SNAPSHOT`
+Fuggoseg: `hu.dbx.stencil/0.2.5`
 
 A modul epit a [stencil](https://github.com/erdos/stencil) nyilt forrasu megoldasra.
 
@@ -10,14 +9,6 @@ A modul epit a [stencil](https://github.com/erdos/stencil) nyilt forrasu megolda
 - Java 8 (tesztelve: `Java 1.8.0_151 OpenJDK 64-Bit Server VM`)
 - Fejlesztéshez: Leiningen 2.7.1 vagy újabb (tesztelve: `2.7.1`)
 - Futtatáshoz: LibreOffice 5 (tesztelve: `5.3.7.2.0+` verzió)
-
-## Dokumentáció
-
-- [Fejlesztői dokumentáció](development.md)
-- [Sablonfájlok nyelvtana](doc/Syntax.md)
-- [Futtatás önálló programként](doc/Standalone.md)
-- Javadoc: futtassuk a `javadoc.sh` parancsot. A kimenet a `./javadoc` mappaba kerul.
-- Generalt javadoc a dbx ci szerveren: http://ci.dbx.hu/job/stencil-unit-tests/Javadoc/
 
 ## Fejlesztői konvenciók
 
