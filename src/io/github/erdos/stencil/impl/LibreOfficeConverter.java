@@ -9,7 +9,6 @@ import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
@@ -120,7 +119,7 @@ public class LibreOfficeConverter implements Converter {
             throw new IOException(e);
         }
 
-        return new FileInputStream(temporartOutputFile);
+        return new DeleteOnCloseFileInputStream(temporartOutputFile);
     }
 
     @Override
