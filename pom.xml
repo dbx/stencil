@@ -3,7 +3,7 @@
   <groupId>hu.dbx</groupId>
   <artifactId>stencil</artifactId>
   <packaging>jar</packaging>
-  <version>0.2.7</version>
+  <version>0.2.7b</version>
   <name>stencil-dbx</name>
   <description>Templating engine for office documents.</description>
   <scm>

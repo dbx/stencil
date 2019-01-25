@@ -79,6 +79,10 @@ public final class Process implements TemplateFactory {
         }
     }
 
+    public Converter getConverter() {
+        return converter;
+    }
+
     /**
      * Calls prepareTemplateFile and renderTemplate as one step.
      *
