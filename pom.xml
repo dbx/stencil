@@ -3,7 +3,7 @@
   <groupId>hu.dbx</groupId>
   <artifactId>stencil</artifactId>
   <packaging>jar</packaging>
-  <version>0.2.8</version>
+  <version>0.2.8b</version>
   <name>stencil-dbx</name>
   <description>Templating engine for office documents.</description>
   <scm>
@@ -82,7 +82,7 @@
     <dependency>
       <groupId>org.jodconverter</groupId>
       <artifactId>jodconverter-local</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.2</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
