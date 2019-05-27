@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.util.Map;
 import java.util.Optional;
 
-import static io.github.erdos.stencil.impl.ClojureHelper.callShutdownAgents;
 import static io.github.erdos.stencil.impl.FileHelper.extension;
 import static io.github.erdos.stencil.impl.FileHelper.removeExtension;
 
@@ -54,7 +53,6 @@ public final class Main {
             }
         } finally {
             process.stop();
-            callShutdownAgents();
         }
     }
 

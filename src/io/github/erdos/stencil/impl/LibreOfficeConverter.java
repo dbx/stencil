@@ -129,10 +129,10 @@ public class LibreOfficeConverter implements Converter {
 
         // we are lazy. if extensions already match then we need to conversion.
         if (OutputDocumentFormats.ofExtension(document.getFormat().name()).orElse(null) == outputFormat)
-            return new ConversionResult<>(outputFormat, document.getInputStream(), null);
+            return new ConversionResult<>(outputFormat, document.toInputStream(executor), null);
 
         final InputDocumentFormats inputFormat = InputDocumentFormats.valueOf(document.getFormat().name());
-        final InputStream inputStream = convert(document.getInputStream(), inputFormat, outputFormat);
+        final InputStream inputStream = convert(document.toInputStream(executor), inputFormat, outputFormat);
         return new ConversionResult<>(outputFormat, inputStream, null);
     }
 }
