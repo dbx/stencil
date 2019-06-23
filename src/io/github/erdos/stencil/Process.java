@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -60,10 +61,30 @@ public final class Process implements TemplateFactory {
      * @throws IllegalArgumentException when any argument is null
      */
     public void renderTemplate(PreparedTemplate template, TemplateData templateData, File outputFile) throws IOException {
+        renderTemplate(template, null, templateData, outputFile);
+    }
+
+    /**
+     * Renders a preprocessed template.
+     *
+     * @param template     preprocessed template
+     * @param fragments    preprocessed fragments
+     * @param templateData data to fill template with
+     * @param outputFile   rendered document is written to this file
+     * @throws IOException              on file system err
+     * @throws IllegalArgumentException when any argument is null
+     */
+    public void renderTemplate(PreparedTemplate template, Map<String, PreparedFragment> fragments,
+                               TemplateData templateData, File outputFile) throws IOException {
         if (outputFile == null)
             throw new IllegalArgumentException("Output File is null!");
         if (template == null)
             throw new IllegalArgumentException("Template is null!");
+        if (fragments != null) {
+            fragments.entrySet().stream().filter(fragmentEntry -> fragmentEntry.getValue() == null).forEach(fragmentEntry -> {
+                throw new IllegalArgumentException("Fragment '" + fragmentEntry.getKey() + "' is null!");
+            });
+        }
         if (templateData == null)
             throw new IllegalArgumentException("Template Data is null!");
 
@@ -72,7 +93,9 @@ public final class Process implements TemplateFactory {
         if (!format.isPresent())
             throw new IllegalArgumentException("Unexpected format for file name: " + outputFile.getName());
 
-        EvaluatedDocument rendered = API.render(template, templateData);
+        EvaluatedDocument rendered = fragments != null
+                ? API.render(template, fragments, templateData)
+                : API.render(template, templateData);
 
         try (InputStream stream = converter.convert(rendered, format.get()).getOutput()) {
             Files.copy(stream, outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
