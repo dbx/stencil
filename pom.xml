@@ -3,13 +3,13 @@
   <groupId>hu.dbx</groupId>
   <artifactId>stencil</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.3b</version>
+  <version>0.3.4</version>
   <name>stencil-dbx</name>
   <description>Templating engine for office documents.</description>
   <scm>
-    <url>https://github.com/dbx/stencil-dbx</url>
-    <connection>scm:git:git://github.com/dbx/stencil-dbx.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/dbx/stencil-dbx.git</developerConnection>
+    <url>https://github.com/dbx/stencil</url>
+    <connection>scm:git:git://github.com/dbx/stencil.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/dbx/stencil.git</developerConnection>
   </scm>
   <build>
     <extensions>
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>io.github.erdos</groupId>
       <artifactId>stencil-core</artifactId>
-      <version>0.3.3</version>
+      <version>0.3.4</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
