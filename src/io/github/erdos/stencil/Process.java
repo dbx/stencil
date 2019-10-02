@@ -1,6 +1,7 @@
 package io.github.erdos.stencil;
 
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
+import org.apache.commons.lang3.time.StopWatch;
 import org.jodconverter.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,19 +121,18 @@ public final class Process implements TemplateFactory {
     }
 
     @Override
-    public PreparedTemplate prepareTemplateFile(File templateFile) throws IOException {
-        long before = 0;
+    public PreparedTemplate prepareTemplateFile(File templateFile, PrepareOptions prepareOptions) throws IOException {
+        StopWatch stopWatch = null;
         if (LOGGER.isDebugEnabled()) {
-            before = System.currentTimeMillis();
+            stopWatch = StopWatch.createStarted();
         }
 
-        final PreparedTemplate prepared = API.prepare(templateFile);
-
+        final PreparedTemplate prepared = API.prepare(templateFile, prepareOptions);
         LOGGER.info("Prepared template file {} at {}", templateFile, prepared.creationDateTime());
 
         if (LOGGER.isDebugEnabled()) {
-            long after = System.currentTimeMillis();
-            LOGGER.debug("Template file {} took {}ms", templateFile, after - before);
+            stopWatch.stop();
+            LOGGER.debug("Template file {} took {}ms", templateFile, stopWatch.getSplitTime());
         }
 
         return prepared;
