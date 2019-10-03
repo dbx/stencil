@@ -1,6 +1,6 @@
 # Dokumentum előállító modul
 
-Fuggoseg: `hu.dbx.stencil/0.3.3`
+Fuggoseg: `hu.dbx.stencil/0.3.7`
 
 A modul epit a [stencil](https://github.com/erdos/stencil) nyilt forrasu megoldasra.
 
