@@ -2,7 +2,7 @@ package io.github.erdos.stencil;
 
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
 import org.apache.commons.lang3.time.StopWatch;
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.core.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

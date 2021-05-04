@@ -1,6 +1,6 @@
 package io.github.erdos.stencil;
 
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.core.office.OfficeManager;
 
 import java.io.File;
 import java.util.Comparator;
