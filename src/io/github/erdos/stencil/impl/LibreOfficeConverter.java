@@ -38,7 +38,8 @@ public class LibreOfficeConverter implements Converter {
         if (!new File(officeHome, "program/soffice.bin").exists())
             throw new IllegalArgumentException("Office home nem korrekt: hianyzik a program/soffice.bin fajlt!");
 
-        this.officeManager = LocalOfficeManager.builder().officeHome(officeHome).build();
+        this.officeManager = LocalOfficeManager.builder().officeHome(officeHome)
+            .afterStartProcessDelay(1000L).build();
     }
 
     /**
