@@ -124,7 +124,8 @@ public final class Process implements TemplateFactory {
     public PreparedTemplate prepareTemplateFile(File templateFile, PrepareOptions prepareOptions) throws IOException {
         StopWatch stopWatch = null;
         if (LOGGER.isDebugEnabled()) {
-            stopWatch = StopWatch.createStarted();
+            stopWatch = new StopWatch();
+            stopWatch.start();
         }
 
         final PreparedTemplate prepared = API.prepare(templateFile, prepareOptions);
