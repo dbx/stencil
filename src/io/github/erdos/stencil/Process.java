@@ -133,7 +133,7 @@ public final class Process implements TemplateFactory {
 
         if (LOGGER.isDebugEnabled()) {
             stopWatch.stop();
-            LOGGER.debug("Template file {} took {}ms", templateFile, stopWatch.getSplitTime());
+            LOGGER.debug("Template file {} took {}ms", templateFile, stopWatch.getTime());
         }
 
         return prepared;
