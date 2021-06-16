@@ -9,6 +9,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("java:S5976") //parameterized tests, TODO
 public class ArgsParserTest {
 
 
@@ -53,5 +54,6 @@ public class ArgsParserTest {
         // THEN
         assertEquals(OutputDocumentFormats.PDF, args.getOutputFormat());
     }
+
 
 }

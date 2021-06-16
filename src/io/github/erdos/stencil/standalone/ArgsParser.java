@@ -1,6 +1,7 @@
 package io.github.erdos.stencil.standalone;
 
 import io.github.erdos.stencil.OutputDocumentFormats;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -53,8 +54,9 @@ public final class ArgsParser {
         } else if (items.element().startsWith(longKey + "=")) {
             String poke = items.remove();
             return Optional.of(parser.apply(poke.substring(longKey.length() + 1)));
-        } else
+        } else {
             return Optional.empty();
+        }
     }
 
     /**
@@ -63,10 +65,7 @@ public final class ArgsParser {
     private static boolean maybeReadFlag(Queue<String> items, String shortKey, String longKey) {
         if (items.isEmpty()) {
             return false;
-        } else if (items.element().equals(shortKey)) {
-            items.remove();
-            return true;
-        } else if (items.element().equals(longKey)) {
+        } else if (StringUtils.equalsAny(items.element(), shortKey, longKey)) {
             items.remove();
             return true;
         } else {
@@ -78,9 +77,13 @@ public final class ArgsParser {
     /**
      * Parses CLI args and returns an ArgsParser instance
      *
-     * @param args CLI arg list
+     * @param args
+     *         CLI arg list
+     *
      * @return new instance holding arguments
-     * @throws IllegalArgumentException on arg format error
+     *
+     * @throws IllegalArgumentException
+     *         on arg format error
      */
     @SuppressWarnings("WeakerAccess")
     public static ArgsParser parse(String... args) {
@@ -88,30 +91,34 @@ public final class ArgsParser {
         final Queue<String> arguments = new LinkedList<>(asList(args));
 
         OutputDocumentFormats outputFormat = null;
-        boolean printTemplateInfo = false;
+        boolean printTemplateInfo;
         File officeHome = null;
 
         while (!arguments.isEmpty()) {
-            final Optional<OutputDocumentFormats> mOut = maybeRead(arguments, "-T", "--output-type", (x) -> OutputDocumentFormats.ofExtension(x).orElseThrow(() -> new RuntimeException("Unexpected output format: " + x)));
+            final Optional<OutputDocumentFormats> mOut = maybeRead(arguments, "-T", "--output-type", x -> OutputDocumentFormats.ofExtension(x).orElseThrow(() -> new RuntimeException(
+                    "Unexpected output format: " + x)));
             if (mOut.isPresent()) {
                 outputFormat = mOut.get();
-                continue;
             }
 
             final Optional<File> mOfficeHome = maybeRead(arguments, "-H", "--office-home", File::new);
             if (mOfficeHome.isPresent()) {
                 officeHome = mOfficeHome.get();
+            }
+
+            if (arguments.isEmpty()) {
                 continue;
             }
 
-            printTemplateInfo = printTemplateInfo || maybeReadFlag(arguments, "-P", "--print-info");
+            printTemplateInfo = maybeReadFlag(arguments, "-P", "--print-info");
 
             File templateFile = new File(arguments.remove());
             List<File> dataFiles = arguments.stream().map(File::new).collect(toList());
 
-            if (outputFormat == null)
+            if (outputFormat == null) {
                 outputFormat = OutputDocumentFormats.ofExtension(extension(templateFile))
                         .orElseThrow(iae("Can not parse template file extension '%s' as output type", extension(templateFile)));
+            }
             return new ArgsParser(outputFormat, templateFile, dataFiles, printTemplateInfo, officeHome);
         }
 

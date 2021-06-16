@@ -1,12 +1,16 @@
 package io.github.erdos.stencil;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jodconverter.core.office.OfficeManager;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.List;
-
-import static java.util.Arrays.asList;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Helps to construct Process instances.
@@ -20,9 +24,13 @@ public final class ProcessFactory {
     /**
      * Constructs a process instance from a given office manager.
      *
-     * @param officeManager office manager instance
+     * @param officeManager
+     *         office manager instance
+     *
      * @return new process instance
-     * @throws IllegalArgumentException when office manager is null
+     *
+     * @throws IllegalArgumentException
+     *         when office manager is null
      */
     public static Process fromOfficeManager(OfficeManager officeManager) throws IllegalArgumentException {
         return new Process(officeManager);
@@ -33,9 +41,13 @@ public final class ProcessFactory {
      * A correct directory must contain a "program/soffice.bin" file.
      * Exception is throw when the directory is not a valid location.
      *
-     * @param libreOfficeHomeDirectory place of LO installation.
+     * @param libreOfficeHomeDirectory
+     *         place of LO installation.
+     *
      * @return new process instance
-     * @throws IllegalArgumentException when argument is not valid LO directory
+     *
+     * @throws IllegalArgumentException
+     *         when argument is not valid LO directory
      */
     public static Process fromLibreOfficeHome(File libreOfficeHomeDirectory) throws IllegalArgumentException {
         return new Process(libreOfficeHomeDirectory);
@@ -50,31 +62,38 @@ public final class ProcessFactory {
      * Finally, looks at /opt/libreoffice* and tries to load largest version number.
      *
      * @return a new Process instance with a running LibreOffice
-     * @throws IllegalStateException when no standard directory has been found.
+     *
+     * @throws IllegalStateException
+     *         when no standard directory has been found.
      */
     public static Process fromLocalLibreOffice() throws IllegalStateException {
-        if (null != System.getenv("LIBRE_OFFICE_HOME")) {
-            File home = new File(System.getenv("LIBRE_OFFICE_HOME"));
-
+        //default locations
+        final Optional<Process> defaultLocProcess = Stream.of(System.getenv("LIBRE_OFFICE_HOME"),
+                "/usr/lib64/libreoffice",
+                "/usr/lib/libreoffice")
+                .filter(StringUtils::isNotEmpty)
+                .map(File::new)
+                .filter(File::exists)
+                .map(ProcessFactory::fromLibreOfficeHome)
+                .findFirst();
+        if (defaultLocProcess.isPresent()) {
+            return defaultLocProcess.get();
         }
-
-        final File home1 = new File("/usr/lib64/libreoffice");
-        if (home1.exists()) {
-            return fromLibreOfficeHome(home1);
+        final Path opt = Paths.get("/opt");
+        if (Files.isDirectory(opt)) {
+            try (Stream<Path> optFiles = Files.list(opt)) {
+                final Optional<Process> optProcess =
+                        optFiles.filter(p -> p.getFileName().startsWith("libreoffice"))
+                                .max(Comparator.naturalOrder())
+                                .map(Path::toFile)
+                                .map(ProcessFactory::fromLibreOfficeHome);
+                if (optProcess.isPresent()) {
+                    return optProcess.get();
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not list " + opt);
+            }
         }
-
-        final File home2 = new File("/usr/lib/libreoffice");
-        if (home2.exists()) {
-            return fromLibreOfficeHome(home2);
-        }
-
-        final File[] optFiles = new File("/opt").listFiles((dir, name) -> name.startsWith("libreoffice"));
-        if (optFiles != null && optFiles.length > 0) {
-            List<File> homes = asList(optFiles);
-            homes.sort(Comparator.reverseOrder());
-            return fromLibreOfficeHome(homes.get(0));
-        }
-
         throw new IllegalStateException("Could not find local LibreOffice home!");
     }
 }

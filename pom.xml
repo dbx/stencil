@@ -3,7 +3,7 @@
   <groupId>hu.dbx</groupId>
   <artifactId>stencil</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.12</version>
+  <version>0.3.15</version>
   <name>stencil-dbx</name>
   <description>Templating engine for office documents.</description>
   <scm>
@@ -11,31 +11,16 @@
     <connection>scm:git:git://github.com/dbx/stencil.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/dbx/stencil.git</developerConnection>
   </scm>
+
+  <properties>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <stencil-core.version>0.3.15</stencil-core.version>
+    <jodconverter.version>4.4.2</jodconverter.version>
+    <junit.version>4.13.2</junit.version>
+  </properties>
+
   <build>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh</artifactId>
-        <version>3.2.0</version>
-      </extension>
-    </extensions>
-    <sourceDirectory>src</sourceDirectory>
-    <testSourceDirectory>test</testSourceDirectory>
-    <resources>
-      <resource>
-        <directory>resources</directory>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>test-resources</directory>
-      </testResource>
-      <testResource>
-        <directory>resources</directory>
-      </testResource>
-    </testResources>
-    <directory>target</directory>
-    <outputDirectory>target/classes</outputDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -49,6 +34,7 @@
       </plugin>
     </plugins>
   </build>
+
   <repositories>
     <repository>
       <id>central</id>
@@ -92,36 +78,18 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.12.0</version>
     </dependency>
-
     <dependency>
       <groupId>org.jodconverter</groupId>
       <artifactId>jodconverter-local</artifactId>
-      <version>4.4.2</version>
+      <version>${jodconverter.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xmlunit</groupId>
-      <artifactId>xmlunit-core</artifactId>
-      <version>2.5.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>hiccup</groupId>
-      <artifactId>hiccup</artifactId>
-      <version>1.0.5</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <maven.compiler.source>8</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
-    <stencil-core.version>0.3.12</stencil-core.version>
-  </properties>
 
   <distributionManagement>
     <repository>

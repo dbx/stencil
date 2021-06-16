@@ -20,10 +20,11 @@ final class JsonParser {
     private static final ScriptEngineManager em = new ScriptEngineManager();
     private static final ScriptEngine engine = em.getEngineByExtension("js");
 
+    private JsonParser() {}
     /**
      * Parses string and returns read object if any.
      */
-    @SuppressWarnings({"unchecked", "unused", "WeakerAccess"})
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static Optional<Object> parse(String contents) {
         try {
             ScriptObjectMirror parser = (ScriptObjectMirror) engine.eval("JSON.parse");
@@ -54,7 +55,7 @@ final class JsonParser {
         } else if (o instanceof List) {
             return unmodifiableList(((List<Object>) o).stream().map(JsonParser::cleanup).collect(toList()));
         } else if (o instanceof Map) {
-            return cleanMap((Map) o);
+            return cleanMap((Map<?,?>) o);
         } else {
             return o;
         }

@@ -11,10 +11,12 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.junit.Assert.assertNotNull;
+
 public class OnlyConversionTest {
 
 
-    @Ignore
+    @Ignore("Csak debugra")
     @Test
     public void test() throws IOException {
 
@@ -27,5 +29,7 @@ public class OnlyConversionTest {
         InputStream result = ((LibreOfficeConverter) (process.getConverter())).convert(templateFile, InputDocumentFormats.DOCX, OutputDocumentFormats.PDF);
 
         process.stop();
+
+        assertNotNull(result);
     }
 }

@@ -17,7 +17,7 @@ import static io.github.erdos.stencil.impl.FileHelper.removeExtension;
 /**
  * Standalone template engine runner.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "java:S106"})
 public final class Main {
 
     public static void main(String... args) throws IOException {
@@ -48,7 +48,7 @@ public final class Main {
                 final File outputFile = new File(templateFile.getParentFile(), outputFileName);
                 final TemplateData data = readTemplateData(dataFile);
 
-                System.out.printf("Rendering data file %s to file %s \n", dataFile.toString(), outputFile.toString());
+                System.err.printf("Rendering data file %s to file %s %n", dataFile, outputFile);
                 process.renderTemplate(template, data, outputFile);
             }
         } finally {
@@ -79,6 +79,6 @@ public final class Main {
         if (!parsed.isPresent())
             throw new IllegalArgumentException("Could not parse data file: " + dataFile);
 
-        return TemplateData.fromMap((Map) parsed.get());
+        return TemplateData.fromMap((Map<String, Object>) parsed.get());
     }
 }

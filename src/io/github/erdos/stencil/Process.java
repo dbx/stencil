@@ -22,7 +22,7 @@ import java.util.Optional;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Process implements TemplateFactory {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(Process.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
 
     private final Converter converter;
 
@@ -123,7 +123,8 @@ public final class Process implements TemplateFactory {
     @Override
     public PreparedTemplate prepareTemplateFile(File templateFile, PrepareOptions prepareOptions) throws IOException {
         StopWatch stopWatch = null;
-        if (LOGGER.isDebugEnabled()) {
+        final boolean isDebugLogging = LOGGER.isDebugEnabled();
+        if (isDebugLogging) {
             stopWatch = new StopWatch();
             stopWatch.start();
         }
@@ -131,7 +132,7 @@ public final class Process implements TemplateFactory {
         final PreparedTemplate prepared = API.prepare(templateFile, prepareOptions);
         LOGGER.info("Prepared template file {} at {}", templateFile, prepared.creationDateTime());
 
-        if (LOGGER.isDebugEnabled()) {
+        if (isDebugLogging) {
             stopWatch.stop();
             LOGGER.debug("Template file {} took {}ms", templateFile, stopWatch.getTime());
         }

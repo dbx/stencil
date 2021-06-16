@@ -9,6 +9,8 @@ import java.util.Optional;
 
 final class EdnParser {
 
+    private EdnParser() {}
+
     static {
         final IFn req = RT.var("clojure.core", "require");
         req.invoke(Symbol.intern("clojure.edn"));
@@ -19,8 +21,8 @@ final class EdnParser {
      */
     public static Optional<Object> parse(String contents) {
         try {
-            Var var = RT.var("clojure.edn", "read-string");
-            return Optional.of(var.invoke(contents));
+            Var variable = RT.var("clojure.edn", "read-string");
+            return Optional.of(variable.invoke(contents));
         } catch (Exception e) {
             return Optional.empty();
         }

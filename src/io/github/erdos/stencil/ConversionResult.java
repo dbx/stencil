@@ -6,15 +6,15 @@ import java.util.Optional;
 /**
  * Result holder of a document type conversion call.
  *
- * @param <TO> conversion result type. Usually InputStream or File.
+ * @param <T> conversion result type. Usually InputStream or File.
  */
-public final class ConversionResult<TO> {
+public final class ConversionResult<T> {
 
     private final OutputDocumentFormats format;
-    private final TO output;
+    private final T output;
     private final Integer pageCount;
 
-    public ConversionResult(OutputDocumentFormats format, TO output, Integer pageCount) {
+    public ConversionResult(OutputDocumentFormats format, T output, Integer pageCount) {
         if (format == null || output == null)
             throw new IllegalArgumentException("Null args are forbidden!");
 
@@ -23,7 +23,7 @@ public final class ConversionResult<TO> {
         this.pageCount = pageCount;
     }
 
-    TO getOutput() {
+    T getOutput() {
         return output;
     }
 
