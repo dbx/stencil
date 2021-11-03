@@ -7,7 +7,9 @@ import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.local.office.LocalOfficeUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,13 +33,6 @@ public class LibreOfficeConverter implements Converter {
      * @throws IllegalArgumentException when officeHome is missing, does not exist or invalid
      */
     public LibreOfficeConverter(final File officeHome) {
-        if (officeHome == null)
-            throw new IllegalArgumentException("Az Office Home parameter hianyzik!");
-        if (!officeHome.exists())
-            throw new IllegalArgumentException("Office Home mappa nem letezik: " + officeHome.toString());
-        if (!new File(officeHome, "program/soffice.bin").exists())
-            throw new IllegalArgumentException("Office home nem korrekt: hianyzik a program/soffice.bin fajlt!");
-
         this.officeManager = LocalOfficeManager.builder().officeHome(officeHome)
             .afterStartProcessDelay(1000L).build();
     }

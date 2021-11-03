@@ -1,6 +1,8 @@
 package io.github.erdos.stencil;
 
+import io.github.erdos.stencil.functions.Function;
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
+import io.github.erdos.stencil.impl.NativeEvaluator;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jodconverter.core.office.OfficeManager;
 import org.slf4j.Logger;
@@ -11,8 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Used to control the document creation process.
@@ -62,7 +63,7 @@ public final class Process implements TemplateFactory {
      * @throws IllegalArgumentException when any argument is null
      */
     public void renderTemplate(PreparedTemplate template, TemplateData templateData, File outputFile) throws IOException {
-        renderTemplate(template, null, templateData, outputFile);
+        renderTemplate(template, null, templateData, outputFile, null);
     }
 
     /**
@@ -72,11 +73,13 @@ public final class Process implements TemplateFactory {
      * @param fragments    preprocessed fragments
      * @param templateData data to fill template with
      * @param outputFile   rendered document is written to this file
+     * @param customFunctions custom functions to register
      * @throws IOException              on file system err
      * @throws IllegalArgumentException when any argument is null
      */
     public void renderTemplate(PreparedTemplate template, Map<String, PreparedFragment> fragments,
-                               TemplateData templateData, File outputFile) throws IOException {
+                               TemplateData templateData, File outputFile, final List<Function> customFunctions) throws IOException {
+        Objects.requireNonNull(outputFile, "Output File is null!");
         if (outputFile == null)
             throw new IllegalArgumentException("Output File is null!");
         if (template == null)
@@ -94,13 +97,20 @@ public final class Process implements TemplateFactory {
         if (!format.isPresent())
             throw new IllegalArgumentException("Unexpected format for file name: " + outputFile.getName());
 
-        EvaluatedDocument rendered = fragments != null
-                ? API.render(template, fragments, templateData)
-                : API.render(template, templateData);
+        EvaluatedDocument rendered = doRender(template, fragments, templateData, customFunctions);
 
         try (InputStream stream = converter.convert(rendered, format.get()).getOutput()) {
             Files.copy(stream, outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    private EvaluatedDocument doRender(final PreparedTemplate template, Map<String, PreparedFragment> fragments, final TemplateData data, final Collection<Function> customFunctions) {
+        //TODO: replace after stencil-core 0.3.29
+        final NativeEvaluator evaluator = new NativeEvaluator();
+        if (customFunctions != null) {
+            evaluator.getFunctionEvaluator().registerFunctions(customFunctions.toArray(new Function[0]));
+        }
+        return evaluator.render(template, Optional.ofNullable(fragments).orElseGet(Collections::emptyMap), data);
     }
 
     public Converter getConverter() {
