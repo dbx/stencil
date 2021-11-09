@@ -2,7 +2,6 @@ package io.github.erdos.stencil;
 
 import io.github.erdos.stencil.functions.Function;
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
-import io.github.erdos.stencil.impl.NativeEvaluator;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jodconverter.core.office.OfficeManager;
 import org.slf4j.Logger;
@@ -13,7 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Used to control the document creation process.
@@ -97,20 +99,11 @@ public final class Process implements TemplateFactory {
         if (!format.isPresent())
             throw new IllegalArgumentException("Unexpected format for file name: " + outputFile.getName());
 
-        EvaluatedDocument rendered = doRender(template, fragments, templateData, customFunctions);
+        EvaluatedDocument rendered = API.render(template, fragments, templateData, customFunctions);
 
         try (InputStream stream = converter.convert(rendered, format.get()).getOutput()) {
             Files.copy(stream, outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
-    }
-
-    private EvaluatedDocument doRender(final PreparedTemplate template, Map<String, PreparedFragment> fragments, final TemplateData data, final Collection<Function> customFunctions) {
-        //TODO: replace after stencil-core 0.3.29
-        final NativeEvaluator evaluator = new NativeEvaluator();
-        if (customFunctions != null) {
-            evaluator.getFunctionEvaluator().registerFunctions(customFunctions.toArray(new Function[0]));
-        }
-        return evaluator.render(template, Optional.ofNullable(fragments).orElseGet(Collections::emptyMap), data);
     }
 
     public Converter getConverter() {
