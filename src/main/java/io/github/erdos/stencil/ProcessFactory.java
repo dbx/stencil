@@ -33,7 +33,24 @@ public final class ProcessFactory {
      *         when office manager is null
      */
     public static Process fromOfficeManager(OfficeManager officeManager) throws IllegalArgumentException {
-        return new Process(officeManager);
+        return fromOfficeManager(officeManager, false);
+    }
+
+    /**
+     * Constructs a process instance from a given office manager.
+     *
+     * @param officeManager
+     *         office manager instance
+     * @param caching
+     *         cache templates
+     *
+     * @return new process instance
+     *
+     * @throws IllegalArgumentException
+     *         when office manager is null
+     */
+    public static Process fromOfficeManager(OfficeManager officeManager, boolean caching) throws IllegalArgumentException {
+        return caching ? new CachingProcess(officeManager) : new Process(officeManager);
     }
 
     /**
@@ -50,7 +67,24 @@ public final class ProcessFactory {
      *         when argument is not valid LO directory
      */
     public static Process fromLibreOfficeHome(File libreOfficeHomeDirectory) throws IllegalArgumentException {
-        return new Process(libreOfficeHomeDirectory);
+        return fromLibreOfficeHome(libreOfficeHomeDirectory, false);
+    }
+
+    /**
+     * Constructs a process instance with a local libreoffice installation.
+     * A correct directory must contain a "program/soffice.bin" file.
+     * Exception is throw when the directory is not a valid location.
+     *
+     * @param libreOfficeHomeDirectory
+     *         place of LO installation.
+     *
+     * @return new process instance
+     *
+     * @throws IllegalArgumentException
+     *         when argument is not valid LO directory
+     */
+    public static Process fromLibreOfficeHome(File libreOfficeHomeDirectory, boolean caching) throws IllegalArgumentException {
+        return caching ? new CachingProcess(libreOfficeHomeDirectory) : new Process(libreOfficeHomeDirectory);
     }
 
     /**
@@ -67,14 +101,31 @@ public final class ProcessFactory {
      *         when no standard directory has been found.
      */
     public static Process fromLocalLibreOffice() throws IllegalStateException {
+        return fromLocalLibreOffice(false);
+    }
+
+    /**
+     * Tries to construct a process instance and tries to find local libreoffice install.
+     * <p>
+     * First, looks for LIBRE_OFFICE_HOME env variable.
+     * Second, looks at /usr/lib64/libreoffice (Fedora default install destination).
+     * Third, looks at /usr/lib/libreoffice (for Ubuntu systems).
+     * Finally, looks at /opt/libreoffice* and tries to load largest version number.
+     *
+     * @return a new Process instance with a running LibreOffice
+     *
+     * @throws IllegalStateException
+     *         when no standard directory has been found.
+     */
+    public static Process fromLocalLibreOffice(boolean caching) throws IllegalStateException {
         //default locations
         final Optional<Process> defaultLocProcess = Stream.of(System.getenv("LIBRE_OFFICE_HOME"),
-                "/usr/lib64/libreoffice",
-                "/usr/lib/libreoffice")
+                        "/usr/lib64/libreoffice",
+                        "/usr/lib/libreoffice")
                 .filter(StringUtils::isNotEmpty)
                 .map(File::new)
                 .filter(File::exists)
-                .map(ProcessFactory::fromLibreOfficeHome)
+                .map(d -> fromLibreOfficeHome(d, caching))
                 .findFirst();
         if (defaultLocProcess.isPresent()) {
             return defaultLocProcess.get();
@@ -86,7 +137,7 @@ public final class ProcessFactory {
                         optFiles.filter(p -> p.getFileName().startsWith("libreoffice"))
                                 .max(Comparator.naturalOrder())
                                 .map(Path::toFile)
-                                .map(ProcessFactory::fromLibreOfficeHome);
+                                .map(d -> fromLibreOfficeHome(d, caching));
                 if (optProcess.isPresent()) {
                     return optProcess.get();
                 }
