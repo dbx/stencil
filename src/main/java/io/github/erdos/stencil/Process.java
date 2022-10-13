@@ -2,6 +2,7 @@ package io.github.erdos.stencil;
 
 import io.github.erdos.stencil.functions.Function;
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
+import io.github.erdos.stencil.util.ClojureUtil;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jodconverter.core.office.OfficeManager;
 import org.slf4j.Logger;
@@ -21,6 +22,11 @@ import java.util.*;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Process implements TemplateFactory {
+
+    static {
+        //TODO: ezt átalakítani ServiceLoader-esre
+        ClojureUtil.requireNamespace("stencil.dbx.functions");
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
 
