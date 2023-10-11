@@ -3,7 +3,7 @@
   <groupId>hu.dbx</groupId>
   <artifactId>stencil</artifactId>
   <packaging>jar</packaging>
-  <version>0.4.7.1</version>
+  <version>0.4.7.2</version>
   <name>stencil-dbx</name>
   <description>Templating engine for office documents.</description>
   <scm>
@@ -15,7 +15,7 @@
   <properties>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
-    <stencil-core.version>0.4.7</stencil-core.version>
+    <stencil-core.version>0.4.7.2-dbx</stencil-core.version><!--TODO upgrade to latest stencil core, 0.5.* -->
     <jodconverter.version>4.4.2</jodconverter.version>
     <junit.version>4.13.2</junit.version>
   </properties>
