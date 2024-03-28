@@ -1,7 +1,7 @@
 package io.github.erdos.stencil;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.jodconverter.core.office.OfficeManager;
