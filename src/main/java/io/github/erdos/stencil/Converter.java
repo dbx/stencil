@@ -71,5 +71,18 @@ public interface Converter {
 
         return new ConversionResult<>(result.getOutputFormat(), outFile, result.getPageCount().orElse(null));
     }
+
+    /**
+     * Converts from an input stream.
+     *
+     * @param inputStream  stream of input file contents
+     * @param inputFormat  input file format
+     * @param outputFormat output stream is expected in this file format
+     * @return a new input stream with the conversion result
+     * @throws IllegalStateException    when converter has not yet been started
+     * @throws IllegalArgumentException when any argument is null
+     * @throws IOException              on file system IO error
+     */
+    InputStream convert(InputStream inputStream, InputDocumentFormats inputFormat, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException;
 }
 

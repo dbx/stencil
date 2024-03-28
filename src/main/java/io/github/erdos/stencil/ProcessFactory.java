@@ -147,4 +147,5 @@ public final class ProcessFactory {
         }
         throw new IllegalStateException("Could not find local LibreOffice home!");
     }
+
 }
