@@ -3,13 +3,15 @@ package io.github.erdos.stencil.impl;
 import io.github.erdos.stencil.*;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
+import org.jodconverter.core.job.AbstractConverter;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
-import org.jodconverter.local.office.LocalOfficeUtils;
+import org.jodconverter.remote.RemoteConverter;
+import org.jodconverter.remote.office.RemoteOfficeManager;
+import org.jodconverter.remote.ssl.SslConfig;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +36,7 @@ public class LibreOfficeConverter implements Converter {
      */
     public LibreOfficeConverter(final File officeHome) {
         this.officeManager = LocalOfficeManager.builder().officeHome(officeHome)
-            .afterStartProcessDelay(1000L).build();
+                .afterStartProcessDelay(1000L).build();
     }
 
     /**
@@ -50,7 +52,6 @@ public class LibreOfficeConverter implements Converter {
         this.officeManager = officeManager;
         started.set(officeManager.isRunning());
     }
-
 
     @Override
     public void start() {
@@ -88,6 +89,7 @@ public class LibreOfficeConverter implements Converter {
      * @throws IllegalArgumentException when any argument is null
      * @throws IOException              on file system IO error
      */
+    @Override
     public InputStream convert(InputStream inputStream, InputDocumentFormats inputFormat, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
         if (inputStream == null)
             throw new IllegalArgumentException("Convert function input stream is null!");
@@ -103,10 +105,12 @@ public class LibreOfficeConverter implements Converter {
 
         File temporartOutputFile = File.createTempFile("stencil", "temfile");
 
+        final AbstractConverter converter = officeManager instanceof RemoteOfficeManager
+                ? RemoteConverter.make(officeManager)
+                : LocalConverter.make(officeManager);
+
         try {
-            LocalConverter
-                    .make(officeManager)
-                    .convert(inputStream)
+            converter.convert(inputStream)
                     .as(inputF)
                     .to(temporartOutputFile)
                     .as(outputF)
