@@ -116,9 +116,8 @@ public class Process implements TemplateFactory {
             throw new IllegalArgumentException("Unexpected format for file name: " + outputFile.getName());
         }
 
-        EvaluatedDocument rendered = API.render(template, preparedFragments, templateData, customFunctions);
-
-        try (InputStream stream = converter.convert(rendered, format.get()).getOutput()) {
+        final EvaluatedDocument rendered = API.render(template, preparedFragments, templateData, customFunctions);
+        try (InputStream stream = converter.convert(rendered, template.getTemplateFormat(), format.get()).getOutput()) {
             Files.copy(stream, outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }

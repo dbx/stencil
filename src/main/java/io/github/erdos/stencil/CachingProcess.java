@@ -1,5 +1,6 @@
 package io.github.erdos.stencil;
 
+import io.github.erdos.stencil.functions.FunctionEvaluator;
 import org.jodconverter.core.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class CachingProcess extends Process {
     public void stop() {
         super.stop();
         LOGGER.debug("Cleaning up cached templates");
-        templateCache.values().forEach(CachedPreparedTemplate::destroy);
+        templateCache.values().forEach(CachedPreparedTemplate::close);
         templateCache.clear();
     }
 
@@ -47,7 +48,7 @@ public class CachingProcess extends Process {
             final CachedPreparedTemplate overwrittenTemplate = templateCache.put(key, newTemplate);
             if (overwrittenTemplate != null) {
                 LOGGER.debug("Cleaning up refreshed template");
-                overwrittenTemplate.destroy();
+                overwrittenTemplate.close();
             }
         }
         return templateCache.get(key);
@@ -112,27 +113,18 @@ public class CachingProcess extends Process {
         }
 
         @Override
-        public Object getSecretObject() {
-            return delegate.getSecretObject();
-        }
-
-        @Override
         public TemplateVariables getVariables() {
             return delegate.getVariables();
         }
 
         @Override
-        public void cleanup() {
-            //NOOP
-        }
-
-        public void destroy() {
-            delegate.cleanup();
+        public EvaluatedDocument render(Map<String, PreparedFragment> map, FunctionEvaluator functionEvaluator, TemplateData templateData) {
+            return delegate.render(map, functionEvaluator, templateData);
         }
 
         @Override
-        protected void finalize() throws Throwable {
-            delegate.cleanup();
+        public void close() {
+            delegate.close();
         }
     }
 }

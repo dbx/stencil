@@ -30,19 +30,21 @@ public interface Converter {
     void stop() throws IllegalStateException;
 
     /**
-     * Converts an evaluated template t oa desired file format.
+     * Converts an evaluated template to a desired file format.
      *
      * @param document     not null document to convert
      * @param outputFormat not null target file format
-     * @return wrapped input stream of file in a desired format. Not null.
+     * @return wrapped input stream of a file in a desired format. Not null.
      * @throws IllegalStateException if service has not yet been started.
      * @throws NullPointerException  when any argument is null
      * @throws IOException           of file system errors or converter service errors
      */
-    ConversionResult<InputStream> convert(EvaluatedDocument document, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException;
+    ConversionResult<InputStream> convert(EvaluatedDocument document,
+                                          TemplateDocumentFormats templateDocumentFormat,
+                                          OutputDocumentFormats outputFormat) throws IllegalStateException, IOException;
 
     /**
-     * Just like convert() but result is a temporary file.
+     * Just like convert() but the result is a temporary file.
      * <p>
      * Result file must be copied/moved to an other location as it might be deleted after the program quits.
      *
@@ -53,12 +55,14 @@ public interface Converter {
      * @throws NullPointerException  when any argument is null
      * @throws IOException           on file system error on converter service error
      */
-    default ConversionResult<File> convertToFile(EvaluatedDocument document, OutputDocumentFormats outputFormat)
+    default ConversionResult<File> convertToFile(EvaluatedDocument document,
+                                                 TemplateDocumentFormats templateFormat,
+                                                 OutputDocumentFormats outputFormat)
             throws IllegalStateException, IOException {
         final Path out = Files.createTempFile("stencil-out-", "." + outputFormat.getExtension());
         final File outFile = out.toFile();
 
-        ConversionResult<InputStream> result = convert(document, outputFormat);
+        ConversionResult<InputStream> result = convert(document, templateFormat, outputFormat);
         try (FileOutputStream outputStream = new FileOutputStream(outFile);
              InputStream input = result.getOutput()) {
             int read;

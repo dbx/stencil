@@ -1,6 +1,7 @@
 package io.github.erdos.stencil.impl;
 
 import io.github.erdos.stencil.*;
+import io.github.erdos.stencil.util.DeleteOnCloseFileInputStream;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
 import org.jodconverter.core.job.AbstractConverter;
@@ -10,7 +11,6 @@ import org.jodconverter.local.LocalConverter;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.remote.RemoteConverter;
 import org.jodconverter.remote.office.RemoteOfficeManager;
-import org.jodconverter.remote.ssl.SslConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +90,9 @@ public class LibreOfficeConverter implements Converter {
      * @throws IOException              on file system IO error
      */
     @Override
-    public InputStream convert(InputStream inputStream, InputDocumentFormats inputFormat, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
+    public InputStream convert(InputStream inputStream,
+                               InputDocumentFormats inputFormat,
+                               OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
         if (inputStream == null)
             throw new IllegalArgumentException("Convert function input stream is null!");
         if (inputFormat == null)
@@ -123,15 +125,17 @@ public class LibreOfficeConverter implements Converter {
     }
 
     @Override
-    public ConversionResult<InputStream> convert(EvaluatedDocument document, OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
+    public ConversionResult<InputStream> convert(EvaluatedDocument document,
+                                                 TemplateDocumentFormats templateDocumentFormat,
+                                                 OutputDocumentFormats outputFormat) throws IllegalStateException, IOException {
         if (!started.get())
             throw new IllegalStateException("Service has not yet been started!");
 
-        // we are lazy. if extensions already match then we need to conversion.
-        if (OutputDocumentFormats.ofExtension(document.getFormat().name()).orElse(null) == outputFormat)
+        // we are lazy. if extensions already match, then we need to conversion.
+        if (OutputDocumentFormats.ofExtension(templateDocumentFormat.name()).orElse(null) == outputFormat)
             return new ConversionResult<>(outputFormat, document.toInputStream(executor), null);
 
-        final InputDocumentFormats inputFormat = InputDocumentFormats.valueOf(document.getFormat().name());
+        final InputDocumentFormats inputFormat = InputDocumentFormats.valueOf(templateDocumentFormat.name());
         final InputStream inputStream = convert(document.toInputStream(executor), inputFormat, outputFormat);
         return new ConversionResult<>(outputFormat, inputStream, null);
     }
