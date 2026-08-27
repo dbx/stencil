@@ -1,6 +1,9 @@
 package io.github.erdos.stencil;
 
-import org.junit.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,25 +12,28 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
-@Ignore
-public class ProcessTest {
+import static org.junit.jupiter.api.Assertions.fail;
+
+@Disabled
+@IntegrationTest
+class ProcessTest {
 
     private static Process process;
 
-    @BeforeClass
-    public static void startProcess() {
+    @BeforeAll
+    static void startProcess() {
         process = ProcessFactory.fromLocalLibreOffice();
         process.start();
     }
 
-    @AfterClass
-    public static void stopProcess() {
+    @AfterAll
+    static void stopProcess() {
         process.stop();
         process = null;
     }
 
     @Test
-    public void testDistinct() {
+    void testDistinct() {
         //should not throw exception
         try {
             final Path tempSourcePath = Files.createTempFile("process-test", ".docx");
@@ -38,7 +44,7 @@ public class ProcessTest {
             tempSourcePath.toFile().deleteOnExit();
             tempTargetPath.toFile().deleteOnExit();
         } catch (Exception e) {
-            Assert.fail("Render should not throw exception: " + e.getMessage());
+            fail("Render should not throw exception: " + e.getMessage());
         }
     }
 

@@ -3,7 +3,7 @@
   <groupId>hu.dbx</groupId>
   <artifactId>stencil</artifactId>
   <packaging>jar</packaging>
-  <version>0.6.6</version>
+  <version>0.6.6.1</version>
   <name>stencil-dbx</name>
   <description>Templating engine for office documents.</description>
   <scm>
@@ -15,11 +15,19 @@
   <properties>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <stencil-core.version>0.6.6</stencil-core.version>
-    <jodconverter.version>4.4.2</jodconverter.version>
-    <junit.version>4.13.2</junit.version>
-    <testcontainers.version>1.17.6</testcontainers.version>
-    <pdfbox.version>3.0.1</pdfbox.version>
+    <jodconverter.version>4.4.11</jodconverter.version>
+    <junit-jupiter.version>5.14.4</junit-jupiter.version>
+    <testcontainers.version>1.21.4</testcontainers.version>
+    <pdfbox.version>3.0.8</pdfbox.version>
+    <commons-lang3.version>3.20.0</commons-lang3.version>
+    <data.json.version>2.5.2</data.json.version>
+
+    <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+    <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
+    <clojure-maven-plugin.version>1.9.3</clojure-maven-plugin.version>
   </properties>
 
   <build>
@@ -27,17 +35,17 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.0</version>
+        <version>${maven-surefire-plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
+        <version>${build-helper-maven-plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.8.4</version>
+        <version>${clojure-maven-plugin.version}</version>
         <extensions>true</extensions>
         <executions>
           <execution>
@@ -89,6 +97,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -100,7 +115,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>data.json</artifactId>
-      <version>0.2.6</version>
+      <version>${data.json.version}</version>
       <optional>true</optional> <!-- Szerintem semmire sem kell, de egyelőre meghagyom -->
     </dependency>
 
@@ -108,7 +123,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>${commons-lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jodconverter</groupId>
@@ -116,9 +131,8 @@
       <version>${jodconverter.version}</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

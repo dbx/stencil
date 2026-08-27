@@ -1,30 +1,30 @@
 package io.github.erdos.stencil.standalone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EdnParserTest {
+class EdnParserTest {
 
     @Test
-    public void testParse() {
+    void testParse() {
         Optional<Object> result = EdnParser.parse("{1 2}");
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof Map);
     }
 
     @Test
-    public void testParseEmpty() {
+    void testParseEmpty() {
         Optional<Object> result = EdnParser.parse("");
         assertFalse(result.isPresent());
     }
 
     @Test
-    public void testParseNull() {
+    void testParseNull() {
         Optional<Object> result = EdnParser.parse(null);
         assertFalse(result.isPresent());
     }

@@ -1,20 +1,20 @@
 package io.github.erdos.stencil.standalone;
 
 import io.github.erdos.stencil.OutputDocumentFormats;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SuppressWarnings("java:S5976") //parameterized tests, TODO
-public class ArgsParserTest {
+class ArgsParserTest {
 
 
     @Test
-    public void longKeySeparated() {
+    void longKeySeparated() {
         // GIVEN
         String params = "--output-type pdf template1 data1 data2 data3";
         // WHEN
@@ -26,7 +26,7 @@ public class ArgsParserTest {
     }
 
     @Test
-    public void shortKeyOne() {
+    void shortKeyOne() {
         // GIVEN
         String params = "-Tpdf t a";
         // WHEN
@@ -36,7 +36,7 @@ public class ArgsParserTest {
     }
 
     @Test
-    public void shortKeySeparated() {
+    void shortKeySeparated() {
         // GIVEN
         String params = "-T pdf t a";
         // WHEN
@@ -46,7 +46,7 @@ public class ArgsParserTest {
     }
 
     @Test
-    public void longKeyEquals() {
+    void longKeyEquals() {
         // GIVEN
         String params = "--output-type=pdf t a";
         // WHEN

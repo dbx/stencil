@@ -7,10 +7,9 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.remote.office.RemoteOfficeManager;
 import org.jodconverter.remote.ssl.SslConfig;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.utility.DockerImageName;
@@ -19,8 +18,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-@Ignore
-public class RemoteOfficeManagerTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+@Disabled
+@IntegrationTest
+class RemoteOfficeManagerTest {
 
     private static final GenericContainer<?> CONTAINER;
     private static final String URL;
@@ -47,19 +50,19 @@ public class RemoteOfficeManagerTest {
     }
 
     @Test
-    public void testRemoteOfficeManager() {
+    void testRemoteOfficeManager() {
         try (final InputStream inputStream = Objects.requireNonNull(
                 RemoteOfficeManagerTest.class.getClassLoader().getResourceAsStream("converter/test.docx"), "Cannot find resource");
              final InputStream result = PROCESS.getConverter().convert(inputStream, InputDocumentFormats.DOCX, OutputDocumentFormats.PDF);
              final PDDocument document = Loader.loadPDF(IOUtils.toByteArray(result))) {
-            Assert.assertEquals("Teszt dokumentum\n", new PDFTextStripper().getText(document));
+            assertEquals("Teszt dokumentum\n", new PDFTextStripper().getText(document));
         } catch (IOException e) {
-            Assert.fail("Converter should not throw exception: " + e.getMessage());
+            fail("Converter should not throw exception: " + e.getMessage());
         }
     }
 
-    @AfterClass
-    public static void stop() {
+    @AfterAll
+    static void stop() {
         PROCESS.stop();
         CONTAINER.stop();
         CONTAINER.close();

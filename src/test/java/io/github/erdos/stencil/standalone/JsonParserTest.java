@@ -1,18 +1,18 @@
 package io.github.erdos.stencil.standalone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class JsonParserTest {
+class JsonParserTest {
 
 
     @Test
-    public void testParseMap() {
+    void testParseMap() {
         Optional<Object> parsed = JsonParser.parse("{\"a\": 23, \"b\": null}");
 
         assertTrue(parsed.isPresent());
@@ -21,7 +21,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testParseVector() {
+    void testParseVector() {
         Optional<Object> parsed = JsonParser.parse("[11, 22, 33]");
 
         assertTrue(parsed.isPresent());
@@ -33,7 +33,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testParseVectorNested() {
+    void testParseVectorNested() {
         Optional<Object> parsed = JsonParser.parse("{\"a\": [11, 22, 33]}");
 
         assertTrue(parsed.isPresent());

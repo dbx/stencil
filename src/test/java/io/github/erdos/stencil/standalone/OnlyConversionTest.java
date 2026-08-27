@@ -5,20 +5,20 @@ import io.github.erdos.stencil.OutputDocumentFormats;
 import io.github.erdos.stencil.Process;
 import io.github.erdos.stencil.ProcessFactory;
 import io.github.erdos.stencil.impl.LibreOfficeConverter;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class OnlyConversionTest {
+class OnlyConversionTest {
 
 
-    @Ignore("Csak debugra")
+    @Disabled("Csak debugra")
     @Test
-    public void test() throws IOException {
+    void test() throws IOException {
 
 
         InputStream templateFile = null;
