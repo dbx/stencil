@@ -3,7 +3,7 @@
   <groupId>hu.dbx</groupId>
   <artifactId>stencil</artifactId>
   <packaging>jar</packaging>
-  <version>0.6.6.1</version>
+  <version>0.6.7</version>
   <name>stencil-dbx</name>
   <description>Templating engine for office documents.</description>
   <scm>
@@ -17,13 +17,14 @@
     <maven.compiler.target>8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <stencil-core.version>0.6.6</stencil-core.version>
+    <stencil-core.version>0.6.7</stencil-core.version>
     <jodconverter.version>4.4.11</jodconverter.version>
     <junit-jupiter.version>5.14.4</junit-jupiter.version>
     <testcontainers.version>1.21.4</testcontainers.version>
     <pdfbox.version>3.0.8</pdfbox.version>
-    <commons-lang3.version>3.20.0</commons-lang3.version>
+    <commons-lang3.version>3.22.0</commons-lang3.version>
     <data.json.version>2.5.2</data.json.version>
+    <commons-compress.version>1.28.0</commons-compress.version>
 
     <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
     <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
@@ -103,6 +104,11 @@
         <version>${junit-jupiter.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${commons-compress.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
